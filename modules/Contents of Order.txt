@@ -1,0 +1,15 @@
+------------------
+Order Details
+-----------------
+Order ID: 2137758
+Date: 20210501
+
+
+----------------------
+Feature Types
+-----------------------
+ - TANTALIS - Crown Tenures in directory TA_CRT_SVW
+
+----------------------------
+Packaged Products
+----------------------------
