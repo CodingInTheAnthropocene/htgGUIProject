@@ -1452,7 +1452,7 @@ p, li { white-space: pre-wrap; }
                    </font>
                   </property>
                   <property name="text">
-                   <string>PyDracula APP - Theme with colors based on Dracula for Python.</string>
+                   <string>HTG Dataset Updater</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
