@@ -256,7 +256,9 @@
     <file>images/icons/icon_restore.png</file>
     <file>images/icons/icon_settings.png</file>
   </qresource>
-  <qresource prefix="newPrefix">
+  <qresource prefix="images">
     <file>images/images/bc_treaty.png</file>
+    <file>images/images/PyDracula_vertical.png</file>
+    <file>images/images/PyDracula.png</file>
   </qresource>
 </RCC>

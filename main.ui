@@ -522,7 +522,7 @@ QCommandLinkButton:pressed {
 /* /////////////////////////////////////////////////////////////////////////////////////////////////
 Button */
 #pagesContainer QPushButton {
-	border: 2px solid rgb(52, 59, 72);
+	border: 2px solid rgb(200, 200, 200);
 	border-radius: 5px;	
 	background-color: rgb(52, 59, 72);
 }
@@ -532,14 +532,13 @@ Button */
 }
 #pagesContainer QPushButton:pressed {	
 	background-color: rgb(35, 40, 49);
-	border: 2px solid rgb(43, 50, 61);
+	border: 2px solid rgb(225, 225, 225);
 }
 
 QTreeWidget {
-	border: 2px solid rgb(200, 200, 200);
+	border: 2px solid rgb(61, 70, 86);
 	border-radius: 5px;
 }
-
 </string>
    </property>
    <layout class="QVBoxLayout" name="appMargins">
@@ -1710,8 +1709,8 @@ p, li { white-space: pre-wrap; }
                   <widget class="QStackedWidget" name="stackedWidget">
                    <property name="geometry">
                     <rect>
-                     <x>50</x>
-                     <y>10</y>
+                     <x>0</x>
+                     <y>0</y>
                      <width>852</width>
                      <height>814</height>
                     </rect>
@@ -1724,15 +1723,13 @@ p, li { white-space: pre-wrap; }
                    </property>
                    <widget class="QWidget" name="data">
                     <property name="styleSheet">
-                     <string notr="true">background-image: url(:images/images/bc_treaty.png);
-background-position: center;
-background-repeat: no-repeat;A</string>
+                     <string notr="true"/>
                     </property>
                     <widget class="QFrame" name="frameCrownTenures">
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>20</y>
+                       <y>70</y>
                        <width>300</width>
                        <height>111</height>
                       </rect>
@@ -1789,35 +1786,85 @@ background-repeat: no-repeat;A</string>
                          </property>
                          <item>
                           <property name="text">
+                           <string>Hosted File Date:</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
                            <string>Size: </string>
                           </property>
                          </item>
                          <item>
                           <property name="text">
-                           <string>E-mail:</string>
+                           <string>File Path: </string>
                           </property>
                          </item>
                          <item>
                           <property name="text">
-                           <string>File Location: </string>
-                          </property>
-                         </item>
-                         <item>
-                          <property name="text">
-                           <string>Archive Location:</string>
+                           <string>Archive Folder:</string>
                           </property>
                          </item>
                         </item>
                        </widget>
                       </item>
-                      <item>
+                      <item alignment="Qt::AlignHCenter">
                        <widget class="QPushButton" name="buttonUpdateCrownTenures">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>100</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>200</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
                         <property name="text">
                          <string>Update</string>
                         </property>
                        </widget>
                       </item>
                      </layout>
+                    </widget>
+                    <widget class="QLabel" name="labelData">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>0</y>
+                       <width>181</width>
+                       <height>51</height>
+                      </rect>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">font: 700 30pt &quot;Segoe UI&quot;;</string>
+                     </property>
+                     <property name="text">
+                      <string>Datasets</string>
+                     </property>
+                    </widget>
+                    <widget class="Line" name="datasetsline">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>40</y>
+                       <width>821</width>
+                       <height>20</height>
+                      </rect>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">background: none</string>
+                     </property>
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
                     </widget>
                    </widget>
                    <widget class="QWidget" name="logs">

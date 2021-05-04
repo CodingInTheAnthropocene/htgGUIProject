@@ -18,11 +18,16 @@
 import sys
 import platform
 
+from PySide6 import QtWidgets
+from widgets.custom_grips.custom_grips import Widgets
+
 # IMPORT / GUI AND MODULES AND WIDGETS
 # ///////////////////////////////////////////////////////////////
 from modules import *
 from widgets import *
 from modules import crownTenuresFunctions
+
+
 
 
 # SET AS GLOBAL WIDGETS
@@ -46,14 +51,14 @@ class MainWindow(QMainWindow):
 
         # APP NAME
         # ///////////////////////////////////////////////////////////////
-        title = "PyDracula - Modern GUI"
-        description = "PyDracula APP - Theme with colors based on Dracula for Python."
+        title = "Dataset Updater"
+        description = "HTG Dataset Updater"
         # APPLY TEXTS
         self.setWindowTitle(title)
         widgets.titleRightInfo.setText(description)
 
         # SET UI DEFINITIONS
-        # ///////////////////////////////////////////////////////////////
+        # //////////////////////////////////////////////////////////////
         UIFunctions.uiDefinitions(self)
 
         # QTableWidget PARAMETERS
@@ -70,22 +75,26 @@ class MainWindow(QMainWindow):
         widgets.buttonDataSettings.setToolTip("    Data Settings")
 
         #Crown Tenures
-        
 
-        #ctlabeldate = "goats"
-        #widgets.treeWidget.setHeaderLabel(f"Crown Tenures - {ctlabeldate}")
+
+        #qtreeCrownTenures starting state
+        widgets.qTreeCrownTenures.setHeaderLabel(f"Crown Tenures: {tenuresDataSettings.tenuresCreatedDate}")
+        widgets.qTreeCrownTenures.topLevelItem(0).child(0).setText(0, "Hosted File Date: ")
+        widgets.qTreeCrownTenures.topLevelItem(0).child(1).setText(0, f"Size: {tenuresDataSettings.size/1000000:.2f} mb")        
+        widgets.qTreeCrownTenures.topLevelItem(0).child(2).setText(0, f"File Path: {tenuresDataSettings.currentTenuresPath}") 
+        widgets.qTreeCrownTenures.topLevelItem(0).child(3).setText(0, f"Archive Folder: {tenuresDataSettings.archiveFolder}")               
         #widgets.treeWidget.setStyleSheet("QHeaderView::section {border-radius: 10px; background: rgb(189, 147, 249);}")
         widgets.qTreeCrownTenures.expanded.connect(self.datasetResizeUp)
         widgets.qTreeCrownTenures.collapsed.connect(self.datasetResizeDown)
-        #widgets.buttonUpdateCrownTenures.clicked.connect(crownTenuresFunctions.tenuresDownload)
-
+        widgets.buttonUpdateCrownTenures.clicked.connect(lambda: crownTenuresFunctions.tenuresProcess(tenuresDataSettings.downloadFolder, tenuresDataSettings.email, tenuresDataSettings.currentTenuresPath, tenuresDataSettings.archiveFolder, tenuresDataSettings.htgLandsPath, tenuresDataSettings.soiPath, tenuresDataSettings.arcgisWorkspaceFolder))
+        
 
 
         # EXTRA LEFT BOX
         def openCloseLeftBox():
             UIFunctions.toggleLeftBox(self, True)
         widgets.toggleLeftBox.clicked.connect(openCloseLeftBox)
-        widgets.extraCloseColumnBtn.clicked.connect(openCloseLeftBox)
+        #widgets.extraCloseColuQ2mnBtn.clicked.connect(openCloseLeftBox)
 
         # EXTRA RIGHT BOX
         def openCloseRightBox():
@@ -106,7 +115,7 @@ class MainWindow(QMainWindow):
             # LOAD AND APPLY STYLE
             UIFunctions.theme(self, themeFile, True)
 
-            # SET HACKS
+            # SET HACKS2
             AppFunctions.setThemeHack(self)
 
         # SET HOME PAGE AND SELECT MENU
@@ -120,6 +129,10 @@ class MainWindow(QMainWindow):
 
     def datasetResizeDown(self):
         widgets.frameCrownTenures.resize(300,111)
+    
+
+    
+    
     
 
     # BUTTONS CLICK

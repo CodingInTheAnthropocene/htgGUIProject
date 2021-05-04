@@ -1,7 +1,8 @@
+
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainJLobSe.ui'
+## Form generated from reading UI file 'mainexHfFz.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.0.3
 ##
@@ -534,7 +535,7 @@ class Ui_MainWindow(object):
 "/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "Button */\n"
 "#pagesContainer QPushButton {\n"
-"	border: 2px solid rgb(200, 200, 200);\n"
+"	border: 2px solid rgb(52, 59, 72);\n"
 "	border-radius: 5px;	\n"
 "	background-color: rgb(52, 59, 72);\n"
 "}\n"
@@ -544,13 +545,14 @@ class Ui_MainWindow(object):
 "}\n"
 "#pagesContainer QPushButton:pressed {	\n"
 "	background-color: rgb(35, 40, 49);\n"
-"	border: 2px solid rgb(225, 225, 225);\n"
+"	border: 2px solid rgb(43, 50, 61);\n"
 "}\n"
 "\n"
 "QTreeWidget {\n"
-"	border: 2px solid rgb(61, 70, 86);\n"
+"	border: 2px solid rgb(200, 200, 200);\n"
 "	border-radius: 5px;\n"
 "}\n"
+"\n"
 "")
         self.appMargins = QVBoxLayout(self.styleSheet)
         self.appMargins.setSpacing(0)
@@ -982,14 +984,16 @@ class Ui_MainWindow(object):
         self.pagesContainer.setFrameShadow(QFrame.Raised)
         self.stackedWidget = QStackedWidget(self.pagesContainer)
         self.stackedWidget.setObjectName(u"stackedWidget")
-        self.stackedWidget.setGeometry(QRect(0, 0, 852, 814))
+        self.stackedWidget.setGeometry(QRect(50, 10, 1180, 814))
         self.stackedWidget.setStyleSheet(u"background: transparent;")
         self.data = QWidget()
         self.data.setObjectName(u"data")
-        self.data.setStyleSheet(u"")
+        self.data.setStyleSheet(u"background-image: url(:images/images/bc_treaty.png);\n"
+"background-position: center;\n"
+"background-repeat: no-repeat;A")
         self.frameCrownTenures = QFrame(self.data)
         self.frameCrownTenures.setObjectName(u"frameCrownTenures")
-        self.frameCrownTenures.setGeometry(QRect(10, 80, 300, 111))
+        self.frameCrownTenures.setGeometry(QRect(440, 307, 300, 111))
         sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
@@ -1021,20 +1025,9 @@ class Ui_MainWindow(object):
 
         self.buttonUpdateCrownTenures = QPushButton(self.frameCrownTenures)
         self.buttonUpdateCrownTenures.setObjectName(u"buttonUpdateCrownTenures")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.buttonUpdateCrownTenures.sizePolicy().hasHeightForWidth())
-        self.buttonUpdateCrownTenures.setSizePolicy(sizePolicy4)
-        self.buttonUpdateCrownTenures.setMinimumSize(QSize(100, 0))
-        self.buttonUpdateCrownTenures.setMaximumSize(QSize(200, 16777215))
 
-        self.verticalLayout_4.addWidget(self.buttonUpdateCrownTenures, 0, Qt.AlignHCenter)
+        self.verticalLayout_4.addWidget(self.buttonUpdateCrownTenures)
 
-        self.labelData = QLabel(self.data)
-        self.labelData.setObjectName(u"labelData")
-        self.labelData.setGeometry(QRect(20, 10, 181, 51))
-        self.labelData.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
         self.stackedWidget.addWidget(self.data)
         self.logs = QWidget()
         self.logs.setObjectName(u"logs")
@@ -1471,6 +1464,46 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_6.addWidget(self.content)
 
+        self.bottomBar = QFrame(self.contentBottom)
+        self.bottomBar.setObjectName(u"bottomBar")
+        self.bottomBar.setMinimumSize(QSize(0, 22))
+        self.bottomBar.setMaximumSize(QSize(16777215, 22))
+        self.bottomBar.setFrameShape(QFrame.NoFrame)
+        self.bottomBar.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_5 = QHBoxLayout(self.bottomBar)
+        self.horizontalLayout_5.setSpacing(0)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.horizontalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.creditsLabel = QLabel(self.bottomBar)
+        self.creditsLabel.setObjectName(u"creditsLabel")
+        self.creditsLabel.setMaximumSize(QSize(16777215, 16))
+        font6 = QFont()
+        font6.setFamily(u"Segoe UI")
+        font6.setBold(False)
+        font6.setItalic(False)
+        self.creditsLabel.setFont(font6)
+        self.creditsLabel.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+
+        self.horizontalLayout_5.addWidget(self.creditsLabel)
+
+        self.version = QLabel(self.bottomBar)
+        self.version.setObjectName(u"version")
+        self.version.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.horizontalLayout_5.addWidget(self.version)
+
+        self.frame_size_grip = QFrame(self.bottomBar)
+        self.frame_size_grip.setObjectName(u"frame_size_grip")
+        self.frame_size_grip.setMinimumSize(QSize(20, 0))
+        self.frame_size_grip.setMaximumSize(QSize(20, 16777215))
+        self.frame_size_grip.setFrameShape(QFrame.NoFrame)
+        self.frame_size_grip.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_5.addWidget(self.frame_size_grip)
+
+
+        self.verticalLayout_6.addWidget(self.bottomBar)
+
 
         self.verticalLayout_2.addWidget(self.contentBottom)
 
@@ -1548,17 +1581,16 @@ class Ui_MainWindow(object):
         ___qtreewidgetitem1 = self.qTreeCrownTenures.topLevelItem(0)
         ___qtreewidgetitem1.setText(0, QCoreApplication.translate("MainWindow", u"Info:", None));
         ___qtreewidgetitem2 = ___qtreewidgetitem1.child(0)
-        ___qtreewidgetitem2.setText(0, QCoreApplication.translate("MainWindow", u"Hosted File Date:", None));
+        ___qtreewidgetitem2.setText(0, QCoreApplication.translate("MainWindow", u"Size: ", None));
         ___qtreewidgetitem3 = ___qtreewidgetitem1.child(1)
-        ___qtreewidgetitem3.setText(0, QCoreApplication.translate("MainWindow", u"Size: ", None));
+        ___qtreewidgetitem3.setText(0, QCoreApplication.translate("MainWindow", u"E-mail:", None));
         ___qtreewidgetitem4 = ___qtreewidgetitem1.child(2)
-        ___qtreewidgetitem4.setText(0, QCoreApplication.translate("MainWindow", u"File Path: ", None));
+        ___qtreewidgetitem4.setText(0, QCoreApplication.translate("MainWindow", u"File Location: ", None));
         ___qtreewidgetitem5 = ___qtreewidgetitem1.child(3)
-        ___qtreewidgetitem5.setText(0, QCoreApplication.translate("MainWindow", u"Archive Folder:", None));
+        ___qtreewidgetitem5.setText(0, QCoreApplication.translate("MainWindow", u"Archive Location:", None));
         self.qTreeCrownTenures.setSortingEnabled(__sortingEnabled)
 
         self.buttonUpdateCrownTenures.setText(QCoreApplication.translate("MainWindow", u"Update", None))
-        self.labelData.setText(QCoreApplication.translate("MainWindow", u"Datasets", None))
         self.labelBoxBlenderInstalation.setText(QCoreApplication.translate("MainWindow", u"FILE BOX", None))
         self.lineEdit.setText("")
         self.lineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type here", None))
@@ -1629,5 +1661,6 @@ class Ui_MainWindow(object):
         self.btn_message.setText(QCoreApplication.translate("MainWindow", u"Message", None))
         self.btn_print.setText(QCoreApplication.translate("MainWindow", u"Print", None))
         self.btn_logout.setText(QCoreApplication.translate("MainWindow", u"Logout", None))
+        self.creditsLabel.setText(QCoreApplication.translate("MainWindow", u"By: Wanderson M. Pimenta", None))
+        self.version.setText(QCoreApplication.translate("MainWindow", u"v1.0.3", None))
     # retranslateUi
-

@@ -16,7 +16,7 @@ from datetime import datetime
 from shutil import move, make_archive, rmtree, unpack_archive
 
 # local imports
-from dataSettings import tenuresDataSettings as tds
+from modules.dataSettings import tenuresDataSettings as tds
 
 
 def tenuresAchiving(currentTenuresPath, archiveFolder):
@@ -276,7 +276,5 @@ def tenuresProcess(downloadFolder, email, currentTenuresPath, archiveFolder, htg
     tenuresAchiving(currentTenuresPath, archiveFolder)
     tenuresGeoprocessing(tenuresDownload(downloadFolder, email), htgLandsPath, soiPath, arcgisWorkspaceFolder)
 
-#tenuresGeoprocessing(tds.tenuresRawPath, tds.htgLandsPath, tds.soiPath, tds.arcgisWorkspaceFolder)
-
-tenuresProcess(tds.downloadFolder, tds.email, tds.currentTenuresPath, tds.archiveFolder, tds.htgLandsPath, tds.soiPath, tds.arcgisWorkspaceFolder)
-
+def getFileCreatedDate(filePath):
+    return datetime.fromtimestamp(path.getctime(filePath)).strftime('%Y-%m-%d')
