@@ -28,8 +28,7 @@ def tenuresAchiving(currentTenuresPath, archiveFolder):
         shapefileNameWithExtension)[0]
 
     # get date modified timestamp from tenures.shp
-    tenuresModifiedTime = datetime.fromtimestamp(
-        path.getmtime(currentTenuresPath)).strftime('%Y-%m-%d')
+    tenuresModifiedTime = getFileCreatedDate(currentTenuresPath)
 
     # make a new directory in the name of the Shapefile with time added in archive folder
     newDirectoryPath = f"{archiveFolder}\\{shapefileNameWithoutExtension}{tenuresModifiedTime}"
@@ -135,8 +134,10 @@ def tenuresDownload(downloadFolder, email):
     #Check distribution.data.gov.bc.ca Every 15 seconds to see if order is available, download it To specified file path if it is
     orderNumber = response.json()["Value"]
     orderURL = f'https://apps.gov.bc.ca/pub/dwds-rasp/pickup/{orderNumber}'
-    
-    while True:
+
+    stopLoop=False
+
+    while stopLoop == False:
         sleep(15)
         print("checking...")
         connection = urlopen(orderURL)
@@ -148,8 +149,7 @@ def tenuresDownload(downloadFolder, email):
             elif "distribution.data.gov.bc.ca" in link:
                 downloadURL= link
                 stopLoop = True
-        if stopLoop == True:
-            break
+                break
     
     downloadFilePath = f"{downloadFolder}\\tenuresShapefileRaw.zip"
     urlretrieve(downloadURL, f"{downloadFilePath}")
