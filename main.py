@@ -15,6 +15,8 @@
 # ///////////////////////////////////////////////////////////////
 
 
+
+from modules.functionLib import crownTenuresProcess
 import sys
 import platform
 
@@ -25,9 +27,6 @@ from widgets.custom_grips.custom_grips import Widgets
 # ///////////////////////////////////////////////////////////////
 from modules import *
 from widgets import *
-from modules import crownTenuresFunctions
-
-
 
 
 # SET AS GLOBAL WIDGETS
@@ -74,19 +73,19 @@ class MainWindow(QMainWindow):
         widgets.buttonLogs.setToolTip("    Logs")
         widgets.buttonDataSettings.setToolTip("    Data Settings")
 
-        #Crown Tenures
-
-
+        ###Crown Tenures Frame###
         #qtreeCrownTenures starting state
-        widgets.qTreeCrownTenures.setHeaderLabel(f"Crown Tenures: {tenuresDataSettings.tenuresCreatedDate}")
+        widgets.qTreeCrownTenures.setHeaderLabel(f"Crown Tenures: {crownTenuresSettings.createdDate}")
         widgets.qTreeCrownTenures.topLevelItem(0).child(0).setText(0, "Hosted File Date: ")
-        widgets.qTreeCrownTenures.topLevelItem(0).child(1).setText(0, f"Size: {tenuresDataSettings.size/1000000:.2f} mb")        
-        widgets.qTreeCrownTenures.topLevelItem(0).child(2).setText(0, f"File Path: {tenuresDataSettings.currentTenuresPath}") 
-        widgets.qTreeCrownTenures.topLevelItem(0).child(3).setText(0, f"Archive Folder: {tenuresDataSettings.archiveFolder}")               
+        widgets.qTreeCrownTenures.topLevelItem(0).child(1).setText(0, f"Size: {crownTenuresSettings.size/1000000:.2f} mb")        
+        widgets.qTreeCrownTenures.topLevelItem(0).child(2).setText(0, f"File Path: {crownTenuresSettings.currentPath}") 
+        widgets.qTreeCrownTenures.topLevelItem(0).child(3).setText(0, f"Archive Folder: {crownTenuresSettings.archiveFolder}")               
         #widgets.treeWidget.setStyleSheet("QHeaderView::section {border-radius: 10px; background: rgb(189, 147, 249);}")
+    
+        #qtreeCrownTenures functionality
         widgets.qTreeCrownTenures.expanded.connect(self.datasetResizeUp)
         widgets.qTreeCrownTenures.collapsed.connect(self.datasetResizeDown)
-        widgets.buttonUpdateCrownTenures.clicked.connect(lambda: crownTenuresFunctions.tenuresProcess(tenuresDataSettings.downloadFolder, tenuresDataSettings.email, tenuresDataSettings.currentTenuresPath, tenuresDataSettings.archiveFolder, tenuresDataSettings.htgLandsPath, tenuresDataSettings.soiPath, tenuresDataSettings.arcgisWorkspaceFolder))
+        widgets.buttonUpdateCrownTenures.clicked.connect(lambda:crownTenuresProcess(crownTenuresSettings.downloadFolder, crownTenuresSettings.currentPath, crownTenuresSettings.archiveFolder, crownTenuresSettings.fileName, universalSettings.htgLandsPath, universalSettings.soiPath, crownTenuresSettings.arcgisWorkspaceFolder, crownTenuresSettings.tenuresDictionary, crownTenuresSettings.jsonPayload, crownTenuresSettings.rawDownloadFolderName, crownTenuresSettings.rawShapefileName))
         
 
 
@@ -130,11 +129,6 @@ class MainWindow(QMainWindow):
     def datasetResizeDown(self):
         widgets.frameCrownTenures.resize(300,111)
     
-
-    
-    
-    
-
     # BUTTONS CLICK
     # Post here your functions for clicked buttons
     # ///////////////////////////////////////////////////////////////

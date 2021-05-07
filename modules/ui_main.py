@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainJLobSe.ui'
+## Form generated from reading UI file 'mainUYrFvg.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.0.3
 ##
@@ -989,7 +989,7 @@ class Ui_MainWindow(object):
         self.data.setStyleSheet(u"")
         self.frameCrownTenures = QFrame(self.data)
         self.frameCrownTenures.setObjectName(u"frameCrownTenures")
-        self.frameCrownTenures.setGeometry(QRect(10, 80, 300, 111))
+        self.frameCrownTenures.setGeometry(QRect(0, 70, 300, 111))
         sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy3.setHorizontalStretch(0)
         sizePolicy3.setVerticalStretch(0)
@@ -1033,8 +1033,14 @@ class Ui_MainWindow(object):
 
         self.labelData = QLabel(self.data)
         self.labelData.setObjectName(u"labelData")
-        self.labelData.setGeometry(QRect(20, 10, 181, 51))
+        self.labelData.setGeometry(QRect(10, 0, 181, 51))
         self.labelData.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
+        self.datasetsline = QFrame(self.data)
+        self.datasetsline.setObjectName(u"datasetsline")
+        self.datasetsline.setGeometry(QRect(10, 40, 821, 20))
+        self.datasetsline.setStyleSheet(u"background: none")
+        self.datasetsline.setFrameShape(QFrame.HLine)
+        self.datasetsline.setFrameShadow(QFrame.Sunken)
         self.stackedWidget.addWidget(self.data)
         self.logs = QWidget()
         self.logs.setObjectName(u"logs")
@@ -1523,7 +1529,7 @@ class Ui_MainWindow(object):
 "<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600; color:#ff79c6;\">Convert QRC</span></p>\n"
 "<p align=\"center\" "
                         "style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; color:#ffffff;\">pyside6-rcc resources.qrc -o resources_rc.py</span></p></body></html>", None))
-        self.titleRightInfo.setText(QCoreApplication.translate("MainWindow", u"PyDracula APP - Theme with colors based on Dracula for Python.", None))
+        self.titleRightInfo.setText(QCoreApplication.translate("MainWindow", u"HTG Dataset Updater", None))
 #if QT_CONFIG(tooltip)
         self.settingsTopBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Settings", None))
 #endif // QT_CONFIG(tooltip)
