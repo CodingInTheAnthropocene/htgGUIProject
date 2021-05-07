@@ -2,49 +2,51 @@
 from os.path import getsize, getctime
 from datetime import datetime
 
+
 class universalSettings:
     htgLandsPath = r"C:\Users\laure\Desktop\test\data\dummy_lands.gdb\lands1_sub_2"
     soiPath = r"C:\Users\laure\Desktop\test\data\HTG_SOIs_all.shp"
     email = ""
 
+
 class crownTenuresSettings:
     # Tantatlis Crown Tenures
     fileName = "crownTenuresProcessed.shp"
-    currentPath = f"C:\\Users\\laure\\Desktop\\test\\tenuresCopy.shp"
-    size = getsize(currentPath)
+    currentPath = r"C:\Users\laure\Desktop\test\data\CrownTenuresProcessed.shp"
     downloadFolder = r"C:\Users\laure\Desktop\test"
     archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
     arcgisWorkspaceFolder = downloadFolder
     createdDate = datetime.fromtimestamp(
         getctime(currentPath)).strftime('%B %d-%Y')
-    
-    #Names given by data catalogue
+    size = getsize(currentPath)
+
+    # Names given by data catalogue
     rawDownloadFolderName = "TA_CROWN_TENURES_SVW"
     rawShapefileName = "TA_CRT_SVW_polygon.shp"
 
-    #json payload sent to data catalogue
+    # json payload sent to data catalogue
     jsonPayload = {
-            "emailAddress": f"{universalSettings.email}",
-            "aoiType": "1",
-            "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
-            "orderingApplication": "BCDC",
-            "crsType": "0",
-            "clippingMethodType": "1",
-            "formatType": "0",
-            "useAOIBounds": "",
-            "prepackagedItems": "",
-            "aoiName": "",
-            "featureItems": [
-                {
-                    "featureItem": "WHSE_TANTALIS.TA_CROWN_TENURES_SVW",
-                    "filterValue": "",
-                    "layerName": "TANTALIS - Crown Tenures",
-                    "layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/tantalis-crown-tenures",
-                    "filterType": "No Filter",
-                    "pctOfMax": 3
-                }
-            ]
-        }
+        "emailAddress": f"{universalSettings.email}",
+        "aoiType": "1",
+        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "orderingApplication": "BCDC",
+        "crsType": "0",
+        "clippingMethodType": "1",
+        "formatType": "0",
+        "useAOIBounds": "",
+        "prepackagedItems": "",
+        "aoiName": "",
+        "featureItems": [
+            {
+                "featureItem": "WHSE_TANTALIS.TA_CROWN_TENURES_SVW",
+                "filterValue": "",
+                "layerName": "TANTALIS - Crown Tenures",
+                "layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/tantalis-crown-tenures",
+                "filterType": "No Filter",
+                "pctOfMax": 3
+            }
+        ]
+    }
 
     # cd_display values derived from this dictionary
     tenuresDictionary = {
@@ -131,8 +133,42 @@ class crownTenuresSettings:
         'UTILITY, WATER LINE': 'water line',
         'WINDPOWER, INVESTIGATIVE AND MONITORING PHASE': 'alternate energy'
     }
-    
+
 
 class forestTenureSettings:
     # Forest Tenure Harvesting Authority Polygons
-    pass
+    fileName = "forestTenureProcessed.shp"
+    currentPath = r"C:\Users\laure\Desktop\test\forestTenureProcessed.shp"
+    downloadFolder = r"C:\Users\laure\Desktop\test"
+    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    arcgisWorkspaceFolder = downloadFolder
+    createdDate = datetime.fromtimestamp(
+        getctime(currentPath)).strftime('%B %d-%Y')
+    size = getsize(currentPath)
+
+    # Names given by data catalogue
+    rawDownloadFolderName = "FTEN_HARVEST_AUTH_POLY_SVW"
+    rawShapefileName = "FTN_HA_SVW_polygon.shp"
+
+    jsonPayload={
+	"emailAddress": f"{universalSettings.email}",
+	"aoiType": "1",
+	"aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+	"orderingApplication": "BCDC",
+	"crsType": "0",
+	"clippingMethodType": "1",
+	"formatType": "0",
+	"useAOIBounds": "",
+	"prepackagedItems": "",
+	"aoiName": "",
+	"featureItems": [
+		{
+			"featureItem": "WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW",
+			"filterValue": "",
+			"layerName": "Forest Tenure Harvesting Authority Polygons",
+			"layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/forest-tenure-harvesting-authority-polygons",
+			"filterType": "No Filter",
+			"pctOfMax": 3
+		}
+	]
+}

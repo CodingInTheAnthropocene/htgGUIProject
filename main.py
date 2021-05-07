@@ -16,7 +16,7 @@
 
 
 
-from modules.functionLib import crownTenuresProcess
+from modules.functionLib import crownTenuresProcess, forestTenureProcess
 import sys
 import platform
 
@@ -31,7 +31,7 @@ from widgets import *
 
 # SET AS GLOBAL WIDGETS
 # ///////////////////////////////////////////////////////////////
-widgets = None
+widgets = None,
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -64,32 +64,7 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
         widgets.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
-        #Main left menu
-        widgets.buttonData.clicked.connect(self.buttonClick)
-        widgets.buttonLogs.clicked.connect(self.buttonClick)
-        widgets.buttonDataSettings.clicked.connect(self.buttonClick)
-
-        widgets.buttonData.setToolTip("    Datasets")
-        widgets.buttonLogs.setToolTip("    Logs")
-        widgets.buttonDataSettings.setToolTip("    Data Settings")
-
-        ###Crown Tenures Frame###
-        #qtreeCrownTenures starting state
-        widgets.qTreeCrownTenures.setHeaderLabel(f"Crown Tenures: {crownTenuresSettings.createdDate}")
-        widgets.qTreeCrownTenures.topLevelItem(0).child(0).setText(0, "Hosted File Date: ")
-        widgets.qTreeCrownTenures.topLevelItem(0).child(1).setText(0, f"Size: {crownTenuresSettings.size/1000000:.2f} mb")        
-        widgets.qTreeCrownTenures.topLevelItem(0).child(2).setText(0, f"File Path: {crownTenuresSettings.currentPath}") 
-        widgets.qTreeCrownTenures.topLevelItem(0).child(3).setText(0, f"Archive Folder: {crownTenuresSettings.archiveFolder}")               
-        #widgets.treeWidget.setStyleSheet("QHeaderView::section {border-radius: 10px; background: rgb(189, 147, 249);}")
-    
-        #qtreeCrownTenures functionality
-        widgets.qTreeCrownTenures.expanded.connect(self.datasetResizeUp)
-        widgets.qTreeCrownTenures.collapsed.connect(self.datasetResizeDown)
-        widgets.buttonUpdateCrownTenures.clicked.connect(lambda:crownTenuresProcess(crownTenuresSettings.downloadFolder, crownTenuresSettings.currentPath, crownTenuresSettings.archiveFolder, crownTenuresSettings.fileName, universalSettings.htgLandsPath, universalSettings.soiPath, crownTenuresSettings.arcgisWorkspaceFolder, crownTenuresSettings.tenuresDictionary, crownTenuresSettings.jsonPayload, crownTenuresSettings.rawDownloadFolderName, crownTenuresSettings.rawShapefileName))
-        
-
-
-        # EXTRA LEFT BOX
+                # EXTRA LEFT BOX
         def openCloseLeftBox():
             UIFunctions.toggleLeftBox(self, True)
         widgets.toggleLeftBox.clicked.connect(openCloseLeftBox)
@@ -121,6 +96,49 @@ class MainWindow(QMainWindow):
         # ///////////////////////////////////////////////////////////////
         widgets.stackedWidget.setCurrentWidget(widgets.data)
         widgets.buttonData.setStyleSheet(UIFunctions.selectMenu(widgets.buttonData.styleSheet()))
+
+        #Main left menu
+        widgets.buttonData.clicked.connect(self.buttonClick)
+        widgets.buttonLogs.clicked.connect(self.buttonClick)
+        widgets.buttonDataSettings.clicked.connect(self.buttonClick)
+
+        # tooltips
+        widgets.buttonData.setToolTip("    Datasets")
+        widgets.buttonLogs.setToolTip("    Logs")
+        widgets.buttonDataSettings.setToolTip("    Data Settings")
+
+
+        ############################################################################################
+        #Dataset Controls
+        #############################################################################################
+        
+        
+
+        #Crown Tenures#
+        #starting state
+        widgets.qTreeCrownTenures.setHeaderLabel(f"Crown Tenures: {crownTenuresSettings.createdDate}")
+        widgets.qTreeCrownTenures.topLevelItem(0).child(0).setText(0, "Hosted File Date: ")
+        widgets.qTreeCrownTenures.topLevelItem(0).child(1).setText(0, f"Size: {crownTenuresSettings.size/1000000:.2f} mb")        
+        widgets.qTreeCrownTenures.topLevelItem(0).child(2).setText(0, f"File Path: {crownTenuresSettings.currentPath}") 
+        widgets.qTreeCrownTenures.topLevelItem(0).child(3).setText(0, f"Archive Folder: {crownTenuresSettings.archiveFolder}")               
+        #widgets.treeWidget.setStyleSheet("QHeaderView::section {border-radius: 10px; background: rgb(189, 147, 249);}")
+    
+        #qtreeCrownTenures functionality
+        widgets.qTreeCrownTenures.expanded.connect(self.datasetResizeUp)
+        widgets.qTreeCrownTenures.collapsed.connect(self.datasetResizeDown)
+        widgets.buttonUpdateCrownTenures.clicked.connect(lambda:crownTenuresProcess(crownTenuresSettings.downloadFolder, crownTenuresSettings.currentPath, crownTenuresSettings.archiveFolder, crownTenuresSettings.fileName, universalSettings.htgLandsPath, universalSettings.soiPath, crownTenuresSettings.arcgisWorkspaceFolder, crownTenuresSettings.tenuresDictionary, crownTenuresSettings.jsonPayload, crownTenuresSettings.rawDownloadFolderName, crownTenuresSettings.rawShapefileName))
+
+        #Forest Tenures#
+        #Starting state
+        widgets.qTreeForestTenure.setHeaderLabel(f"Crown Tenures: {forestTenureSettings.createdDate}")
+        widgets.qTreeForestTenure.topLevelItem(0).child(0).setText(0, "Hosted File Date: ")
+        widgets.qTreeForestTenure.topLevelItem(0).child(1).setText(0, f"Size: {forestTenureSettings.size/1000000:.2f} mb")        
+        widgets.qTreeForestTenure.topLevelItem(0).child(2).setText(0, f"File Path: {forestTenureSettings.currentPath}") 
+        widgets.qTreeForestTenure.topLevelItem(0).child(3).setText(0, f"Archive Folder: {forestTenureSettings.archiveFolder}")
+        
+        
+
+
 
     # Crown Tenuers methods
     def datasetResizeUp (self):

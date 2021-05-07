@@ -1,4 +1,5 @@
 # download imports
+from dataSettings import forestTenureSettings, universalSettings
 from requests import post, Session
 from urllib.request import urlopen, urlretrieve
 from lxml.html import fromstring
@@ -57,7 +58,7 @@ def shapefileArchiving(shapefilePath, archiveFolder):
 
     # remove non zipped data
     rmtree(newDirectoryPath)
-    remove(f"{shapefilePath}.xml")
+    #remove(f"{shapefilePath}.xml")
 
     print("Done Archiving!")
 
@@ -250,17 +251,15 @@ def crownTenuresGeoprocessing(crownTenuresRawPath, fileName, htgLandsPath, soiPa
 
     return crownTenuresProcessedPath
 
-
-def crownTenuresProcess(downloadFolder, currentTenuresPath, archiveFolder, fileName, htgLandsPath, soiPath, arcgisWorkspaceFolder, crownTenuresDictionary, jsonPayload, rawDownloadFolderName, rawShapeFileName):
+def crownTenuresProcess(downloadFolder, crownTenuresPath, archiveFolder, fileName, htgLandsPath, soiPath, arcgisWorkspaceFolder, crownTenuresDictionary, jsonPayload, rawDownloadFolderName, rawShapeFileName):
     """Entire crown tenure chain: archive old, download new, process new. This function is called from the GUI"""
-    shapefileArchiving(currentTenuresPath, archiveFolder)
+    shapefileArchiving(crownTenuresPath, archiveFolder)
     crownTenuresGeoprocessing(catalogueWarehouseDownload(downloadFolder, jsonPayload, rawDownloadFolderName, rawShapeFileName), fileName, htgLandsPath, soiPath, arcgisWorkspaceFolder, crownTenuresDictionary)
-
 
 ####################################################################################################################
 # Forest Tenure Harvesting Authority Polygons
 ####################################################################################################################
-def forestTenureGeoprocessing(forestTenureRawPath, fileName="forestTenureProcessed.shp", htgLandsPath=r"C:\Users\laure\Desktop\test\data\dummy_lands.gdb\lands1_sub_2", arcgisWorkspaceFolder=r"C:\Users\laure\Desktop\test"):
+def forestTenureGeoprocessing(forestTenureRawPath, downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder):
 
     print("Starting forest tenure geoprocessing")
 
@@ -268,28 +267,26 @@ def forestTenureGeoprocessing(forestTenureRawPath, fileName="forestTenureProcess
     arcpy.env.workspace = arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
     
-    # get crucial names
-    downloadFolder = path.split(forestTenureRawPath)[0]
     forestTenureNameTemp = path.splitext(
         arcpy.Describe(forestTenureRawPath).name)[0]
 
     # Create a temporary GDB and create a copy of forest tenure in it. This is a workaround so that renaming fields is easy.
     arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
-    tempGdb = f"{downloadFolder}\\temp.gdb"
+    tempGdbPath = f"{downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(
-        forestTenureRawPath, tempGdb)
+        forestTenureRawPath, tempGdbPath)
 
     print("Raw Shapefile copied to temp Geodatabase")
 
     
-    forestTenureCopy = f"{tempGdb}\\{forestTenureNameTemp}"
+    forestTenureCopy = f"{tempGdbPath}\\{forestTenureNameTemp}"
 
 
 
     print("Fields deleted from forest tenure")
 
-    #   Update expiry DT, where
+    # Update EXPIRY of all you and live in_DT *NOTE, doesn't make sense to me but arcpy is reading null as " ". Should be extra cautious to make sure that this is working.
     cursor=arcpy.da.UpdateCursor(
         forestTenureCopy, ["EXPIRY_DT", "EXTEND_DT"]
     )
@@ -298,6 +295,7 @@ def forestTenureGeoprocessing(forestTenureRawPath, fileName="forestTenureProcess
         if row[1] != " ":
             row[0] = row[1]
 
+    del cursor
 
     # delete fields from forest tenure
     fieldsToDelete = ['HVA_SKEY', 'FFID', 'CP_ID', 'FEAT_CLASS', 'HVA_ID', 'HVA_MGMTID', 'HVA_MGMTCD', 'HRV_TP_CD', 'HRV_TP_DSC', 'HVA_ST_CD', 'ISSUE_DATE', 'EXTEND_DT', 'CURR_EX_DT', 'QTA_TP_CD', 'CR_LND_CD', 'SAL_TP_CD', 'CASC_SP_CD', 'CATAST_IND', 'CR_GRT_IND', 'CRUISE_IND', 'DECID_IND', 'RETIRE_DT',
@@ -350,12 +348,17 @@ def forestTenureGeoprocessing(forestTenureRawPath, fileName="forestTenureProcess
     
     print("HA calculated")
 
+    # remove working files
     arcpy.management.Delete(htgLandsCopy)
-    arcpy.management.Delete(tempGdb)
+    arcpy.management.Delete(tempGdbPath)
     
     return forestTenureProcessedPath
 
+def forestTenureProcess(downloadFolder, currentForestTenurePath, archiveFolder, filename, htgLandsPath, arcgisWorkspaceFolder, jsonPayload, rawDownloadFoldernName, rawShapefileName):
+    shapefileArchiving(currentForestTenurePath, archiveFolder)
+    forestTenureGeoprocessing(catalogueWarehouseDownload(downloadFolder, jsonPayload, rawDownloadFoldernName, rawShapefileName), downloadFolder, filename, htgLandsPath, arcgisWorkspaceFolder)
 
-forestTenureGeoprocessing(
-    r"C:\Users\laure\Desktop\test\FTN_HA_SVW_polygon.shp")
+# test
+forestTenureProcess(forestTenureSettings.downloadFolder, forestTenureSettings.currentPath, forestTenureSettings.archiveFolder, forestTenureSettings.fileName, universalSettings.htgLandsPath, forestTenureSettings.arcgisWorkspaceFolder, forestTenureSettings.jsonPayload, forestTenureSettings.rawDownloadFolderName, forestTenureSettings.rawShapefileName)
+
 

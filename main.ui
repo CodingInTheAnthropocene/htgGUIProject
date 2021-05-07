@@ -1807,30 +1807,47 @@ p, li { white-space: pre-wrap; }
                         </item>
                        </widget>
                       </item>
-                      <item alignment="Qt::AlignHCenter">
-                       <widget class="QPushButton" name="buttonUpdateCrownTenures">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="minimumSize">
-                         <size>
-                          <width>100</width>
-                          <height>0</height>
-                         </size>
-                        </property>
-                        <property name="maximumSize">
-                         <size>
-                          <width>200</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                        <property name="text">
-                         <string>Update</string>
-                        </property>
-                       </widget>
+                      <item>
+                       <layout class="QHBoxLayout" name="layoutButtons">
+                        <item>
+                         <widget class="QPushButton" name="buttonUpdateCrownTenures">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>16772155</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
+                          <property name="text">
+                           <string>Update</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="buttonCrownTenuresSettings">
+                          <property name="maximumSize">
+                           <size>
+                            <width>100</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
+                          <property name="text">
+                           <string>Settings</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
                       </item>
                      </layout>
                     </widget>
@@ -1865,6 +1882,132 @@ p, li { white-space: pre-wrap; }
                      <property name="orientation">
                       <enum>Qt::Horizontal</enum>
                      </property>
+                    </widget>
+                    <widget class="QFrame" name="frameCrownTenures_3">
+                     <property name="geometry">
+                      <rect>
+                       <x>320</x>
+                       <y>70</y>
+                       <width>300</width>
+                       <height>111</height>
+                      </rect>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>300</width>
+                       <height>200</height>
+                      </size>
+                     </property>
+                     <property name="frameShape">
+                      <enum>QFrame::StyledPanel</enum>
+                     </property>
+                     <property name="frameShadow">
+                      <enum>QFrame::Raised</enum>
+                     </property>
+                     <layout class="QVBoxLayout" name="verticalLayout_27">
+                      <item>
+                       <widget class="QTreeWidget" name="qTreeForestTenure">
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>16777212</height>
+                         </size>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true"/>
+                        </property>
+                        <attribute name="headerVisible">
+                         <bool>true</bool>
+                        </attribute>
+                        <attribute name="headerCascadingSectionResizes">
+                         <bool>false</bool>
+                        </attribute>
+                        <column>
+                         <property name="text">
+                          <string>Forest Tenure - Date Change</string>
+                         </property>
+                         <property name="font">
+                          <font>
+                           <bold>true</bold>
+                          </font>
+                         </property>
+                        </column>
+                        <item>
+                         <property name="text">
+                          <string>Info:</string>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>Hosted File Date:</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Size: </string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>File Path: </string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Archive Folder:</string>
+                          </property>
+                         </item>
+                        </item>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_7">
+                        <item>
+                         <widget class="QPushButton" name="buttonUpdateForestTenure">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>16772155</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
+                          <property name="text">
+                           <string>Update</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="buttonForestTenureSettings">
+                          <property name="maximumSize">
+                           <size>
+                            <width>100</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
+                          <property name="text">
+                           <string>Settings</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
                     </widget>
                    </widget>
                    <widget class="QWidget" name="logs">
