@@ -1,6 +1,6 @@
 {
     "python.pythonPath": "c:\\Users\\laure\\AppData\\Local\\ESRI\\conda\\envs\\arcgispro-py3-htg1\\python.exe",
-    
-    
-
+    "python.autoComplete.extraPaths": [
+        "C:\\Users\\laure\\Desktop\\htgGUIProject\\modules"
+    ]
 }

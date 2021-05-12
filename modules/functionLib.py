@@ -1,15 +1,19 @@
 # download imports
-from dataSettings import forestTenureSettings, universalSettings
+ 
+from dataSettings import nationalParksSettings, parksEcologicalProtectedSettings, recreationPolygonsSettings
+from dataSettings import harvestedAreasSettings
+from dataSettings import forestHarvestingAuthoritySettings, universalSettings, forestManagedLicenceSettings
 from requests import post, Session
 from urllib.request import urlopen, urlretrieve
 from lxml.html import fromstring
 from time import sleep
+from multiprocessing import Pool
 
 # geoprocessing imports
 import arcpy
 
 # archiving imports
-from os import path, mkdir, walk, rename, remove
+from os import name, path, mkdir, walk, rename, remove
 from datetime import datetime
 from shutil import move, make_archive, rmtree, unpack_archive
 
@@ -58,10 +62,29 @@ def shapefileArchiving(shapefilePath, archiveFolder):
 
     # remove non zipped data
     rmtree(newDirectoryPath)
-    #remove(f"{shapefilePath}.xml")
+    # remove(f"{shapefilePath}.xml")
 
     print("Done Archiving!")
 
+def shapeFileDownloadUnzip(url, downloadFolder, fileName):
+    folderPath= f"{downloadFolder}\\raw{fileName}"
+    if path.exists(folderPath):
+        rmtree(folderPath)
+    mkdir(folderPath)
+    urlretrieve(url, f"{folderPath}.zip")
+    filePaths = []
+    unpack_archive(f"{folderPath}.zip", folderPath)
+    remove(f"{folderPath}.zip")
+    for dirname, _, files in walk(folderPath):
+        for i in files:
+            if i[-4:] == ".shp":
+                filePaths.append(f"{dirname}\\{i}")
+    
+    if len(filePaths) > 1:
+        return filePaths
+    else:
+        return filePaths[0]
+        
 
 def catalogueWarehouseDownload(downloadFolder, jsonPayload, rawDownloadFolderName, rawShapefileName):
     """requests link to download raw download from data catalogue warehouse, and downloads and unzips file from that link"""
@@ -128,16 +151,19 @@ def catalogueWarehouseDownload(downloadFolder, jsonPayload, rawDownloadFolderNam
                 stopLoop = True
                 break
 
-    downloadFilePath = f"{downloadFolder}\\tempDataCatalogueDownload.zip"
-    urlretrieve(downloadURL, f"{downloadFilePath}")
+    zipPath = f"{downloadFolder}\\{rawShapefileName}temp.zip"
+    urlretrieve(downloadURL, f"{zipPath}")
 
     # unzip
-    unpack_archive(downloadFilePath, downloadFolder, "zip")
+    unpack_archive(zipPath, downloadFolder, "zip")
 
     # remove useless files
-    remove(downloadFilePath)
-    for i in ["Contents of Order.txt", "licence.txt", "README.txt", f"{rawDownloadFolderName}.html"]:
-        remove(f"{downloadFolder}\\{i}")
+    remove(zipPath)
+    try:
+        for i in ["Contents of Order.txt", "licence.txt", "README.txt", f"{rawDownloadFolderName}.html"]:
+            remove(f"{downloadFolder}\\{i}")
+    except:
+        print("couldn't remove some files")
 
     # Path to raw tenures shapefile, *NOTE Will break if name changes
     rawPath = f"{downloadFolder}\\{rawDownloadFolderName}\\{rawShapefileName}"
@@ -251,49 +277,53 @@ def crownTenuresGeoprocessing(crownTenuresRawPath, fileName, htgLandsPath, soiPa
 
     return crownTenuresProcessedPath
 
+
 def crownTenuresProcess(downloadFolder, crownTenuresPath, archiveFolder, fileName, htgLandsPath, soiPath, arcgisWorkspaceFolder, crownTenuresDictionary, jsonPayload, rawDownloadFolderName, rawShapeFileName):
     """Entire crown tenure chain: archive old, download new, process new. This function is called from the GUI"""
     shapefileArchiving(crownTenuresPath, archiveFolder)
-    crownTenuresGeoprocessing(catalogueWarehouseDownload(downloadFolder, jsonPayload, rawDownloadFolderName, rawShapeFileName), fileName, htgLandsPath, soiPath, arcgisWorkspaceFolder, crownTenuresDictionary)
+    crownTenuresGeoprocessing(catalogueWarehouseDownload(downloadFolder, jsonPayload, rawDownloadFolderName,
+                                                         rawShapeFileName), fileName, htgLandsPath, soiPath, arcgisWorkspaceFolder, crownTenuresDictionary)
 
 ####################################################################################################################
-# Forest Tenure Harvesting Authority Polygons
+# Forest Tenure Harvesting Authority Polygons (Forest Tenure Cut Permits)
 ####################################################################################################################
-def forestTenureGeoprocessing(forestTenureRawPath, downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder):
+
+
+def forestHarvestingAuthorityGeoprocessing(rawForestHarvestingAuthorityPath, downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder):
 
     print("Starting forest tenure geoprocessing")
 
-    #env variables
+    # env variables
     arcpy.env.workspace = arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
-    
-    forestTenureNameTemp = path.splitext(
-        arcpy.Describe(forestTenureRawPath).name)[0]
+
+    # get Name of Raw shape file
+    rawName = path.splitext(
+        arcpy.Describe(rawForestHarvestingAuthorityPath).name)[0]
 
     # Create a temporary GDB and create a copy of forest tenure in it. This is a workaround so that renaming fields is easy.
     arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
     tempGdbPath = f"{downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(
-        forestTenureRawPath, tempGdbPath)
+        rawForestHarvestingAuthorityPath, tempGdbPath)
 
     print("Raw Shapefile copied to temp Geodatabase")
 
-    
-    forestTenureCopy = f"{tempGdbPath}\\{forestTenureNameTemp}"
-
-
+    forestHarvestingAuthorityCopy = f"{tempGdbPath}\\{rawName}"
 
     print("Fields deleted from forest tenure")
 
-    # Update EXPIRY of all you and live in_DT *NOTE, doesn't make sense to me but arcpy is reading null as " ". Should be extra cautious to make sure that this is working.
-    cursor=arcpy.da.UpdateCursor(
-        forestTenureCopy, ["EXPIRY_DT", "EXTEND_DT"]
+    # Update EXPIRY_DT
+    cursor = arcpy.da.UpdateCursor(
+        forestHarvestingAuthorityCopy, ["EXPIRY_DT", "EXTEND_DT"]
     )
 
     for row in cursor:
         if row[1] != " ":
             row[0] = row[1]
+
+        cursor.updateRow(row)
 
     del cursor
 
@@ -301,11 +331,10 @@ def forestTenureGeoprocessing(forestTenureRawPath, downloadFolder, fileName, htg
     fieldsToDelete = ['HVA_SKEY', 'FFID', 'CP_ID', 'FEAT_CLASS', 'HVA_ID', 'HVA_MGMTID', 'HVA_MGMTCD', 'HRV_TP_CD', 'HRV_TP_DSC', 'HVA_ST_CD', 'ISSUE_DATE', 'EXTEND_DT', 'CURR_EX_DT', 'QTA_TP_CD', 'CR_LND_CD', 'SAL_TP_CD', 'CASC_SP_CD', 'CATAST_IND', 'CR_GRT_IND', 'CRUISE_IND', 'DECID_IND', 'RETIRE_DT',
                       'FEAT_AREA', 'FEAT_PERIM', 'ADM_DST_CD', 'GEO_DST_CD', 'GEO_DST_NM', 'TM_PRIME', 'MRK_MD_CD', 'MRK_MD_DSC', 'MRK_IN_CD', 'MRK_IN_DSC', 'OTH_TM_IND', 'CL_LOC_CD', 'FILE_TP_CD', 'FILE_ST_CD', 'PFU_MGMTID', 'SB_FND_IND', 'BCTS_ORGCD', 'BCTS_ORGNM', 'MAP_LABEL', 'AREA_SQM', 'FEAT_LEN', 'OBJECTID']
 
-    arcpy.DeleteField_management(forestTenureCopy, fieldsToDelete)
-
+    arcpy.DeleteField_management(forestHarvestingAuthorityCopy, fieldsToDelete)
 
     # dictionary to rename fields
-    forestTenureRenameDict = {
+    forestHarvestingAuthorityRenameDict = {
         "ADM_DST_NM": "AdmnDstrct",
         "QTA_TP_DSC": "Type",
         "SAL_TP_DSC": "SlvgType",
@@ -319,46 +348,282 @@ def forestTenureGeoprocessing(forestTenureRawPath, downloadFolder, fileName, htg
     }
 
     # rename fields
-    for i in forestTenureRenameDict:
+    for i in forestHarvestingAuthorityRenameDict:
         arcpy.AlterField_management(
-            forestTenureCopy, i, forestTenureRenameDict[i])
+            forestHarvestingAuthorityCopy, i, forestHarvestingAuthorityRenameDict[i])
 
     # create copy of lands And delete fields that aren't wanted in final product
     htgLandsCopy = arcpy.CopyFeatures_management(
         htgLandsPath, "htglandsCopy")
 
-    fieldsToDeletehtgLandsCopy = ['ATTRIBUTE_', 'EN', 'GEOMETRY_S', 'H_', 'Ha', 'ICF', 'ICF_AREA', 'ICIS', 'JUROL', 'LAND_ACT_P', 'LAND_DISTR', 'LEGAL_FREE', 'LOCALAREA', 'LTSA_BLOCK', 'LTSA_LOT', 'LTSA_PARCE', 'LTSA_PLAN', 'OWNER_CLAS', 'OtherComme', 'PARCEL_DES', 'PID', 'PIN', 'PIN_DISTLE', 'PIN_SUBDLA', 'PMBC', 'RoW', 'SOURCE_PRO', 'TEMP_PolyI', 'TENURES', 'TimbeTable', 'Title_Info', 'Title_num', 'Title_owne', 'access',
-                                  'apprais2BC', 'apprais2HB', 'apprais2Ha', 'apprais2re', 'appraisal2', 'arch_sites', 'avail_issu', 'available', 'comments', 'confirm_qu', 'ess_respon', 'essential', 'guide_outf', 'interests', 'label', 'landval_20', 'landval_sr', 'location', 'municipali', 'needs_conf', 'owner', 'potential_', 'prop_class', 'result_val', 'selected', 'specific_l', 'tourism_ca', 'trapline', 'use_on_pro', 'valperHa_2', 'zone_code', 'zoning', "Shape_Leng", "Shape_Area", "new_owners", "ownership_" ]
+    fieldsToDeletehtgLands = ['ATTRIBUTE_', 'EN', 'GEOMETRY_S', 'H_', 'Ha', 'ICF', 'ICF_AREA', 'ICIS', 'JUROL', 'LAND_ACT_P', 'LAND_DISTR', 'LEGAL_FREE', 'LOCALAREA', 'LTSA_BLOCK', 'LTSA_LOT', 'LTSA_PARCE', 'LTSA_PLAN', 'OWNER_CLAS', 'OtherComme', 'PARCEL_DES', 'PID', 'PIN', 'PIN_DISTLE', 'PIN_SUBDLA', 'PMBC', 'RoW', 'SOURCE_PRO', 'TEMP_PolyI', 'TENURES', 'TimbeTable', 'Title_Info', 'Title_num', 'Title_owne', 'access',
+                              'apprais2BC', 'apprais2HB', 'apprais2Ha', 'apprais2re', 'appraisal2', 'arch_sites', 'avail_issu', 'available', 'comments', 'confirm_qu', 'ess_respon', 'essential', 'guide_outf', 'interests', 'label', 'landval_20', 'landval_sr', 'location', 'municipali', 'needs_conf', 'owner', 'potential_', 'prop_class', 'result_val', 'selected', 'specific_l', 'tourism_ca', 'trapline', 'use_on_pro', 'valperHa_2', 'zone_code', 'zoning', "Shape_Leng", "Shape_Area", "new_owners", "ownership_"]
 
-
-    
-    arcpy.DeleteField_management(htgLandsCopy, fieldsToDeletehtgLandsCopy)
+    arcpy.DeleteField_management(htgLandsCopy, fieldsToDeletehtgLands)
 
     # intersect forest tenure with HTG lands
-    forestTenureProcessedPath = arcpy.Intersect_analysis([forestTenureCopy, htgLandsCopy], 
-                        fileName, join_attributes="NO_FID")
+    forestHarvestingAuthorityProcessedPath = arcpy.Intersect_analysis([forestHarvestingAuthorityCopy, htgLandsCopy],
+                                                                      fileName, join_attributes="NO_FID")
 
     print("Forest tenure and lands intersected")
-    
+
     # calculate geometry
-    arcpy.AddField_management(forestTenureProcessedPath, "HA", "FLOAT")
+    arcpy.AddField_management(
+        forestHarvestingAuthorityProcessedPath, "HA", "FLOAT")
 
     arcpy.CalculateGeometryAttributes_management(
-        forestTenureProcessedPath, [["HA", "AREA"]], area_unit="HECTARES")
-    
+        forestHarvestingAuthorityProcessedPath, [["HA", "AREA"]], area_unit="HECTARES")
+
     print("HA calculated")
 
     # remove working files
     arcpy.management.Delete(htgLandsCopy)
     arcpy.management.Delete(tempGdbPath)
-    
-    return forestTenureProcessedPath
 
-def forestTenureProcess(downloadFolder, currentForestTenurePath, archiveFolder, filename, htgLandsPath, arcgisWorkspaceFolder, jsonPayload, rawDownloadFoldernName, rawShapefileName):
-    shapefileArchiving(currentForestTenurePath, archiveFolder)
-    forestTenureGeoprocessing(catalogueWarehouseDownload(downloadFolder, jsonPayload, rawDownloadFoldernName, rawShapefileName), downloadFolder, filename, htgLandsPath, arcgisWorkspaceFolder)
+    return forestHarvestingAuthorityProcessedPath
+
+
+def forestHarvestingAuthorityProcess(downloadFolder, currentForestHarvestingAuthorityPath, archiveFolder, fileName, htgLandsPath, arcgisWorkspaceFolder, jsonPayload, rawDownloadFolderName, rawShapefileName):
+    shapefileArchiving(currentForestHarvestingAuthorityPath, archiveFolder)
+    forestHarvestingAuthorityGeoprocessing(catalogueWarehouseDownload(
+        downloadFolder, jsonPayload, rawDownloadFolderName, rawShapefileName), downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder)
 
 # test
-forestTenureProcess(forestTenureSettings.downloadFolder, forestTenureSettings.currentPath, forestTenureSettings.archiveFolder, forestTenureSettings.fileName, universalSettings.htgLandsPath, forestTenureSettings.arcgisWorkspaceFolder, forestTenureSettings.jsonPayload, forestTenureSettings.rawDownloadFolderName, forestTenureSettings.rawShapefileName)
+#forestHarvestingAuthorityProcess(forestHarvestingAuthoritySettings.downloadFolder, forestHarvestingAuthoritySettings.currentPath, forestHarvestingAuthoritySettings.archiveFolder, forestHarvestingAuthoritySettings.fileName, universalSettings.htgLandsPath, forestHarvestingAuthoritySettings.arcgisWorkspaceFolder, forestHarvestingAuthoritySettings.jsonPayload, forestHarvestingAuthoritySettings.rawDownloadFolderName, forestHarvestingAuthoritySettings.rawShapefileName)
+
+####################################################################################################################
+# forest tenure managed licence
+####################################################################################################################
 
 
+def forestManagedLicenceGeoprocessing(rawForestManagedLicence, downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder):
+    # environment settings
+    arcpy.env.workspace = arcgisWorkspaceFolder
+    arcpy.env.overwriteOutput = True
+
+    # get name of Raw shape file
+    rawName = path.splitext(
+        arcpy.Describe(rawForestManagedLicence).name)[0]
+
+    # create temporary GDB and copy raw shape file to it
+    arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
+    tempGdbPath = f"{downloadFolder}\\temp.gdb"
+
+    arcpy.FeatureClassToGeodatabase_conversion(
+        rawForestManagedLicence, tempGdbPath)
+
+    print("Raw Shapefile copied to temp Geodatabase")
+
+    forestManagedLicenceCopy = f"{tempGdbPath}\\{rawName}"
+
+    # delete fields
+    fieldsToDelete = ['MPBLCKD', 'MLTPCD', 'ML_COMMENT', 'RTRMNTDT', 'MNDMNTD', 'MAP_LABEL',
+                      'FEAT_AREA', 'FTRPRMTR', 'FTRCLSSSK', 'FLSTTSCD', 'DMNDSTRCTC', 'AREA_SQM', 'FEAT_LEN', 'OBJECTID']
+
+    arcpy.DeleteField_management(forestManagedLicenceCopy, fieldsToDelete)
+
+    print("Fields Deleted")
+
+    # rename fields
+    forestManagedLicenceRenameDict = {
+        "CLNTNM": "Client", "FRSTFLD": "PermitID", "CLNTNMBR": "ClientNum", "DMNDSTRCTN": "District", "LFCCLSTTSC": "Status"
+    }
+
+    for i in forestManagedLicenceRenameDict:
+        arcpy.AlterField_management(
+            forestManagedLicenceCopy, i, forestManagedLicenceRenameDict[i])
+
+    arcpy.AddField_management(forestManagedLicenceCopy, "ClientGrp", "TEXT")
+
+    # Update EXPIRY_DT
+    cursor = arcpy.da.UpdateCursor(
+        forestManagedLicenceCopy, ["Client", "ClientGrp"]
+    )
+
+    for row in cursor:
+        if row[0] in ("HALALT FIRST NATION", "LYACKSON FIRST NATION", "PENELAKUT FIRST NATION"):
+            row[1] = "HTG"
+        elif row[0] in ("MALAHAT TENURE HOLDING LTD.", "STZ'UMINUS FIRST NATION"):
+            row[1] = "other FN"
+        else:
+            row[1] = "other"
+
+        cursor.updateRow(row)
+
+    del cursor
+
+    print("EXPIRY_DT updated")
+
+    # create HTG lands copy and delete fields from it
+    fieldsToDeletehtgLands = ['LOCALAREA', 'ICF_AREA', 'GEOMETRY_S', 'ATTRIBUTE_', 'PID', 'PIN', 'JUROL', 'LTSA_LOT', 'LTSA_BLOCK', 'LTSA_PARCE', 'LTSA_PLAN', 'LEGAL_FREE', 'LAND_DISTR', 'LAND_ACT_P', 'PARCEL_DES', 'OWNER_CLAS', 'SOURCE_PRO', 'landval_20', 'valperHa_2', 'result_val', 'Ha', 'comments', 'new_owners', 'PMBC', 'ICIS', 'ICF', 'landval_sr', 'prop_class', 'needs_conf', 'confirm_qu', 'selected', 'selected_b', 'label', 'location', 'specific_l', 'H_',
+                              'use_on_pro', 'potential_', 'interests', 'available', 'avail_issu', 'owner', 'EN', 'guide_outf', 'trapline', 'ess_respon', 'tourism_ca', 'access', 'zoning', 'zone_code', 'TENURES', 'PIN_DISTLE', 'PIN_SUBDLA', 'municipali', 'arch_sites', 'Title_num', 'Title_owne', 'Title_Info', 'essential', 'RoW', 'OtherComme', 'appraisal2', 'apprais2HB', 'apprais2re', 'apprais2BC', 'apprais2Ha', 'TEMP_PolyI', 'TimbeTable', 'ownership_', 'Shape_Leng', 'Shape_Area']
+
+    htgLandsCopy = arcpy.CopyFeatures_management(
+        htgLandsPath, "htglandsCopy")
+    arcpy.DeleteField_management(htgLandsCopy, fieldsToDeletehtgLands)
+
+    print("Fields from HTG copy deleted")
+
+    # intersect HTG lands and forest managed licenses
+    forestManagedLicenceProcessedPath = arcpy.Intersect_analysis([forestManagedLicenceCopy, htgLandsCopy],
+                                                                 fileName, join_attributes="NO_FID")
+
+    # calculate geometry
+    arcpy.AddField_management(
+        forestManagedLicenceProcessedPath, "HA", "FLOAT")
+
+    arcpy.CalculateGeometryAttributes_management(
+        forestManagedLicenceProcessedPath, [["HA", "AREA"]], area_unit="HECTARES")
+
+    # remove working files
+    arcpy.management.Delete(htgLandsCopy)
+    arcpy.management.Delete(tempGdbPath)
+
+
+def forestManagedLicenceProcess(downloadFolder, currentForestManagedLicencePath, archiveFolder, fileName, htgLandsPath, arcgisWorkspaceFolder, jsonPayload, rawDownloadFolderName, rawShapefileName):
+    shapefileArchiving(currentForestManagedLicencePath, archiveFolder)
+    forestManagedLicenceGeoprocessing(catalogueWarehouseDownload(
+        downloadFolder, jsonPayload, rawDownloadFolderName, rawShapefileName), downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder)
+
+# test
+
+#forestManagedLicenceProcess(forestManagedLicenceSettings.downloadFolder, forestManagedLicenceSettings.currentPath, forestManagedLicenceSettings.archiveFolder, forestManagedLicenceSettings.fileName, universalSettings.htgLandsPath, forestManagedLicenceSettings.arcgisWorkspaceFolder, forestManagedLicenceSettings.jsonPayload, forestManagedLicenceSettings.rawDownloadFolderName, forestManagedLicenceSettings.rawShapefileName)
+
+
+####################################################################################################################
+# Harvested areas of BC (Consolidated Cut Blocks)
+####################################################################################################################
+
+
+def harvestedAreasGeoprocessing(rawHarvestedAreas, downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder):
+
+    # environment settings
+    arcpy.env.workspace = arcgisWorkspaceFolder
+    arcpy.env.overwriteOutput = True
+
+    # get name of Raw shape file
+    rawName = path.splitext(
+        arcpy.Describe(rawHarvestedAreas).name)[0]
+
+    # create temporary GDB and copy raw shape file to it
+    arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
+    tempGdbPath = f"{downloadFolder}\\temp.gdb"
+
+    arcpy.FeatureClassToGeodatabase_conversion(
+        rawHarvestedAreas, tempGdbPath)
+
+    print("Raw Shapefile copied to temp Geodatabase")
+
+    harvestedAreasCopy = f"{tempGdbPath}\\{rawName}"
+
+    # delete fields
+    fieldsToDelete = ['OPENINGID', 'AREA_SQM',
+                      'FTLENGTHM', 'SHAPE_1', 'OBJECTID']
+
+    arcpy.DeleteField_management(harvestedAreasCopy, fieldsToDelete)
+
+    #Field rename
+    harvestedAreasRenameDict = {
+        "CUTBLOCKID": "CUTBLOCKID",
+        "HARVESTYR": "HARVESTYR",
+        "DSTRBSTDT": "startdate",
+        "DSTRBEDDT": "enddate",
+        "DATASOURCE": "DATASOURCE",
+        "AREAHA": "HA"
+    }
+
+    for i in harvestedAreasRenameDict:
+        arcpy.AlterField_management(
+            harvestedAreasCopy, i, harvestedAreasRenameDict[i])
+
+
+    print("Fields Deleted")
+
+    cursor = arcpy.da.UpdateCursor(
+        harvestedAreasCopy, ["startdate", "enddate"]
+    )
+
+    # change date format in stardate, enddate
+    for row in cursor:
+        if row[0] != " ":
+            row[0] = f"{row[0][0:4]}_{row[0][4:6]}"
+            row[1] = f"{row[1][0:4]}_{row[1][4:6]}"
+    
+        cursor.updateRow(row)
+    
+    del cursor
+
+
+    # create HTG lands copy and delete fields from it
+    fieldsToDeletehtgLands = ['LOCALAREA', 'ICF_AREA', 'GEOMETRY_S', 'ATTRIBUTE_', 'PID', 'PIN', 'JUROL', 'LTSA_LOT', 'LTSA_BLOCK', 'LTSA_PARCE', 'LTSA_PLAN', 'LEGAL_FREE', 'LAND_DISTR', 'LAND_ACT_P', 'PARCEL_DES', 'OWNER_CLAS', 'SOURCE_PRO', 'landval_20', 'valperHa_2', 'result_val', 'Ha', 'comments', 'new_owners', 'PMBC', 'ICIS', 'ICF', 'landval_sr', 'prop_class', 'needs_conf', 'confirm_qu', 'selected', 'label', 'location', 'specific_l', 'H_',
+                              'use_on_pro', 'potential_', 'interests', 'available', 'avail_issu', 'owner', 'EN', 'guide_outf', 'trapline', 'ess_respon', 'tourism_ca', 'access', 'zoning', 'zone_code', 'TENURES', 'PIN_DISTLE', 'PIN_SUBDLA', 'municipali', 'arch_sites', 'Title_num', 'Title_owne', 'Title_Info', 'essential', 'RoW', 'OtherComme', 'appraisal2', 'apprais2HB', 'apprais2re', 'apprais2BC', 'apprais2Ha', 'TEMP_PolyI', 'TimbeTable', 'ownership_', 'Shape_Leng', 'Shape_Area']
+
+    htgLandsCopy = arcpy.CopyFeatures_management(
+        htgLandsPath, "htglandsCopy")
+    arcpy.DeleteField_management(htgLandsCopy, fieldsToDeletehtgLands)
+
+    print("Fields from HTG copy deleted")
+
+    # intersect HTG landS and harvested areas        
+    harvestedAreasProcessedPath = arcpy.Intersect_analysis([harvestedAreasCopy, htgLandsCopy],
+                                                                 fileName, join_attributes="NO_FID")
+
+
+    arcpy.CalculateGeometryAttributes_management(
+        harvestedAreasProcessedPath, [["HA", "AREA"]], area_unit="HECTARES")
+
+    # remove working files
+    arcpy.management.Delete(htgLandsCopy)
+    arcpy.management.Delete(tempGdbPath)
+
+def harvestAreasProcess(downloadFolder, currentForestManagedLicencePath, archiveFolder, fileName, htgLandsPath, arcgisWorkspaceFolder, jsonPayload, rawDownloadFolderName, rawShapefileName):
+    shapefileArchiving(currentForestManagedLicencePath, archiveFolder)
+    harvestedAreasGeoprocessing(catalogueWarehouseDownload(
+        downloadFolder, jsonPayload, rawDownloadFolderName, rawShapefileName), downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder)
+
+
+# test
+#harvestAreasProcess(harvestedAreasSettings.downloadFolder, harvestedAreasSettings.currentPath, harvestedAreasSettings.archiveFolder, harvestedAreasSettings.fileName, universalSettings.htgLandsPath, harvestedAreasSettings.arcgisWorkspaceFolder, harvestedAreasSettings.jsonPayload, harvestedAreasSettings.rawDownloadFolderName, harvestedAreasSettings.rawShapefileName)
+
+
+####################################################################################################################
+# recreation datasets
+####################################################################################################################
+
+"""
+Get download link for each file - search concurrently for data warehouse Stuff
+Download each file concurrently
+Extract each file
+geoprocess each file
+
+Merge them together
+
+"""
+
+
+
+def shapefileDownloadUnzip(url, downloadFolder, rawShapefileName):
+    zipPath = f"{downloadFolder}\\{rawShapefileName}.zip"
+    
+    unpack_archive(zipPath, downloadFolder, "zip")
+    remove(zipPath)
+    return f"{downloadFolder}\\{rawShapefileName}"
+
+
+
+
+
+
+
+settingsList = (parksEcologicalProtectedSettings, nationalParksSettings, recreationPolygonsSettings)
+
+dataList = [(i.downloadFolder, i.jsonPayload, i.rawDownloadFolderName, i.rawShapefileName) for i in settingsList]
+
+'''
+if __name__ == "__main__":
+    pool = Pool(3)
+    filePaths = pool.starmap(catalogueWarehouseDownload, dataList)
+    pool.close()
+    pool.join()
+
+'''

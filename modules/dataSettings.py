@@ -12,7 +12,7 @@ class universalSettings:
 class crownTenuresSettings:
     # Tantatlis Crown Tenures
     fileName = "crownTenuresProcessed.shp"
-    currentPath = r"C:\Users\laure\Desktop\test\data\CrownTenuresProcessed.shp"
+    currentPath = r"C:\Users\laure\Desktop\test\crownTenuresProcessed.shp"
     downloadFolder = r"C:\Users\laure\Desktop\test"
     archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
     arcgisWorkspaceFolder = downloadFolder
@@ -135,7 +135,7 @@ class crownTenuresSettings:
     }
 
 
-class forestTenureSettings:
+class forestHarvestingAuthoritySettings:
     # Forest Tenure Harvesting Authority Polygons
     fileName = "forestTenureProcessed.shp"
     currentPath = r"C:\Users\laure\Desktop\test\forestTenureProcessed.shp"
@@ -150,25 +150,227 @@ class forestTenureSettings:
     rawDownloadFolderName = "FTEN_HARVEST_AUTH_POLY_SVW"
     rawShapefileName = "FTN_HA_SVW_polygon.shp"
 
-    jsonPayload={
-	"emailAddress": f"{universalSettings.email}",
-	"aoiType": "1",
-	"aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
-	"orderingApplication": "BCDC",
-	"crsType": "0",
-	"clippingMethodType": "1",
-	"formatType": "0",
-	"useAOIBounds": "",
-	"prepackagedItems": "",
-	"aoiName": "",
-	"featureItems": [
-		{
-			"featureItem": "WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW",
-			"filterValue": "",
-			"layerName": "Forest Tenure Harvesting Authority Polygons",
-			"layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/forest-tenure-harvesting-authority-polygons",
-			"filterType": "No Filter",
-			"pctOfMax": 3
-		}
-	]
-}
+    jsonPayload = {
+        "emailAddress": f"{universalSettings.email}",
+        "aoiType": "1",
+        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "orderingApplication": "BCDC",
+        "crsType": "0",
+        "clippingMethodType": "1",
+        "formatType": "0",
+        "useAOIBounds": "",
+        "prepackagedItems": "",
+        "aoiName": "",
+        "featureItems": [
+            {
+                        "featureItem": "WHSE_FOREST_TENURE.FTEN_HARVEST_AUTH_POLY_SVW",
+                        "filterValue": "",
+                        "layerName": "Forest Tenure Harvesting Authority Polygons",
+                        "layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/forest-tenure-harvesting-authority-polygons",
+                        "filterType": "No Filter",
+                        "pctOfMax": 3
+            }
+        ]
+    }
+
+
+class forestManagedLicenceSettings:
+    # forest tenure managed licence
+    fileName = "forestManagedLicenceProcessed.shp"
+    currentPath = r"C:\Users\laure\Desktop\test\forestManagedLicenceProcessed.shp"
+    downloadFolder = r"C:\Users\laure\Desktop\test"
+    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    arcgisWorkspaceFolder = downloadFolder
+    createdDate = datetime.fromtimestamp(
+        getctime(currentPath)).strftime('%B %d-%Y')
+    size = getsize(currentPath)
+
+    # Names given by data catalogue
+    rawDownloadFolderName = "FTEN_MANAGED_LICENCE_POLY_SVW"
+    rawShapefileName = "FTN_MG_L_P_polygon.shp"
+
+    jsonPayload = {
+        "emailAddress": f"{universalSettings.email}",
+        "aoiType": "1",
+        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "orderingApplication": "BCDC",
+        "crsType": "0",
+        "clippingMethodType": "1",
+        "formatType": "0",
+        "useAOIBounds": "",
+        "prepackagedItems": "",
+        "aoiName": "",
+        "featureItems": [
+            {
+                        "featureItem": "WHSE_FOREST_TENURE.FTEN_MANAGED_LICENCE_POLY_SVW",
+                        "filterValue": "",
+                        "layerName": "Forest Tenure Managed Licence",
+                        "layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/forest-tenure-managed-licence",
+                        "filterType": "No Filter",
+                        "pctOfMax": 3
+            }
+        ]
+    }
+
+
+class harvestedAreasSettings:
+    fileName = "harvestedAreas.shp"
+    currentPath = r"C:\Users\laure\Desktop\test\harvestedAreas.shp"
+    downloadFolder = r"C:\Users\laure\Desktop\test"
+    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    arcgisWorkspaceFolder = downloadFolder
+    createdDate = datetime.fromtimestamp(
+        getctime(currentPath)).strftime('%B %d-%Y')
+    size = getsize(currentPath)
+
+    # Names given by data catalogue
+    rawDownloadFolderName = "VEG_CONSOLIDATED_CUT_BLOCKS_SP"
+    rawShapefileName = "CNS_CUT_BL_polygon.shp"
+
+    jsonPayload = {
+        "emailAddress": f"{universalSettings.email}",
+        "aoiType": "1",
+        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "orderingApplication": "BCDC",
+        "crsType": "0",
+        "clippingMethodType": "1",
+        "formatType": "0",
+        "useAOIBounds": "",
+        "prepackagedItems": "",
+        "aoiName": "",
+        "featureItems": [
+            {
+                "featureItem": "WHSE_FOREST_VEGETATION.VEG_CONSOLIDATED_CUT_BLOCKS_SP",
+                "filterValue": "",
+                "layerName": "Harvested Areas of BC (Consolidated Cutblocks)",
+                "layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/harvested-areas-of-bc-consolidated-cutblocks-",
+                "filterType": "No Filter",
+                "pctOfMax": 3
+            }
+        ]
+    }
+
+
+class parksEcologicalProtectedSettings:
+    fileName = "parksEcologicalProtected.shp"
+    currentPath = r"C:\Users\laure\Desktop\test\parksEcologicalProtected.shp"
+    downloadFolder = r"C:\Users\laure\Desktop\test"
+    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+
+    # Names given by data catalogue
+    rawDownloadFolderName = "TA_PARK_ECORES_PA_SVW"
+    rawShapefileName = "TA_PEP_SVW_polygon.shp"
+
+    jsonPayload = {
+        "emailAddress": f"{universalSettings.email}",
+        "aoiType": "1",
+        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "orderingApplication": "BCDC",
+        "crsType": "0",
+        "clippingMethodType": "1",
+        "formatType": "0",
+        "useAOIBounds": "",
+        "prepackagedItems": "",
+        "aoiName": "",
+        "featureItems": [
+            {
+                        "featureItem": "WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW",
+                        "filterValue": "",
+                        "layerName": "BC Parks, Ecological Reserves, and Protected Areas",
+                        "layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/bc-parks-ecological-reserves-and-protected-areas",
+                        "filterType": "No Filter",
+                        "pctOfMax": 3
+            }
+        ]
+    }
+
+
+class nationalParksSettings:
+    fileName = "nationalParks.shp"
+    currentPath = r"C:\Users\laure\Desktop\test\nationalParks.shp"
+    downloadFolder = r"C:\Users\laure\Desktop\test"
+    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+
+    # Names given by data catalogue
+    rawDownloadFolderName = "CLAB_NATIONAL_PARKS"
+    rawShapefileName = "CLAB_NATPK_polygon.shp"
+
+    jsonPayload = {
+        "emailAddress": f"{universalSettings.email}",
+        "aoiType": "1",
+        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "orderingApplication": "BCDC",
+        "crsType": "0",
+        "clippingMethodType": "1",
+        "formatType": "0",
+        "useAOIBounds": "",
+        "prepackagedItems": "",
+        "aoiName": "",
+        "featureItems": [
+            {
+                        "featureItem": "WHSE_ADMIN_BOUNDARIES.CLAB_NATIONAL_PARKS",
+                        "filterValue": "",
+                        "layerName": "National Parks of Canada within British Columbia",
+                        "layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/national-parks-of-canada-within-british-columbia",
+                        "filterType": "No Filter",
+                        "pctOfMax": 3
+            }
+
+        ]
+    }
+
+
+class recreationPolygonsSettings:
+    fileName = "recreationPolygons.shp"
+    currentPath = r"C:\Users\laure\Desktop\test\recreationPolygons.shp"
+    downloadFolder = r"C:\Users\laure\Desktop\test"
+    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+
+    # Names given by data catalogue
+    rawDownloadFolderName = "FTEN_RECREATION_POLY_SVW"
+    rawShapefileName = "FTN_REC_PL_polygon.shp"
+
+    jsonPayload = {
+        "emailAddress": f"{universalSettings.email}",
+        "aoiType": "1",
+        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "orderingApplication": "BCDC",
+        "crsType": "0",
+        "clippingMethodType": "1",
+        "formatType": "0",
+        "useAOIBounds": "",
+        "prepackagedItems": "",
+        "aoiName": "",
+        "featureItems": [
+            {
+                        "featureItem": "WHSE_FOREST_TENURE.FTEN_RECREATION_POLY_SVW",
+                        "filterValue": "",
+                        "layerName": "Recreation Polygons",
+                        "layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/recreation-polygons",
+                        "filterType": "No Filter",
+                        "pctOfMax": 3
+            }
+
+        ]
+    }
+
+
+class parksProcessedSettings:
+    fileName = "parksProcessed.shp"
+    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    currentPath = ""
+
+
+class nanaimoParksSettings:
+    downloadFolder = r"C:\Users\laure\Desktop\test"
+    rawShapefileName = "Parks.shp"
+
+class crvdParksSettings:
+    pass
+
+class northCowichanParksSettings:
+    downloadFolder = r"C:\Users\laure\Desktop\test"
+    rawShapefileName1 = "ForestryRecreation.shp"
+    rawShapefileName2 = "NonDNCRecreation.shp"
+    rawShapefileName3 = "Recreation.shp"
+
