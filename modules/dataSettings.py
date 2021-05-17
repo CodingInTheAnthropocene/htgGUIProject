@@ -1,24 +1,20 @@
 
-from os.path import getsize, getctime
-from datetime import datetime
-
-
 class universalSettings:
     htgLandsPath = r"C:\Users\laure\Desktop\test\data\dummy_lands.gdb\lands1_sub_2"
     soiPath = r"C:\Users\laure\Desktop\test\data\HTG_SOIs_all.shp"
+    aoiPath = r"C:\Users\laure\Desktop\test\data\SW_BC.shp"
     email = ""
+    downloadFolder = r"C:\Users\laure\Desktop\test"
+    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
 
 
 class crownTenuresSettings:
     # Tantatlis Crown Tenures
     fileName = "crownTenuresProcessed.shp"
     currentPath = r"C:\Users\laure\Desktop\test\crownTenuresProcessed.shp"
-    downloadFolder = r"C:\Users\laure\Desktop\test"
-    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    downloadFolder = universalSettings.downloadFolder
+    archiveFolder = universalSettings.archiveFolder
     arcgisWorkspaceFolder = downloadFolder
-    createdDate = datetime.fromtimestamp(
-        getctime(currentPath)).strftime('%B %d-%Y')
-    size = getsize(currentPath)
 
     # Names given by data catalogue
     rawDownloadFolderName = "TA_CROWN_TENURES_SVW"
@@ -139,12 +135,9 @@ class forestHarvestingAuthoritySettings:
     # Forest Tenure Harvesting Authority Polygons
     fileName = "forestTenureProcessed.shp"
     currentPath = r"C:\Users\laure\Desktop\test\forestTenureProcessed.shp"
-    downloadFolder = r"C:\Users\laure\Desktop\test"
-    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    downloadFolder = universalSettings.downloadFolder
+    archiveFolder = universalSettings.archiveFolder
     arcgisWorkspaceFolder = downloadFolder
-    createdDate = datetime.fromtimestamp(
-        getctime(currentPath)).strftime('%B %d-%Y')
-    size = getsize(currentPath)
 
     # Names given by data catalogue
     rawDownloadFolderName = "FTEN_HARVEST_AUTH_POLY_SVW"
@@ -178,12 +171,9 @@ class forestManagedLicenceSettings:
     # forest tenure managed licence
     fileName = "forestManagedLicenceProcessed.shp"
     currentPath = r"C:\Users\laure\Desktop\test\forestManagedLicenceProcessed.shp"
-    downloadFolder = r"C:\Users\laure\Desktop\test"
-    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    downloadFolder = universalSettings.downloadFolder
+    archiveFolder = universalSettings.archiveFolder
     arcgisWorkspaceFolder = downloadFolder
-    createdDate = datetime.fromtimestamp(
-        getctime(currentPath)).strftime('%B %d-%Y')
-    size = getsize(currentPath)
 
     # Names given by data catalogue
     rawDownloadFolderName = "FTEN_MANAGED_LICENCE_POLY_SVW"
@@ -216,12 +206,9 @@ class forestManagedLicenceSettings:
 class harvestedAreasSettings:
     fileName = "harvestedAreas.shp"
     currentPath = r"C:\Users\laure\Desktop\test\harvestedAreas.shp"
-    downloadFolder = r"C:\Users\laure\Desktop\test"
-    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    downloadFolder = universalSettings.downloadFolder
+    archiveFolder = universalSettings.archiveFolder
     arcgisWorkspaceFolder = downloadFolder
-    createdDate = datetime.fromtimestamp(
-        getctime(currentPath)).strftime('%B %d-%Y')
-    size = getsize(currentPath)
 
     # Names given by data catalogue
     rawDownloadFolderName = "VEG_CONSOLIDATED_CUT_BLOCKS_SP"
@@ -254,8 +241,8 @@ class harvestedAreasSettings:
 class parksEcologicalProtectedSettings:
     fileName = "parksEcologicalProtected.shp"
     currentPath = r"C:\Users\laure\Desktop\test\parksEcologicalProtected.shp"
-    downloadFolder = r"C:\Users\laure\Desktop\test"
-    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    downloadFolder = universalSettings.downloadFolder
+    archiveFolder = universalSettings.archiveFolder
 
     # Names given by data catalogue
     rawDownloadFolderName = "TA_PARK_ECORES_PA_SVW"
@@ -288,8 +275,8 @@ class parksEcologicalProtectedSettings:
 class nationalParksSettings:
     fileName = "nationalParks.shp"
     currentPath = r"C:\Users\laure\Desktop\test\nationalParks.shp"
-    downloadFolder = r"C:\Users\laure\Desktop\test"
-    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    downloadFolder = universalSettings.downloadFolder
+    archiveFolder = universalSettings.archiveFolder
 
     # Names given by data catalogue
     rawDownloadFolderName = "CLAB_NATIONAL_PARKS"
@@ -323,8 +310,8 @@ class nationalParksSettings:
 class recreationPolygonsSettings:
     fileName = "recreationPolygons.shp"
     currentPath = r"C:\Users\laure\Desktop\test\recreationPolygons.shp"
-    downloadFolder = r"C:\Users\laure\Desktop\test"
-    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    downloadFolder = universalSettings.downloadFolder
+    archiveFolder = universalSettings.archiveFolder
 
     # Names given by data catalogue
     rawDownloadFolderName = "FTEN_RECREATION_POLY_SVW"
@@ -354,23 +341,24 @@ class recreationPolygonsSettings:
         ]
     }
 
+class nanaimoParksSettings:
+    fileName = "nanaimoParks.shp"
+    downloadFolder = universalSettings.downloadFolder
+    downloadURL = "https://www.nanaimo.ca/open-data-catalogue/Download/Index?container=nanaimo&entitySetName=ParksGeoSpatial&downloadID=79"
+
+
+class cvrdParksSettings:
+    fileName = "cvrdParks.shp"
+    downloadFolder = universalSettings.downloadFolder
+    downloadURL = "https://maps.cvrd.ca/downloads/Shapefiles/Parks.zip"
+
+
+class northCowichanParksSettings:
+    fileName = "northCowichanParksShapefiles"
+    downloadFolder = universalSettings.downloadFolder
+    downloadURL = "https://s3-us-west-2.amazonaws.com/openfiles.northcowichan.ca/GIS/Parks/Recreation_SHP.zip"
 
 class parksProcessedSettings:
     fileName = "parksProcessed.shp"
-    archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
-    currentPath = ""
-
-
-class nanaimoParksSettings:
-    downloadFolder = r"C:\Users\laure\Desktop\test"
-    rawShapefileName = "Parks.shp"
-
-class crvdParksSettings:
-    pass
-
-class northCowichanParksSettings:
-    downloadFolder = r"C:\Users\laure\Desktop\test"
-    rawShapefileName1 = "ForestryRecreation.shp"
-    rawShapefileName2 = "NonDNCRecreation.shp"
-    rawShapefileName3 = "Recreation.shp"
-
+    downloadFolder = universalSettings.downloadFolder
+    arcgisWorkspaceFolder = downloadFolder
