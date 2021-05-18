@@ -16,9 +16,13 @@
 
 
 
-from modules.functionLib import crownTenuresProcess, forestTenureProcess
+from os.path import getsize
+from modules.functionLib import *
+from modules.dataSettings import *
 import sys
 import platform
+from traceback import print_exc
+from datetime import datetime, timedelta
 
 from PySide6 import QtWidgets
 from widgets.custom_grips.custom_grips import Widgets
@@ -27,6 +31,7 @@ from widgets.custom_grips.custom_grips import Widgets
 # ///////////////////////////////////////////////////////////////
 from modules import *
 from widgets import *
+
 
 
 # SET AS GLOBAL WIDGETS
@@ -116,29 +121,34 @@ class MainWindow(QMainWindow):
 
         #Crown Tenures#
         #starting state
-        widgets.qTreeCrownTenures.setHeaderLabel(f"Crown Tenures: {crownTenuresSettings.createdDate}")
-        widgets.qTreeCrownTenures.topLevelItem(0).child(0).setText(0, "Hosted File Date: ")
-        widgets.qTreeCrownTenures.topLevelItem(0).child(1).setText(0, f"Size: {crownTenuresSettings.size/1000000:.2f} mb")        
+        try:
+            widgets.qTreeCrownTenures.setHeaderLabel(f"Crown Tenures: {getFileCreatedDate(crownTenuresSettings.currentPath)}")
+            widgets.qTreeCrownTenures.topLevelItem(0).child(1).setText(0, f"Size: {getsize(crownTenuresSettings.currentPath)/1000000:.2f} mb")  
+        except:
+            print_exc()
+            
+        widgets.qTreeCrownTenures.topLevelItem(0).child(0).setText(0, f"Hosted File Date: {(dataCurrency.crownTenures).date()} ")      
         widgets.qTreeCrownTenures.topLevelItem(0).child(2).setText(0, f"File Path: {crownTenuresSettings.currentPath}") 
         widgets.qTreeCrownTenures.topLevelItem(0).child(3).setText(0, f"Archive Folder: {crownTenuresSettings.archiveFolder}")               
-        #widgets.treeWidget.setStyleSheet("QHeaderView::section {border-radius: 10px; background: rgb(189, 147, 249);}")
-    
+        if datetime.today() - timedelta(days=7) > dataCurrency.crownTenures:
+            widgets.qTreeCrownTenures.setStyleSheet("QHeaderView::section {border-radius: 5px; background: rgb(189, 147, 249);}")
+
         #qtreeCrownTenures functionality
         widgets.qTreeCrownTenures.expanded.connect(self.datasetResizeUp)
         widgets.qTreeCrownTenures.collapsed.connect(self.datasetResizeDown)
-        widgets.buttonUpdateCrownTenures.clicked.connect(lambda:crownTenuresProcess(crownTenuresSettings.downloadFolder, crownTenuresSettings.currentPath, crownTenuresSettings.archiveFolder, crownTenuresSettings.fileName, universalSettings.htgLandsPath, universalSettings.soiPath, crownTenuresSettings.arcgisWorkspaceFolder, crownTenuresSettings.tenuresDictionary, crownTenuresSettings.jsonPayload, crownTenuresSettings.rawDownloadFolderName, crownTenuresSettings.rawShapefileName))
+        widgets.buttonUpdateCrownTenures.clicked.connect(crownTenuresProcess)
 
         #Forest Tenures#
         #Starting state
-        widgets.qTreeForestTenure.setHeaderLabel(f"Crown Tenures: {forestTenureSettings.createdDate}")
-        widgets.qTreeForestTenure.topLevelItem(0).child(0).setText(0, "Hosted File Date: ")
-        widgets.qTreeForestTenure.topLevelItem(0).child(1).setText(0, f"Size: {forestTenureSettings.size/1000000:.2f} mb")        
-        widgets.qTreeForestTenure.topLevelItem(0).child(2).setText(0, f"File Path: {forestTenureSettings.currentPath}") 
-        widgets.qTreeForestTenure.topLevelItem(0).child(3).setText(0, f"Archive Folder: {forestTenureSettings.archiveFolder}")
-        
-        
-
-
+        try:
+            widgets.qTreeForestTenure.setHeaderLabel(f"Crown Tenures: {forestTenureSettings.createdDate}")
+            widgets.qTreeForestTenure.topLevelItem(0).child(0).setText(0, "Hosted File Date: ")
+            widgets.qTreeForestTenure.topLevelItem(0).child(1).setText(0, f"Size: {forestTenureSettings.size/1000000:.2f} mb")        
+            widgets.qTreeForestTenure.topLevelItem(0).child(2).setText(0, f"File Path: {forestTenureSettings.currentPath}") 
+            widgets.qTreeForestTenure.topLevelItem(0).child(3).setText(0, f"Archive Folder: {forestTenureSettings.archiveFolder}")
+        except:
+            print_exc()
+            
 
     # Crown Tenuers methods
     def datasetResizeUp (self):

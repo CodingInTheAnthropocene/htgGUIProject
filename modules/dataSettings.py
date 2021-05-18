@@ -10,15 +10,12 @@ class universalSettings:
 
 class crownTenuresSettings:
     # Tantatlis Crown Tenures
+    dataCatalogueId = "3544ad91-0cf2-4926-a08a-bfe42d9a031d"
     fileName = "crownTenuresProcessed.shp"
     currentPath = r"C:\Users\laure\Desktop\test\crownTenuresProcessed.shp"
     downloadFolder = universalSettings.downloadFolder
     archiveFolder = universalSettings.archiveFolder
     arcgisWorkspaceFolder = downloadFolder
-
-    # Names given by data catalogue
-    rawDownloadFolderName = "TA_CROWN_TENURES_SVW"
-    rawShapefileName = "TA_CRT_SVW_polygon.shp"
 
     # json payload sent to data catalogue
     jsonPayload = {
@@ -360,5 +357,7 @@ class northCowichanParksSettings:
 
 class parksProcessedSettings:
     fileName = "parksProcessed.shp"
+    currentPath = r"C:\Users\laure\Desktop\test\parksProcessed.shp"
+    archiveFolder = universalSettings.archiveFolder
     downloadFolder = universalSettings.downloadFolder
     arcgisWorkspaceFolder = downloadFolder

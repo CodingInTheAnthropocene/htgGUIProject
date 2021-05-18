@@ -1,27 +1,13 @@
 # download imports
- 
-from itertools import chain
-from pathlib import Path
-from dataSettings import cvrdParksSettings
-import multiprocessing
-from multiprocessing import process
 
-from dataSettings import nanaimoParksSettings, northCowichanParksSettings, parksProcessedSettings
-from dataSettings import nationalParksSettings, parksEcologicalProtectedSettings, recreationPolygonsSettings
-from dataSettings import harvestedAreasSettings
-from dataSettings import forestHarvestingAuthoritySettings, universalSettings, forestManagedLicenceSettings
+from modules.dataSettings import *
 from requests import post, Session
 from urllib.request import urlopen, urlretrieve
 from lxml.html import fromstring
 from time import sleep
-from multiprocessing import Pool, Process
 from pandas.core.common import flatten
-
-# geoprocessing imports
 import arcpy
-
-# archiving imports
-from os import name, path, mkdir, walk, rename, remove
+from os import path, mkdir, walk, rename, remove
 from datetime import datetime
 from shutil import move, make_archive, rmtree, unpack_archive
 
@@ -177,11 +163,15 @@ def catalogueWarehouseDownload(downloadFolder, jsonPayload, fileName):
 # Tantalis Crown Tenures
 ####################################################################################################################
 
-def crownTenuresGeoprocessing(crownTenuresRawPath, fileName, htgLandsPath, soiPath, arcgisWorkspaceFolder, crownTenuresDictionary):
+def crownTenuresGeoprocessing(crownTenuresRawPath):
     """Takes raw crown tenures data set and runs it through standardized Geoprocessing"""
 
+    fileName = crownTenuresSettings.fileName
+
+
+
     # ArcGIS environment settings
-    arcpy.env.workspace = arcgisWorkspaceFolder
+    arcpy.env.workspace = crownTenuresSettings.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
     # copy Shapefile To leave original intact
@@ -221,10 +211,10 @@ def crownTenuresGeoprocessing(crownTenuresRawPath, fileName, htgLandsPath, soiPa
 
     for row in cursor:
         # iterate over tenures dictionary
-        for i in crownTenuresDictionary:
+        for i in crownTenuresSettings.tenuresDictionary:
             first2 = f"{row[0]}, {row[1]}"
             if first2 == i:
-                row[2] = crownTenuresDictionary[first2]
+                row[2] = crownTenuresSettings.tenuresDictionary[first2]
                 cursor.updateRow(row)
                 break
 
@@ -233,13 +223,13 @@ def crownTenuresGeoprocessing(crownTenuresRawPath, fileName, htgLandsPath, soiPa
     # intersect crown tenures with SOI, delete automatically created fields
     # FIX THIS: no_fid appropriate?? May eliminate need to delete added fields??
     tenuresSOIIntersect = arcpy.Intersect_analysis(
-        [tenuresCopy, soiPath], "tenureSOIIntersect", join_attributes="NO_FID")
+        [tenuresCopy, universalSettings.soiPath], "tenureSOIIntersect", join_attributes="NO_FID")
 
     print("tenure and SOI's intersected")
 
     # create new lands feature Class with removed fields. This is a workaround as disabling fields in arcpy is apparently very cumbersome.
     htgLandsCopy = arcpy.CopyFeatures_management(
-        htgLandsPath, "htglandsCopy")
+        universalSettings.htgLandsPath, "htglandsCopy")
 
     # NOTE: should keep ['new_group', 'parcel_num', 'selected_by', 'new_ownership', 'ownership_type'] and default fields
 
@@ -278,12 +268,11 @@ def crownTenuresGeoprocessing(crownTenuresRawPath, fileName, htgLandsPath, soiPa
     return crownTenuresProcessedPath
 
 
-def crownTenuresProcess(downloadFolder, crownTenuresPath, archiveFolder, fileName, htgLandsPath, soiPath, arcgisWorkspaceFolder, crownTenuresDictionary, jsonPayload, rawDownloadFolderName, rawShapeFileName):
+def crownTenuresProcess():
     """Entire crown tenure chain: archive old, download new, process new. This function is called from the GUI"""
-    shapefileArchiving(crownTenuresPath, archiveFolder)
-    crownTenuresGeoprocessing(catalogueWarehouseDownload(downloadFolder, jsonPayload, rawDownloadFolderName,
-                                                         rawShapeFileName), fileName, htgLandsPath, soiPath, arcgisWorkspaceFolder, crownTenuresDictionary)
-
+    shapefileArchiving(crownTenuresSettings.currentPath, crownTenuresSettings.archiveFolder)
+    crownTenuresGeoprocessing(catalogueWarehouseDownload(crownTenuresSettings.downloadFolder, crownTenuresSettings.jsonPayload, crownTenuresSettings.fileName))
+    
 ####################################################################################################################
 # Forest Tenure Harvesting Authority Polygons (Forest Tenure Cut Permits)
 ####################################################################################################################
@@ -485,10 +474,6 @@ def forestManagedLicenceProcess(downloadFolder, currentForestManagedLicencePath,
     forestManagedLicenceGeoprocessing(catalogueWarehouseDownload(
         downloadFolder, jsonPayload, rawDownloadFolderName, rawShapefileName), downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder)
 
-# test
-
-#forestManagedLicenceProcess(forestManagedLicenceSettings.downloadFolder, forestManagedLicenceSettings.currentPath, forestManagedLicenceSettings.archiveFolder, forestManagedLicenceSettings.fileName, universalSettings.htgLandsPath, forestManagedLicenceSettings.arcgisWorkspaceFolder, forestManagedLicenceSettings.jsonPayload, forestManagedLicenceSettings.rawDownloadFolderName, forestManagedLicenceSettings.rawShapefileName)
-
 
 ####################################################################################################################
 # Harvested areas of BC (Consolidated Cut Blocks)
@@ -582,14 +567,9 @@ def harvestAreasProcess(downloadFolder, currentForestManagedLicencePath, archive
         downloadFolder, jsonPayload, rawDownloadFolderName, rawShapefileName), downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder)
 
 
-# test
-#harvestAreasProcess(harvestedAreasSettings.downloadFolder, harvestedAreasSettings.currentPath, harvestedAreasSettings.archiveFolder, harvestedAreasSettings.fileName, universalSettings.htgLandsPath, harvestedAreasSettings.arcgisWorkspaceFolder, harvestedAreasSettings.jsonPayload, harvestedAreasSettings.rawDownloadFolderName, harvestedAreasSettings.rawShapefileName)
-
-
 ####################################################################################################################
 # recreation datasets
 ####################################################################################################################
-
 
 def recreationDownload():
     print("Starting Parks download")
@@ -601,7 +581,8 @@ def recreationDownload():
 
     for i in dataList:
         filePaths.append(catalogueWarehouseDownload(*i))
-
+    
+    print("Finished Parks Donnload")
     return filePaths
 
 def northCowichanRecreationGeoprocessing(rawPath):
@@ -809,15 +790,6 @@ def northCowichanForestryRecreationGeoprocessing(rawPath):
     
     return northCowichanForestryRecreationCopy
 
-#Tests
-
-#northCowichanForestryRecreationGeoprocessing(r"C:\Users\laure\Downloads\Recreation_SHP\ForestryRecreation.shp", r"C:\Users\laure\Desktop\test", r"C:\Users\laure\Desktop\test")
-
-#northCowichanRecreationGeoprocessing(r"C:\Users\laure\Downloads\Recreation_SHP\Recreation.shp", r"C:\Users\laure\Desktop\test", r"C:\Users\laure\Desktop\test")
-
-#northCowichanNonDNCRecreationGeoprocessing(r"C:\Users\laure\Downloads\Recreation_SHP\NonDNCRecreation.shp", r"C:\Users\laure\Desktop\test", r"C:\Users\laure\Desktop\test")
-
-
 
 def parksEcologicalProtectedGeoprocessing(rawPath):
     
@@ -895,9 +867,6 @@ def parksEcologicalProtectedGeoprocessing(rawPath):
     return parksEcologicalProtectedCopy
 
 
-# test
-#parksEcologicalProtectedGeoprocessing(r"C:\Users\laure\Desktop\test\rawparksEcologicalProtected.shp\TA_PARK_ECORES_PA_SVW\TA_PEP_SVW_polygon.shp", r"C:\Users\laure\Desktop\test", r"C:\Users\laure\Desktop\test")
-
 def nationalParksGeoprocessing(rawPath):
     
     downloadFolder = nationalParksSettings.downloadFolder
@@ -966,7 +935,6 @@ def nationalParksGeoprocessing(rawPath):
     
     return nationalParksCopy
 
-#nationalParksGeoprocessing(r'C:\Users\laure\Desktop\test\rawnationalParks.shp\CLAB_NATIONAL_PARKS\CLAB_NATPK_polygon.shp', r"C:\Users\laure\Desktop\test", r"C:\Users\laure\Desktop\test")
 
 def recreationPolygonsGeoprocessing(rawPath):
     downloadFolder = recreationPolygonsSettings.downloadFolder
@@ -1039,7 +1007,6 @@ def recreationPolygonsGeoprocessing(rawPath):
     
     return recreationPolygonsCopy
 
-#recreationPolygonsGeoprocessing(r"C:\Users\laure\Desktop\test\rawrecreationPolygons.shp\FTEN_RECREATION_POLY_SVW\FTN_REC_PL_polygon.shp", r"C:\Users\laure\Desktop\test", r"C:\Users\laure\Desktop\test")
 
 def nanaimoCityParksGeoprocessing(rawPath):
     
@@ -1118,9 +1085,6 @@ def nanaimoCityParksGeoprocessing(rawPath):
     return nanaimoCityParksCopy
 
 
-
-#nanaimoCityParksGeoprocessing(r"C:\Users\laure\Desktop\test\rawnanaimoParks\PARKS.shp", r"C:\Users\laure\Desktop\test", r"C:\Users\laure\Desktop\test")
-
 def cvrdParksGeoprocessing(rawPath):
     
     downloadFolder = cvrdParksSettings.downloadFolder
@@ -1195,10 +1159,13 @@ def cvrdParksGeoprocessing(rawPath):
     return cvrdParksCopy
 
 
-def recreationProcess():
+def parksProcess():
     arcpy.env.workspace = parksProcessedSettings.arcgisWorkspaceFolder
     
+    shapefileArchiving(parksProcessedSettings.currentPath, parksProcessedSettings.archiveFolder)
+
     #NOTE, north cowicahn parks are fragile if names change
+
     rawFilePaths = recreationDownload()
     processedFilePaths = []
 
@@ -1223,6 +1190,4 @@ def recreationProcess():
     recreationMerged = arcpy.Merge_management(processedFilePaths, parksProcessedSettings.fileName)
 
     return recreationMerged
-
-recreationProcess()
 
