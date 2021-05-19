@@ -98,7 +98,7 @@ class crownTenuresSettings:
         'MISCELLANEOUS LAND USES, LAND USE PLAN INTERIM AGREEMENT': 'other uses',
         'MISCELLANEOUS LAND USES, OTHER': 'other uses',
         'MISCELLANEOUS LAND USES, PLANNING/MARKETING/DEVELOP PROJECTS': 'other uses',
-        'OCEAN ENERGY, INVESTIGATIVE AND MONITORING PHASE': 'ocean energy',
+        'OCEAN ENERGY, INVESTIGATIVE AND MONITORING PHASE': 'alternate energy',
         'QUARRYING, CONSTRUCTION STONE': 'quarrying',
         'QUARRYING, MISCELLANEOUS': 'quarrying',
         'QUARRYING, SAND AND GRAVEL': 'quarrying',
@@ -361,3 +361,34 @@ class parksProcessedSettings:
     archiveFolder = universalSettings.archiveFolder
     downloadFolder = universalSettings.downloadFolder
     arcgisWorkspaceFolder = downloadFolder
+
+class parcelMapBCSettings:
+    dataCatalogueId= "4cf233c2-f020-4f7a-9b87-1923252fbc24"
+    fileName = "parcelMapBCProcessed.gdb"
+    currentPath = ""
+    downloadFolder =universalSettings.downloadFolder
+    archiveFolder =universalSettings.archiveFolder
+    arcgisWorkspaceFolder=downloadFolder
+
+    jsonPayload = {
+	"emailAddress": f"{universalSettings.email}",
+	"aoiType": "1",
+	"aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+	"orderingApplication": "BCDC",
+	"crsType": "0",
+	"clippingMethodType": "1",
+	"formatType": "3",
+	"useAOIBounds": "",
+	"prepackagedItems": "",
+	"aoiName": "",
+	"featureItems": [
+		{
+			"featureItem": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
+			"filterValue": "",
+			"layerName": "ParcelMap BC Parcel Fabric",
+			"layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/parcelmap-bc-parcel-fabric",
+			"filterType": "No Filter",
+			"pctOfMax": 7
+		}
+	]
+}

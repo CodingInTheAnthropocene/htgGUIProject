@@ -130,7 +130,7 @@ class MainWindow(QMainWindow):
         widgets.qTreeCrownTenures.topLevelItem(0).child(0).setText(0, f"Hosted File Date: {(dataCurrency.crownTenures).date()} ")      
         widgets.qTreeCrownTenures.topLevelItem(0).child(2).setText(0, f"File Path: {crownTenuresSettings.currentPath}") 
         widgets.qTreeCrownTenures.topLevelItem(0).child(3).setText(0, f"Archive Folder: {crownTenuresSettings.archiveFolder}")               
-        if datetime.today() - timedelta(days=7) > dataCurrency.crownTenures:
+        if getFileCreatedDate(crownTenuresSettings.currentPath) < (dataCurrency.crownTenures).date():
             widgets.qTreeCrownTenures.setStyleSheet("QHeaderView::section {border-radius: 5px; background: rgb(189, 147, 249);}")
 
         #qtreeCrownTenures functionality
@@ -152,7 +152,7 @@ class MainWindow(QMainWindow):
 
     # Crown Tenuers methods
     def datasetResizeUp (self):
-        widgets.frameCrownTenures.resize(300, 200)
+        widgets.frameCrownTenures.setSizePolicy(QSizePolicy.Ignored)
 
     def datasetResizeDown(self):
         widgets.frameCrownTenures.resize(300,111)

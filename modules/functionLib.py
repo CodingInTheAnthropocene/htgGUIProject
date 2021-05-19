@@ -16,7 +16,7 @@ from shutil import move, make_archive, rmtree, unpack_archive
 # Universal functions
 ####################################################################################################################
 def getFileCreatedDate(filePath):
-    return datetime.fromtimestamp(path.getctime(filePath)).strftime('%Y-%m-%d')
+    return datetime.fromtimestamp(path.getctime(filePath)).date()
 
 def fieldsToDelete(featureClass, keepFields):
     originalFields = [i.name for i in arcpy.ListFields(featureClass)]
@@ -193,7 +193,7 @@ def crownTenuresGeoprocessing(crownTenuresRawPath):
     for row in cursor:
         if row[0] == 1414573:
             cursor.deleteRow()
-        if row[1] == "BCAL INVENTORY" or row[1] == "NOTATION OF INTEREST":
+        if row[1] in ("BCAL INVENTORY", "NOTATION OF INTEREST") and row[2] not in ("UREP/RECREATION RESERVE", "FISH AND WILDLIFE MANAGEMENT", "ENVIRONMENT PROTECTION/CONSERVATION"):
             cursor.deleteRow()
         if row[2] == "TREATY AREA":
             cursor.deleteRow()
@@ -239,15 +239,15 @@ def crownTenuresGeoprocessing(crownTenuresRawPath):
     # ]
 
     fieldsToDeletehtgLandsCopy = ['ATTRIBUTE_', 'EN', 'GEOMETRY_S', 'H_', 'Ha', 'ICF', 'ICF_AREA', 'ICIS', 'JUROL', 'LAND_ACT_P', 'LAND_DISTR', 'LEGAL_FREE', 'LOCALAREA', 'LTSA_BLOCK', 'LTSA_LOT', 'LTSA_PARCE', 'LTSA_PLAN', 'OWNER_CLAS', 'OtherComme', 'PARCEL_DES', 'PID', 'PIN', 'PIN_DISTLE', 'PIN_SUBDLA', 'PMBC', 'RoW', 'SOURCE_PRO', 'TEMP_PolyI', 'TENURES', 'TimbeTable', 'Title_Info', 'Title_num', 'Title_owne', 'access',
-                                  'apprais2BC', 'apprais2HB', 'apprais2Ha', 'apprais2re', 'appraisal2', 'arch_sites', 'avail_issu', 'available', 'comments', 'confirm_qu', 'ess_respon', 'essential', 'guide_outf', 'interests', 'label', 'landval_20', 'landval_sr', 'location', 'municipali', 'needs_conf', 'owner', 'potential_', 'prop_class', 'result_val', 'selected', 'specific_l', 'tourism_ca', 'trapline', 'use_on_pro', 'valperHa_2', 'zone_code', 'zoning']
+                                  'apprais2BC', 'apprais2HB', 'apprais2Ha', 'apprais2re', 'appraisal2', 'arch_sites', 'avail_issu', 'available', 'comments', 'confirm_qu', 'ess_respon', 'essential', 'guide_outf', 'interests', 'label', 'landval_20', 'landval_sr', 'location', 'municipali', 'needs_conf', 'potential_', 'prop_class', 'result_val', 'selected', 'specific_l', 'tourism_ca', 'trapline', 'use_on_pro', 'valperHa_2', 'zone_code', 'zoning']
 
     arcpy.DeleteField_management(htgLandsCopy, fieldsToDeletehtgLandsCopy)
 
     print("Fields deleted from lands copy")
 
     # Intersect tenures/soi intersect with land parcels data
-    crownTenuresProcessedPath = arcpy.Intersect_analysis(
-        [tenuresSOIIntersect, htgLandsCopy], fileName, join_attributes="NO_FID")
+    crownTenuresProcessedPath = arcpy.Identity_analysis(
+        tenuresSOIIntersect, htgLandsCopy, fileName, join_attributes="NO_FID")
     print("tenure SOI lands intersect completed")
 
     # add and calculate HA field to tenures/soi/lands intersect
