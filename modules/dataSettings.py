@@ -1,7 +1,13 @@
 
+from modules import bbox_SOIs
+
+
 class universalSettings:
     htgLandsPath = r"C:\Users\laure\Desktop\test\data\dummy_lands.gdb\lands1_sub_2"
     soiPath = r"C:\Users\laure\Desktop\test\data\HTG_SOIs_all.shp"
+    soiCorePath = ""
+    soiMarinePath = ""
+    soiWHAPath = ""
     aoiPath = r"C:\Users\laure\Desktop\test\data\SW_BC.shp"
     email = ""
     downloadFolder = r"C:\Users\laure\Desktop\test"
@@ -10,18 +16,20 @@ class universalSettings:
 
 class crownTenuresSettings:
     # Tantatlis Crown Tenures
+    name = "Tantalis Crown Tenures"
     dataCatalogueId = "3544ad91-0cf2-4926-a08a-bfe42d9a031d"
     fileName = "crownTenuresProcessed.shp"
     currentPath = r"C:\Users\laure\Desktop\test\crownTenuresProcessed.shp"
     downloadFolder = universalSettings.downloadFolder
     archiveFolder = universalSettings.archiveFolder
     arcgisWorkspaceFolder = downloadFolder
+    alias="crownTenures"
+    updateDays = 1
 
-    # json payload sent to data catalogue
     jsonPayload = {
-        "emailAddress": f"{universalSettings.email}",
+        "emailAddress": universalSettings.email,
         "aoiType": "1",
-        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "aoi": bbox_SOIs.marine,
         "orderingApplication": "BCDC",
         "crsType": "0",
         "clippingMethodType": "1",
@@ -42,7 +50,7 @@ class crownTenuresSettings:
     }
 
     # cd_display values derived from this dictionary
-    tenuresDictionary = {
+    valuesDictionary = {
         'AGRICULTURE, EXTENSIVE': 'agriculture',
         'AGRICULTURE, INTENSIVE': 'agriculture',
         'AQUACULTURE, PLANTS': 'aquaculture',
@@ -129,21 +137,21 @@ class crownTenuresSettings:
 
 
 class forestHarvestingAuthoritySettings:
-    # Forest Tenure Harvesting Authority Polygons
+    # Forest Tenure Harvesting Authority Polygons (cut permits)
+    name = "Forest Tenure Harvesting Authority Polygons"
+    dataCatalogueId = "cff7b8f7-6897-444f-8c53-4bb93c7e9f8b"
     fileName = "forestTenureProcessed.shp"
     currentPath = r"C:\Users\laure\Desktop\test\forestTenureProcessed.shp"
     downloadFolder = universalSettings.downloadFolder
     archiveFolder = universalSettings.archiveFolder
     arcgisWorkspaceFolder = downloadFolder
-
-    # Names given by data catalogue
-    rawDownloadFolderName = "FTEN_HARVEST_AUTH_POLY_SVW"
-    rawShapefileName = "FTN_HA_SVW_polygon.shp"
+    alias="forestHarvestingAuthority"
+    updateDays = 1
 
     jsonPayload = {
-        "emailAddress": f"{universalSettings.email}",
+        "emailAddress": universalSettings.email,
         "aoiType": "1",
-        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "aoi": bbox_SOIs.core,
         "orderingApplication": "BCDC",
         "crsType": "0",
         "clippingMethodType": "1",
@@ -166,20 +174,20 @@ class forestHarvestingAuthoritySettings:
 
 class forestManagedLicenceSettings:
     # forest tenure managed licence
+    name = "Forest Tenure Managed Licence"
+    dataCatalogueId = "c3e96239-cdc9-4328-ac19-58fba1623ef8"
     fileName = "forestManagedLicenceProcessed.shp"
     currentPath = r"C:\Users\laure\Desktop\test\forestManagedLicenceProcessed.shp"
     downloadFolder = universalSettings.downloadFolder
     archiveFolder = universalSettings.archiveFolder
     arcgisWorkspaceFolder = downloadFolder
-
-    # Names given by data catalogue
-    rawDownloadFolderName = "FTEN_MANAGED_LICENCE_POLY_SVW"
-    rawShapefileName = "FTN_MG_L_P_polygon.shp"
+    alias="forestManagedLicence"
+    updateDays = 1
 
     jsonPayload = {
-        "emailAddress": f"{universalSettings.email}",
+        "emailAddress": universalSettings.email,
         "aoiType": "1",
-        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "aoi": bbox_SOIs.core,
         "orderingApplication": "BCDC",
         "crsType": "0",
         "clippingMethodType": "1",
@@ -201,20 +209,21 @@ class forestManagedLicenceSettings:
 
 
 class harvestedAreasSettings:
+
+    name = "Harvested Areas of BC"
+    dataCatalogueId = "b1b647a6-f271-42e0-9cd0-89ec24bce9f7"
     fileName = "harvestedAreas.shp"
     currentPath = r"C:\Users\laure\Desktop\test\harvestedAreas.shp"
     downloadFolder = universalSettings.downloadFolder
     archiveFolder = universalSettings.archiveFolder
     arcgisWorkspaceFolder = downloadFolder
-
-    # Names given by data catalogue
-    rawDownloadFolderName = "VEG_CONSOLIDATED_CUT_BLOCKS_SP"
-    rawShapefileName = "CNS_CUT_BL_polygon.shp"
+    alias="harvestedAreas"
+    updateDays = 1
 
     jsonPayload = {
-        "emailAddress": f"{universalSettings.email}",
+        "emailAddress": universalSettings.email,
         "aoiType": "1",
-        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "aoi": bbox_SOIs.core,
         "orderingApplication": "BCDC",
         "crsType": "0",
         "clippingMethodType": "1",
@@ -236,19 +245,18 @@ class harvestedAreasSettings:
 
 
 class parksEcologicalProtectedSettings:
+    name = "BC Parks, Ecological Reserves, and Protected Areas"
+    dataCatalogueId = "1130248f-f1a3-4956-8b2e-38d29d3e4af7"
     fileName = "parksEcologicalProtected.shp"
     currentPath = r"C:\Users\laure\Desktop\test\parksEcologicalProtected.shp"
     downloadFolder = universalSettings.downloadFolder
     archiveFolder = universalSettings.archiveFolder
-
-    # Names given by data catalogue
-    rawDownloadFolderName = "TA_PARK_ECORES_PA_SVW"
-    rawShapefileName = "TA_PEP_SVW_polygon.shp"
+    alias="parksEcologicalProtected"
 
     jsonPayload = {
-        "emailAddress": f"{universalSettings.email}",
+        "emailAddress": universalSettings.email,
         "aoiType": "1",
-        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "aoi": bbox_SOIs.wha,
         "orderingApplication": "BCDC",
         "crsType": "0",
         "clippingMethodType": "1",
@@ -270,19 +278,18 @@ class parksEcologicalProtectedSettings:
 
 
 class nationalParksSettings:
+    name = "National Parks of Canada"
+    dataCatalogueId = "88e61a14-19a0-46ab-bdae-f68401d3d0fb"
     fileName = "nationalParks.shp"
     currentPath = r"C:\Users\laure\Desktop\test\nationalParks.shp"
     downloadFolder = universalSettings.downloadFolder
     archiveFolder = universalSettings.archiveFolder
-
-    # Names given by data catalogue
-    rawDownloadFolderName = "CLAB_NATIONAL_PARKS"
-    rawShapefileName = "CLAB_NATPK_polygon.shp"
+    alias="nationalParks"
 
     jsonPayload = {
-        "emailAddress": f"{universalSettings.email}",
+        "emailAddress": universalSettings.email,
         "aoiType": "1",
-        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+        "aoi": bbox_SOIs.wha,
         "orderingApplication": "BCDC",
         "crsType": "0",
         "clippingMethodType": "1",
@@ -305,20 +312,18 @@ class nationalParksSettings:
 
 
 class recreationPolygonsSettings:
+    name = "Recreation Polygons"
+    dataCatalogueId = "263338a7-93ee-49c1-83e8-13f0bde70833"
     fileName = "recreationPolygons.shp"
     currentPath = r"C:\Users\laure\Desktop\test\recreationPolygons.shp"
     downloadFolder = universalSettings.downloadFolder
     archiveFolder = universalSettings.archiveFolder
-
-    # Names given by data catalogue
-    rawDownloadFolderName = "FTEN_RECREATION_POLY_SVW"
-    rawShapefileName = "FTN_REC_PL_polygon.shp"
+    name="recreationPolygons"
 
     jsonPayload = {
-        "emailAddress": f"{universalSettings.email}",
+        "emailAddress": universalSettings.email,
         "aoiType": "1",
-        "aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
-        "orderingApplication": "BCDC",
+        "aoi": bbox_SOIs.wha,
         "crsType": "0",
         "clippingMethodType": "1",
         "formatType": "0",
@@ -338,42 +343,166 @@ class recreationPolygonsSettings:
         ]
     }
 
+
 class nanaimoParksSettings:
+    name = "Nanaimo City Parks"
     fileName = "nanaimoParks.shp"
     downloadFolder = universalSettings.downloadFolder
     downloadURL = "https://www.nanaimo.ca/open-data-catalogue/Download/Index?container=nanaimo&entitySetName=ParksGeoSpatial&downloadID=79"
+    alias="nanaimoParks"
 
 
 class cvrdParksSettings:
+    name = "CVRD Parks"
     fileName = "cvrdParks.shp"
     downloadFolder = universalSettings.downloadFolder
     downloadURL = "https://maps.cvrd.ca/downloads/Shapefiles/Parks.zip"
+    alias="cvrdParks"
 
 
 class northCowichanParksSettings:
+    name = "North Cowichan Recreation"
+    dataCatalogueId = "c9f0be75-81d1-4a8b-b463-09afe46e03b2"
     fileName = "northCowichanParksShapefiles"
     downloadFolder = universalSettings.downloadFolder
     downloadURL = "https://s3-us-west-2.amazonaws.com/openfiles.northcowichan.ca/GIS/Parks/Recreation_SHP.zip"
+    alias = "northCowichanParks"
 
-class parksProcessedSettings:
+
+class parksRecreationDatasetsSettings:
+    name = "Parks/Recreation Datasets"
+    dataCatalogueId = "N/A"
     fileName = "parksProcessed.shp"
     currentPath = r"C:\Users\laure\Desktop\test\parksProcessed.shp"
     archiveFolder = universalSettings.archiveFolder
     downloadFolder = universalSettings.downloadFolder
     arcgisWorkspaceFolder = downloadFolder
+    alias="parksRecreationDatasets"
+    updateDays = 1
+
 
 class parcelMapBCSettings:
-    dataCatalogueId= "4cf233c2-f020-4f7a-9b87-1923252fbc24"
-    fileName = "parcelMapBCProcessed.gdb"
+    name = "ParcelMap BC Parcel Fabric"
+    dataCatalogueId = "4cf233c2-f020-4f7a-9b87-1923252fbc24"
+    fileName = "PMBC.shp"
     currentPath = ""
-    downloadFolder =universalSettings.downloadFolder
-    archiveFolder =universalSettings.archiveFolder
-    arcgisWorkspaceFolder=downloadFolder
+    downloadFolder = universalSettings.downloadFolder
+    archiveFolder = universalSettings.archiveFolder
+    arcgisWorkspaceFolder = downloadFolder
+    alias="parcelMapBC"
+    updateDays = 1
 
     jsonPayload = {
-	"emailAddress": f"{universalSettings.email}",
+        "emailAddress": universalSettings.email,
+        "aoiType": "1",
+        "aoi": bbox_SOIs.marine,
+        "orderingApplication": "BCDC",
+        "crsType": "0",
+        "clippingMethodType": "1",
+        "formatType": "3",
+        "useAOIBounds": "",
+        "prepackagedItems": "",
+        "aoiName": "",
+        "featureItems": [
+            {
+                        "featureItem": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
+                        "filterValue": "",
+                        "layerName": "ParcelMap BC Parcel Fabric",
+                        "layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/parcelmap-bc-parcel-fabric",
+                        "filterType": "No Filter",
+                        "pctOfMax": 7
+            }
+        ]
+    }
+
+
+class digitalRoadAtlasSettings:
+    name = "Digital Road Atlas"
+    dataCatalogueId = "bb060417-b6e6-4548-b837-f9060d94743e"
+    fileName = "roads.shp"
+    currentPath = ""
+    downloadFolder = universalSettings.downloadFolder
+    archiveFolder = universalSettings.archiveFolder
+    arcgisWorkspaceFolder = downloadFolder
+    alias="digitalRoadAtlas"
+    updateDays = 1
+
+
+    jsonPayload = {
+        "emailAddress": universalSettings.email,
+        "aoiType": "1",
+        "aoi": bbox_SOIs.roadsMask,
+        "orderingApplication": "BCDC",
+        "crsType": "0",
+        "clippingMethodType": "1",
+        "formatType": "0",
+        "useAOIBounds": "",
+        "prepackagedItems": "",
+        "aoiName": "",
+        "featureItems": [
+            {
+                        "featureItem": "WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP",
+                        "filterValue": "",
+                        "layerName": "Digital Road Atlas (DRA) - Master Partially-Attributed Roads",
+                        "layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/digital-road-atlas-dra-master-partially-attributed-roads",
+                        "filterType": "No Filter",
+                        "pctOfMax": 9
+            }
+        ]
+    }
+
+    valuesDictionary = {('freeway', 'highway'): 'highway', ('arterial', 'collector', 'ramp'): 'main', ('local', 'lane'): 'local', 'ferry': 'ferry', 'unclassified': 'unnamed/logging',
+                        ('alleyway', 'driveway', 'private', 'recreation', 'resource', 'restricted', 'runway', 'service', 'strata', 'yield'): 'other', ('pedestrian', 'trail'): 'path', 'proposed': 'proposed'}
+
+class alcAlrPolygonsSettings:
+    name = "ALC ALR Polygons"
+    dataCatalogueId="92e17599-ac8a-47c8-877c-107768cb373c"
+    fileName = "ALR.shp"
+    currentPath = ""
+    downloadFolder = universalSettings.downloadFolder
+    archiveFolder = universalSettings.archiveFolder
+    arcgisWorkspaceFolder = downloadFolder
+    alias="alcAlrPolygons"
+    updateDays = 1
+
+    jsonPayload = {
+	"emailAddress": universalSettings.email,
 	"aoiType": "1",
-	"aoi": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"geometry\":{\"bbox\":[-125.06139016888163,48.30224522044379,-122.40515460372072,49.3470925218454],\"type\":\"Polygon\",\"coordinates\":[[[-125.03939999215429,49.387443381941395],[-122.43518398330905,49.3480870937964],[-122.48762955305448,48.259285597314474],[-125.03356376204732,48.30199424617951],[-125.03939999215429,49.387443381941395]]]},\"properties\":{\"Id\":0}}],\"fileName\":\"SW_BC\"}",
+	"aoi": bbox_SOIs.wha,
+	"orderingApplication": "BCDC",
+	"crsType": "0",
+	"clippingMethodType": "1",
+	"formatType": "0",
+	"useAOIBounds": "",
+	"prepackagedItems": "",
+	"aoiName": "",
+	"featureItems": [
+		{
+			"featureItem": "WHSE_LEGAL_ADMIN_BOUNDARIES.OATS_ALR_POLYS",
+			"filterValue": "",
+			"layerName": "ALC ALR Polygons",
+			"layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/alc-alr-polygons",
+			"filterType": "No Filter",
+			"pctOfMax": 3
+		}
+	]
+}
+
+class environmentalRemediationSitesSettings:
+    name="Environmental Remediation Sites"
+    dataCatalogueId = "63804e64-a4f3-4bc7-b1e3-5f736bbc3967"
+    fileName = "remediation_sites.shp"
+    currentPath = ""
+    downloadFolder = universalSettings.downloadFolder
+    archiveFolder = universalSettings.archiveFolder
+    arcgisWorkspaceFolder = downloadFolder
+    alias="environmentalRemediationSites"
+    updateDays=1
+
+    jsonPayload = {
+	"emailAddress": "laurencejperry@outlook.com",
+	"aoiType": "1",
+	"aoi": bbox_SOIs.SW_BC,
 	"orderingApplication": "BCDC",
 	"crsType": "0",
 	"clippingMethodType": "1",
@@ -383,12 +512,13 @@ class parcelMapBCSettings:
 	"aoiName": "",
 	"featureItems": [
 		{
-			"featureItem": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
+			"featureItem": "WHSE_WASTE.SITE_ENV_RMDTN_SITES_SVW",
 			"filterValue": "",
-			"layerName": "ParcelMap BC Parcel Fabric",
-			"layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/parcelmap-bc-parcel-fabric",
+			"layerName": "Environmental Remediation Sites",
+			"layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/environmental-remediation-sites",
 			"filterType": "No Filter",
-			"pctOfMax": 7
+			"pctOfMax": 3
 		}
 	]
 }
+

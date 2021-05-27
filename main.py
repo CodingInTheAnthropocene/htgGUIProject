@@ -17,12 +17,11 @@
 
 
 from os.path import getsize
-from modules.functionLib import *
-from modules.dataSettings import *
 import sys
-import platform
 from traceback import print_exc
 from datetime import datetime, timedelta
+from modules import flowLayout
+from ui_main import *
 
 from PySide6 import QtWidgets
 from widgets.custom_grips.custom_grips import Widgets
@@ -31,6 +30,10 @@ from widgets.custom_grips.custom_grips import Widgets
 # ///////////////////////////////////////////////////////////////
 from modules import *
 from widgets import *
+from modules.dataCurrency import *
+from modules.functionLib import *
+from modules.customWidgets import datasetFrame
+from modules.flowLayout import FlowLayout
 
 
 
@@ -94,10 +97,16 @@ class MainWindow(QMainWindow):
             # LOAD AND APPLY STYLE
             UIFunctions.theme(self, themeFile, True)
 
-            # SET HACKS2
+            # SET HACKS
             AppFunctions.setThemeHack(self)
 
-        # SET HOME PAGE AND SELECT MENU
+
+        
+        #widgets.gridLayout_3.addWidget(QPushButton("hellO!!"))
+
+        ###
+
+        # SET HOME PAGE AND SELECT MENUbe
         # ///////////////////////////////////////////////////////////////
         widgets.stackedWidget.setCurrentWidget(widgets.data)
         widgets.buttonData.setStyleSheet(UIFunctions.selectMenu(widgets.buttonData.styleSheet()))
@@ -114,54 +123,37 @@ class MainWindow(QMainWindow):
 
 
         ############################################################################################
-        #Dataset Controls
+        #Dataset Instantiation
         #############################################################################################
         
+        initiationFunctionDictionary = {
+            crownTenuresSettings : crownTenuresProcess,
+            forestHarvestingAuthoritySettings : forestHarvestingAuthorityProcess,
+            forestManagedLicenceSettings: forestManagedLicenceProcess,
+            harvestedAreasSettings: harvestedAreasProcess,
+            parksRecreationDatasetsSettings: parksRecreationDatasetsProcess,
+            parcelMapBCSettings: parcelMapBCProcess,
+            digitalRoadAtlasSettings: digitalRoadAtlasProcess,
+            alcAlrPolygonsSettings: alcAlrPolygonsProcess,
+            environmentalRemediationSitesSettings: environmentalRemediationSitesProcess           
+        }
+
+        datasetList = sorted([i for i in initiationFunctionDictionary], key=lambda x:x.name)
         
 
-        #Crown Tenures#
-        #starting state
-        try:
-            widgets.qTreeCrownTenures.setHeaderLabel(f"Crown Tenures: {getFileCreatedDate(crownTenuresSettings.currentPath)}")
-            widgets.qTreeCrownTenures.topLevelItem(0).child(1).setText(0, f"Size: {getsize(crownTenuresSettings.currentPath)/1000000:.2f} mb")  
-        except:
-            print_exc()
-            
-        widgets.qTreeCrownTenures.topLevelItem(0).child(0).setText(0, f"Hosted File Date: {(dataCurrency.crownTenures).date()} ")      
-        widgets.qTreeCrownTenures.topLevelItem(0).child(2).setText(0, f"File Path: {crownTenuresSettings.currentPath}") 
-        widgets.qTreeCrownTenures.topLevelItem(0).child(3).setText(0, f"Archive Folder: {crownTenuresSettings.archiveFolder}")               
-        if getFileCreatedDate(crownTenuresSettings.currentPath) < (dataCurrency.crownTenures).date():
-            widgets.qTreeCrownTenures.setStyleSheet("QHeaderView::section {border-radius: 5px; background: rgb(189, 147, 249);}")
+        self.flowLayout = FlowLayout(widgets.frameDatasets)
 
-        #qtreeCrownTenures functionality
-        widgets.qTreeCrownTenures.expanded.connect(self.datasetResizeUp)
-        widgets.qTreeCrownTenures.collapsed.connect(self.datasetResizeDown)
-        widgets.buttonUpdateCrownTenures.clicked.connect(crownTenuresProcess)
+        for i in datasetList:
+            newDataSetFrame = datasetFrame(widgets.frameDatasets, i, initiationFunctionDictionary[i])
+            self.flowLayout.addWidget(newDataSetFrame)
 
-        #Forest Tenures#
-        #Starting state
-        try:
-            widgets.qTreeForestTenure.setHeaderLabel(f"Crown Tenures: {forestTenureSettings.createdDate}")
-            widgets.qTreeForestTenure.topLevelItem(0).child(0).setText(0, "Hosted File Date: ")
-            widgets.qTreeForestTenure.topLevelItem(0).child(1).setText(0, f"Size: {forestTenureSettings.size/1000000:.2f} mb")        
-            widgets.qTreeForestTenure.topLevelItem(0).child(2).setText(0, f"File Path: {forestTenureSettings.currentPath}") 
-            widgets.qTreeForestTenure.topLevelItem(0).child(3).setText(0, f"Archive Folder: {forestTenureSettings.archiveFolder}")
-        except:
-            print_exc()
-            
 
-    # Crown Tenuers methods
-    def datasetResizeUp (self):
-        widgets.frameCrownTenures.setSizePolicy(QSizePolicy.Ignored)
-
-    def datasetResizeDown(self):
-        widgets.frameCrownTenures.resize(300,111)
-    
     # BUTTONS CLICK
     # Post here your functions for clicked buttons
     # ///////////////////////////////////////////////////////////////
+
     
-    
+
     def buttonClick(self):
         # get button clicked
         btn = self.sender()
@@ -185,30 +177,11 @@ class MainWindow(QMainWindow):
             UIFunctions.resetStyle(self, btnName) # RESET ANOTHERS BUTTONS SELECTED
             btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet())) # SELECT MENU
 
-        if btnName == "btn_save":
-            print("Save BTN clicked!")
-
-        # PRINT BTN NAME
-        print(f'Button "{btnName}" pressed!')
-
-
     # RESIZE EVENTS
     # ///////////////////////////////////////////////////////////////
     def resizeEvent(self, event):
         # Update Size Grips
         UIFunctions.resize_grips(self)
-
-    # MOUSE CLICK EVENTS
-    # ///////////////////////////////////////////////////////////////
-    def mousePressEvent(self, event):
-        # SET DRAG POS WINDOW
-        self.dragPos = event.globalPos()
-
-        # PRINT MOUSE EVENTS
-        if event.buttons() == Qt.LeftButton:
-            print('Mouse click: LEFT CLICK')
-        if event.buttons() == Qt.RightButton:
-            print('Mouse click: RIGHT CLICK')
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

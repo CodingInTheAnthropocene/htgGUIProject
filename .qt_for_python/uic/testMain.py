@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main.ui'
+## Form generated from reading UI file 'testMain.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.0.3
 ##
@@ -18,7 +18,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1386, 1062)
+        MainWindow.resize(1280, 720)
         MainWindow.setMinimumSize(QSize(940, 560))
         self.styleSheet = QWidget(MainWindow)
         self.styleSheet.setObjectName(u"styleSheet")
@@ -987,21 +987,183 @@ class Ui_MainWindow(object):
         self.data = QWidget()
         self.data.setObjectName(u"data")
         self.data.setStyleSheet(u"")
+        self.gridLayout_3 = QGridLayout(self.data)
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.labelData = QLabel(self.data)
         self.labelData.setObjectName(u"labelData")
-        self.labelData.setGeometry(QRect(10, 0, 181, 51))
         self.labelData.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
+
+        self.gridLayout_3.addWidget(self.labelData, 0, 0, 1, 1)
+
         self.datasetsline = QFrame(self.data)
         self.datasetsline.setObjectName(u"datasetsline")
-        self.datasetsline.setGeometry(QRect(10, 40, 821, 20))
         self.datasetsline.setStyleSheet(u"background: none")
         self.datasetsline.setFrameShape(QFrame.HLine)
         self.datasetsline.setFrameShadow(QFrame.Sunken)
-        self.frameDatasets = QFrame(self.data)
-        self.frameDatasets.setObjectName(u"frameDatasets")
-        self.frameDatasets.setGeometry(QRect(10, 60, 841, 741))
-        self.frameDatasets.setFrameShape(QFrame.StyledPanel)
-        self.frameDatasets.setFrameShadow(QFrame.Raised)
+
+        self.gridLayout_3.addWidget(self.datasetsline, 1, 0, 1, 2)
+
+        self.frameCrownTenures = QFrame(self.data)
+        self.frameCrownTenures.setObjectName(u"frameCrownTenures")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.frameCrownTenures.sizePolicy().hasHeightForWidth())
+        self.frameCrownTenures.setSizePolicy(sizePolicy3)
+        self.frameCrownTenures.setMaximumSize(QSize(300, 200))
+        self.frameCrownTenures.setFrameShape(QFrame.StyledPanel)
+        self.frameCrownTenures.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_4 = QVBoxLayout(self.frameCrownTenures)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.qTreeCrownTenures = QTreeWidget(self.frameCrownTenures)
+        font4 = QFont()
+        font4.setBold(True)
+        __qtreewidgetitem = QTreeWidgetItem()
+        __qtreewidgetitem.setFont(0, font4);
+        self.qTreeCrownTenures.setHeaderItem(__qtreewidgetitem)
+        __qtreewidgetitem1 = QTreeWidgetItem(self.qTreeCrownTenures)
+        QTreeWidgetItem(__qtreewidgetitem1)
+        QTreeWidgetItem(__qtreewidgetitem1)
+        QTreeWidgetItem(__qtreewidgetitem1)
+        QTreeWidgetItem(__qtreewidgetitem1)
+        QTreeWidgetItem(__qtreewidgetitem1)
+        QTreeWidgetItem(__qtreewidgetitem1)
+        self.qTreeCrownTenures.setObjectName(u"qTreeCrownTenures")
+        self.qTreeCrownTenures.setMaximumSize(QSize(16777215, 16777212))
+        self.qTreeCrownTenures.setStyleSheet(u"")
+        self.qTreeCrownTenures.header().setVisible(True)
+        self.qTreeCrownTenures.header().setCascadingSectionResizes(False)
+
+        self.verticalLayout_4.addWidget(self.qTreeCrownTenures)
+
+        self.layoutButtons = QHBoxLayout()
+        self.layoutButtons.setObjectName(u"layoutButtons")
+        self.buttonCrownTenuresUpdate = QPushButton(self.frameCrownTenures)
+        self.buttonCrownTenuresUpdate.setObjectName(u"buttonCrownTenuresUpdate")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.buttonCrownTenuresUpdate.sizePolicy().hasHeightForWidth())
+        self.buttonCrownTenuresUpdate.setSizePolicy(sizePolicy4)
+        self.buttonCrownTenuresUpdate.setMinimumSize(QSize(0, 0))
+        self.buttonCrownTenuresUpdate.setMaximumSize(QSize(16772155, 16777215))
+
+        self.layoutButtons.addWidget(self.buttonCrownTenuresUpdate)
+
+        self.buttonCrownTenuresSettings = QPushButton(self.frameCrownTenures)
+        self.buttonCrownTenuresSettings.setObjectName(u"buttonCrownTenuresSettings")
+        self.buttonCrownTenuresSettings.setMaximumSize(QSize(100, 16777215))
+
+        self.layoutButtons.addWidget(self.buttonCrownTenuresSettings)
+
+
+        self.verticalLayout_4.addLayout(self.layoutButtons)
+
+
+        self.gridLayout_3.addWidget(self.frameCrownTenures, 2, 0, 1, 1)
+
+        self.frameForestManagedLicence = QFrame(self.data)
+        self.frameForestManagedLicence.setObjectName(u"frameForestManagedLicence")
+        sizePolicy3.setHeightForWidth(self.frameForestManagedLicence.sizePolicy().hasHeightForWidth())
+        self.frameForestManagedLicence.setSizePolicy(sizePolicy3)
+        self.frameForestManagedLicence.setMaximumSize(QSize(400, 200))
+        self.frameForestManagedLicence.setFrameShape(QFrame.StyledPanel)
+        self.frameForestManagedLicence.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_27 = QVBoxLayout(self.frameForestManagedLicence)
+        self.verticalLayout_27.setObjectName(u"verticalLayout_27")
+        self.qTreeForestManagedLicense = QTreeWidget(self.frameForestManagedLicence)
+        __qtreewidgetitem2 = QTreeWidgetItem()
+        __qtreewidgetitem2.setFont(0, font4);
+        self.qTreeForestManagedLicense.setHeaderItem(__qtreewidgetitem2)
+        __qtreewidgetitem3 = QTreeWidgetItem(self.qTreeForestManagedLicense)
+        QTreeWidgetItem(__qtreewidgetitem3)
+        QTreeWidgetItem(__qtreewidgetitem3)
+        QTreeWidgetItem(__qtreewidgetitem3)
+        QTreeWidgetItem(__qtreewidgetitem3)
+        QTreeWidgetItem(__qtreewidgetitem3)
+        QTreeWidgetItem(__qtreewidgetitem3)
+        self.qTreeForestManagedLicense.setObjectName(u"qTreeForestManagedLicense")
+        self.qTreeForestManagedLicense.setMaximumSize(QSize(16777215, 16777212))
+        self.qTreeForestManagedLicense.setStyleSheet(u"")
+        self.qTreeForestManagedLicense.header().setVisible(True)
+        self.qTreeForestManagedLicense.header().setCascadingSectionResizes(False)
+
+        self.verticalLayout_27.addWidget(self.qTreeForestManagedLicense)
+
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.buttonForestManagedLicenceUpdate = QPushButton(self.frameForestManagedLicence)
+        self.buttonForestManagedLicenceUpdate.setObjectName(u"buttonForestManagedLicenceUpdate")
+        sizePolicy4.setHeightForWidth(self.buttonForestManagedLicenceUpdate.sizePolicy().hasHeightForWidth())
+        self.buttonForestManagedLicenceUpdate.setSizePolicy(sizePolicy4)
+        self.buttonForestManagedLicenceUpdate.setMinimumSize(QSize(0, 0))
+        self.buttonForestManagedLicenceUpdate.setMaximumSize(QSize(16772155, 16777215))
+
+        self.horizontalLayout_7.addWidget(self.buttonForestManagedLicenceUpdate)
+
+        self.buttonForestManagedLicenseSettings = QPushButton(self.frameForestManagedLicence)
+        self.buttonForestManagedLicenseSettings.setObjectName(u"buttonForestManagedLicenseSettings")
+        self.buttonForestManagedLicenseSettings.setMaximumSize(QSize(100, 16777215))
+
+        self.horizontalLayout_7.addWidget(self.buttonForestManagedLicenseSettings)
+
+
+        self.verticalLayout_27.addLayout(self.horizontalLayout_7)
+
+
+        self.gridLayout_3.addWidget(self.frameForestManagedLicence, 2, 1, 1, 1)
+
+        self.frameHarvestedAreas = QFrame(self.data)
+        self.frameHarvestedAreas.setObjectName(u"frameHarvestedAreas")
+        sizePolicy3.setHeightForWidth(self.frameHarvestedAreas.sizePolicy().hasHeightForWidth())
+        self.frameHarvestedAreas.setSizePolicy(sizePolicy3)
+        self.frameHarvestedAreas.setMaximumSize(QSize(300, 200))
+        self.frameHarvestedAreas.setFrameShape(QFrame.StyledPanel)
+        self.frameHarvestedAreas.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_15 = QVBoxLayout(self.frameHarvestedAreas)
+        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
+        self.qTreeHarvestedAreas = QTreeWidget(self.frameHarvestedAreas)
+        __qtreewidgetitem4 = QTreeWidgetItem()
+        __qtreewidgetitem4.setFont(0, font4);
+        self.qTreeHarvestedAreas.setHeaderItem(__qtreewidgetitem4)
+        __qtreewidgetitem5 = QTreeWidgetItem(self.qTreeHarvestedAreas)
+        QTreeWidgetItem(__qtreewidgetitem5)
+        QTreeWidgetItem(__qtreewidgetitem5)
+        QTreeWidgetItem(__qtreewidgetitem5)
+        QTreeWidgetItem(__qtreewidgetitem5)
+        QTreeWidgetItem(__qtreewidgetitem5)
+        QTreeWidgetItem(__qtreewidgetitem5)
+        self.qTreeHarvestedAreas.setObjectName(u"qTreeHarvestedAreas")
+        self.qTreeHarvestedAreas.setMaximumSize(QSize(16777215, 16777212))
+        self.qTreeHarvestedAreas.setStyleSheet(u"")
+        self.qTreeHarvestedAreas.header().setVisible(True)
+        self.qTreeHarvestedAreas.header().setCascadingSectionResizes(False)
+
+        self.verticalLayout_15.addWidget(self.qTreeHarvestedAreas)
+
+        self.layoutButtons_2 = QHBoxLayout()
+        self.layoutButtons_2.setObjectName(u"layoutButtons_2")
+        self.buttonHarvestedAreasUpdate = QPushButton(self.frameHarvestedAreas)
+        self.buttonHarvestedAreasUpdate.setObjectName(u"buttonHarvestedAreasUpdate")
+        sizePolicy4.setHeightForWidth(self.buttonHarvestedAreasUpdate.sizePolicy().hasHeightForWidth())
+        self.buttonHarvestedAreasUpdate.setSizePolicy(sizePolicy4)
+        self.buttonHarvestedAreasUpdate.setMinimumSize(QSize(0, 0))
+        self.buttonHarvestedAreasUpdate.setMaximumSize(QSize(16772155, 16777215))
+
+        self.layoutButtons_2.addWidget(self.buttonHarvestedAreasUpdate)
+
+        self.buttonHarvestedAreasSettings = QPushButton(self.frameHarvestedAreas)
+        self.buttonHarvestedAreasSettings.setObjectName(u"buttonHarvestedAreasSettings")
+        self.buttonHarvestedAreasSettings.setMaximumSize(QSize(100, 16777215))
+
+        self.layoutButtons_2.addWidget(self.buttonHarvestedAreasSettings)
+
+
+        self.verticalLayout_15.addLayout(self.layoutButtons_2)
+
+
+        self.gridLayout_3.addWidget(self.frameHarvestedAreas, 3, 0, 1, 1)
+
         self.stackedWidget.addWidget(self.data)
         self.logs = QWidget()
         self.logs.setObjectName(u"logs")
@@ -1144,7 +1306,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 218, 218))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 274, 218))
         self.scrollAreaWidgetContents.setStyleSheet(u" QScrollBar:vertical {\n"
 "	border: none;\n"
 "    background: rgb(52, 59, 72);\n"
@@ -1233,10 +1395,10 @@ class Ui_MainWindow(object):
         self.tableWidget.setHorizontalHeaderItem(3, __qtablewidgetitem3)
         if (self.tableWidget.rowCount() < 16):
             self.tableWidget.setRowCount(16)
-        font4 = QFont()
-        font4.setFamily(u"Segoe UI")
+        font5 = QFont()
+        font5.setFamily(u"Segoe UI")
         __qtablewidgetitem4 = QTableWidgetItem()
-        __qtablewidgetitem4.setFont(font4);
+        __qtablewidgetitem4.setFont(font5);
         self.tableWidget.setVerticalHeaderItem(0, __qtablewidgetitem4)
         __qtablewidgetitem5 = QTableWidgetItem()
         self.tableWidget.setVerticalHeaderItem(1, __qtablewidgetitem5)
@@ -1277,9 +1439,6 @@ class Ui_MainWindow(object):
         __qtablewidgetitem23 = QTableWidgetItem()
         self.tableWidget.setItem(0, 3, __qtablewidgetitem23)
         self.tableWidget.setObjectName(u"tableWidget")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
         self.tableWidget.setSizePolicy(sizePolicy3)
         palette = QPalette()
@@ -1511,6 +1670,75 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.closeAppBtn.setText("")
         self.labelData.setText(QCoreApplication.translate("MainWindow", u"Datasets", None))
+        ___qtreewidgetitem = self.qTreeCrownTenures.headerItem()
+        ___qtreewidgetitem.setText(0, QCoreApplication.translate("MainWindow", u"Tantalis Crown Tenures", None));
+
+        __sortingEnabled = self.qTreeCrownTenures.isSortingEnabled()
+        self.qTreeCrownTenures.setSortingEnabled(False)
+        ___qtreewidgetitem1 = self.qTreeCrownTenures.topLevelItem(0)
+        ___qtreewidgetitem1.setText(0, QCoreApplication.translate("MainWindow", u"Info:", None));
+        ___qtreewidgetitem2 = ___qtreewidgetitem1.child(0)
+        ___qtreewidgetitem2.setText(0, QCoreApplication.translate("MainWindow", u"Hosted File Date:", None));
+        ___qtreewidgetitem3 = ___qtreewidgetitem1.child(1)
+        ___qtreewidgetitem3.setText(0, QCoreApplication.translate("MainWindow", u"Date:", None));
+        ___qtreewidgetitem4 = ___qtreewidgetitem1.child(2)
+        ___qtreewidgetitem4.setText(0, QCoreApplication.translate("MainWindow", u"Size: ", None));
+        ___qtreewidgetitem5 = ___qtreewidgetitem1.child(3)
+        ___qtreewidgetitem5.setText(0, QCoreApplication.translate("MainWindow", u"File Path: ", None));
+        ___qtreewidgetitem6 = ___qtreewidgetitem1.child(4)
+        ___qtreewidgetitem6.setText(0, QCoreApplication.translate("MainWindow", u"Archive Folder:", None));
+        ___qtreewidgetitem7 = ___qtreewidgetitem1.child(5)
+        ___qtreewidgetitem7.setText(0, QCoreApplication.translate("MainWindow", u"Download Folder:", None));
+        self.qTreeCrownTenures.setSortingEnabled(__sortingEnabled)
+
+        self.buttonCrownTenuresUpdate.setText(QCoreApplication.translate("MainWindow", u"Update", None))
+        self.buttonCrownTenuresSettings.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
+        ___qtreewidgetitem8 = self.qTreeForestManagedLicense.headerItem()
+        ___qtreewidgetitem8.setText(0, QCoreApplication.translate("MainWindow", u"Forest Tenure Harvesting Authority Polygons", None));
+
+        __sortingEnabled1 = self.qTreeForestManagedLicense.isSortingEnabled()
+        self.qTreeForestManagedLicense.setSortingEnabled(False)
+        ___qtreewidgetitem9 = self.qTreeForestManagedLicense.topLevelItem(0)
+        ___qtreewidgetitem9.setText(0, QCoreApplication.translate("MainWindow", u"Info:", None));
+        ___qtreewidgetitem10 = ___qtreewidgetitem9.child(0)
+        ___qtreewidgetitem10.setText(0, QCoreApplication.translate("MainWindow", u"Date:", None));
+        ___qtreewidgetitem11 = ___qtreewidgetitem9.child(1)
+        ___qtreewidgetitem11.setText(0, QCoreApplication.translate("MainWindow", u"Hosted File Date:", None));
+        ___qtreewidgetitem12 = ___qtreewidgetitem9.child(2)
+        ___qtreewidgetitem12.setText(0, QCoreApplication.translate("MainWindow", u"Size: ", None));
+        ___qtreewidgetitem13 = ___qtreewidgetitem9.child(3)
+        ___qtreewidgetitem13.setText(0, QCoreApplication.translate("MainWindow", u"File Path: ", None));
+        ___qtreewidgetitem14 = ___qtreewidgetitem9.child(4)
+        ___qtreewidgetitem14.setText(0, QCoreApplication.translate("MainWindow", u"Download Folder:", None));
+        ___qtreewidgetitem15 = ___qtreewidgetitem9.child(5)
+        ___qtreewidgetitem15.setText(0, QCoreApplication.translate("MainWindow", u"Archive Folder:", None));
+        self.qTreeForestManagedLicense.setSortingEnabled(__sortingEnabled1)
+
+        self.buttonForestManagedLicenceUpdate.setText(QCoreApplication.translate("MainWindow", u"Update", None))
+        self.buttonForestManagedLicenseSettings.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
+        ___qtreewidgetitem16 = self.qTreeHarvestedAreas.headerItem()
+        ___qtreewidgetitem16.setText(0, QCoreApplication.translate("MainWindow", u"Harvested Areas of BC", None));
+
+        __sortingEnabled2 = self.qTreeHarvestedAreas.isSortingEnabled()
+        self.qTreeHarvestedAreas.setSortingEnabled(False)
+        ___qtreewidgetitem17 = self.qTreeHarvestedAreas.topLevelItem(0)
+        ___qtreewidgetitem17.setText(0, QCoreApplication.translate("MainWindow", u"Info:", None));
+        ___qtreewidgetitem18 = ___qtreewidgetitem17.child(0)
+        ___qtreewidgetitem18.setText(0, QCoreApplication.translate("MainWindow", u"Hosted File Date:", None));
+        ___qtreewidgetitem19 = ___qtreewidgetitem17.child(1)
+        ___qtreewidgetitem19.setText(0, QCoreApplication.translate("MainWindow", u"Date:", None));
+        ___qtreewidgetitem20 = ___qtreewidgetitem17.child(2)
+        ___qtreewidgetitem20.setText(0, QCoreApplication.translate("MainWindow", u"Size: ", None));
+        ___qtreewidgetitem21 = ___qtreewidgetitem17.child(3)
+        ___qtreewidgetitem21.setText(0, QCoreApplication.translate("MainWindow", u"File Path: ", None));
+        ___qtreewidgetitem22 = ___qtreewidgetitem17.child(4)
+        ___qtreewidgetitem22.setText(0, QCoreApplication.translate("MainWindow", u"Archive Folder:", None));
+        ___qtreewidgetitem23 = ___qtreewidgetitem17.child(5)
+        ___qtreewidgetitem23.setText(0, QCoreApplication.translate("MainWindow", u"Download Folder:", None));
+        self.qTreeHarvestedAreas.setSortingEnabled(__sortingEnabled2)
+
+        self.buttonHarvestedAreasUpdate.setText(QCoreApplication.translate("MainWindow", u"Update", None))
+        self.buttonHarvestedAreasSettings.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
         self.labelBoxBlenderInstalation.setText(QCoreApplication.translate("MainWindow", u"FILE BOX", None))
         self.lineEdit.setText("")
         self.lineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type here", None))
@@ -1565,7 +1793,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem19 = self.tableWidget.verticalHeaderItem(15)
         ___qtablewidgetitem19.setText(QCoreApplication.translate("MainWindow", u"New Row", None));
 
-        __sortingEnabled = self.tableWidget.isSortingEnabled()
+        __sortingEnabled3 = self.tableWidget.isSortingEnabled()
         self.tableWidget.setSortingEnabled(False)
         ___qtablewidgetitem20 = self.tableWidget.item(0, 0)
         ___qtablewidgetitem20.setText(QCoreApplication.translate("MainWindow", u"Test", None));
@@ -1575,7 +1803,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem22.setText(QCoreApplication.translate("MainWindow", u"Cell", None));
         ___qtablewidgetitem23 = self.tableWidget.item(0, 3)
         ___qtablewidgetitem23.setText(QCoreApplication.translate("MainWindow", u"Line", None));
-        self.tableWidget.setSortingEnabled(__sortingEnabled)
+        self.tableWidget.setSortingEnabled(__sortingEnabled3)
 
         self.label.setText(QCoreApplication.translate("MainWindow", u"NEW PAGE TEST", None))
         self.btn_message.setText(QCoreApplication.translate("MainWindow", u"Message", None))

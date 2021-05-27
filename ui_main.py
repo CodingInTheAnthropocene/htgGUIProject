@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainnTbWVk.ui'
+## Form generated from reading UI file 'maingRdYbN.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.0.3
 ##
@@ -12,13 +12,13 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 
-from . resources_rc import *
+import resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1280, 720)
+        MainWindow.resize(1386, 1062)
         MainWindow.setMinimumSize(QSize(940, 560))
         self.styleSheet = QWidget(MainWindow)
         self.styleSheet.setObjectName(u"styleSheet")
@@ -987,61 +987,6 @@ class Ui_MainWindow(object):
         self.data = QWidget()
         self.data.setObjectName(u"data")
         self.data.setStyleSheet(u"")
-        self.frameCrownTenures = QFrame(self.data)
-        self.frameCrownTenures.setObjectName(u"frameCrownTenures")
-        self.frameCrownTenures.setGeometry(QRect(0, 70, 300, 111))
-        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.frameCrownTenures.sizePolicy().hasHeightForWidth())
-        self.frameCrownTenures.setSizePolicy(sizePolicy3)
-        self.frameCrownTenures.setMaximumSize(QSize(300, 200))
-        self.frameCrownTenures.setFrameShape(QFrame.StyledPanel)
-        self.frameCrownTenures.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_4 = QVBoxLayout(self.frameCrownTenures)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.qTreeCrownTenures = QTreeWidget(self.frameCrownTenures)
-        font4 = QFont()
-        font4.setBold(True)
-        __qtreewidgetitem = QTreeWidgetItem()
-        __qtreewidgetitem.setFont(0, font4);
-        self.qTreeCrownTenures.setHeaderItem(__qtreewidgetitem)
-        __qtreewidgetitem1 = QTreeWidgetItem(self.qTreeCrownTenures)
-        QTreeWidgetItem(__qtreewidgetitem1)
-        QTreeWidgetItem(__qtreewidgetitem1)
-        QTreeWidgetItem(__qtreewidgetitem1)
-        QTreeWidgetItem(__qtreewidgetitem1)
-        self.qTreeCrownTenures.setObjectName(u"qTreeCrownTenures")
-        self.qTreeCrownTenures.setMaximumSize(QSize(16777215, 16777212))
-        self.qTreeCrownTenures.setStyleSheet(u"")
-        self.qTreeCrownTenures.header().setVisible(True)
-        self.qTreeCrownTenures.header().setCascadingSectionResizes(False)
-
-        self.verticalLayout_4.addWidget(self.qTreeCrownTenures)
-
-        self.layoutButtons = QHBoxLayout()
-        self.layoutButtons.setObjectName(u"layoutButtons")
-        self.buttonUpdateCrownTenures = QPushButton(self.frameCrownTenures)
-        self.buttonUpdateCrownTenures.setObjectName(u"buttonUpdateCrownTenures")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.buttonUpdateCrownTenures.sizePolicy().hasHeightForWidth())
-        self.buttonUpdateCrownTenures.setSizePolicy(sizePolicy4)
-        self.buttonUpdateCrownTenures.setMinimumSize(QSize(0, 0))
-        self.buttonUpdateCrownTenures.setMaximumSize(QSize(16772155, 16777215))
-
-        self.layoutButtons.addWidget(self.buttonUpdateCrownTenures)
-
-        self.buttonCrownTenuresSettings = QPushButton(self.frameCrownTenures)
-        self.buttonCrownTenuresSettings.setObjectName(u"buttonCrownTenuresSettings")
-        self.buttonCrownTenuresSettings.setMaximumSize(QSize(100, 16777215))
-
-        self.layoutButtons.addWidget(self.buttonCrownTenuresSettings)
-
-
-        self.verticalLayout_4.addLayout(self.layoutButtons)
-
         self.labelData = QLabel(self.data)
         self.labelData.setObjectName(u"labelData")
         self.labelData.setGeometry(QRect(10, 0, 181, 51))
@@ -1052,53 +997,11 @@ class Ui_MainWindow(object):
         self.datasetsline.setStyleSheet(u"background: none")
         self.datasetsline.setFrameShape(QFrame.HLine)
         self.datasetsline.setFrameShadow(QFrame.Sunken)
-        self.frameCrownTenures_3 = QFrame(self.data)
-        self.frameCrownTenures_3.setObjectName(u"frameCrownTenures_3")
-        self.frameCrownTenures_3.setGeometry(QRect(320, 70, 300, 111))
-        sizePolicy3.setHeightForWidth(self.frameCrownTenures_3.sizePolicy().hasHeightForWidth())
-        self.frameCrownTenures_3.setSizePolicy(sizePolicy3)
-        self.frameCrownTenures_3.setMaximumSize(QSize(300, 200))
-        self.frameCrownTenures_3.setFrameShape(QFrame.StyledPanel)
-        self.frameCrownTenures_3.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_27 = QVBoxLayout(self.frameCrownTenures_3)
-        self.verticalLayout_27.setObjectName(u"verticalLayout_27")
-        self.qTreeForestTenure = QTreeWidget(self.frameCrownTenures_3)
-        __qtreewidgetitem2 = QTreeWidgetItem()
-        __qtreewidgetitem2.setFont(0, font4);
-        self.qTreeForestTenure.setHeaderItem(__qtreewidgetitem2)
-        __qtreewidgetitem3 = QTreeWidgetItem(self.qTreeForestTenure)
-        QTreeWidgetItem(__qtreewidgetitem3)
-        QTreeWidgetItem(__qtreewidgetitem3)
-        QTreeWidgetItem(__qtreewidgetitem3)
-        QTreeWidgetItem(__qtreewidgetitem3)
-        self.qTreeForestTenure.setObjectName(u"qTreeForestTenure")
-        self.qTreeForestTenure.setMaximumSize(QSize(16777215, 16777212))
-        self.qTreeForestTenure.setStyleSheet(u"")
-        self.qTreeForestTenure.header().setVisible(True)
-        self.qTreeForestTenure.header().setCascadingSectionResizes(False)
-
-        self.verticalLayout_27.addWidget(self.qTreeForestTenure)
-
-        self.horizontalLayout_7 = QHBoxLayout()
-        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.buttonUpdateForestTenure = QPushButton(self.frameCrownTenures_3)
-        self.buttonUpdateForestTenure.setObjectName(u"buttonUpdateForestTenure")
-        sizePolicy4.setHeightForWidth(self.buttonUpdateForestTenure.sizePolicy().hasHeightForWidth())
-        self.buttonUpdateForestTenure.setSizePolicy(sizePolicy4)
-        self.buttonUpdateForestTenure.setMinimumSize(QSize(0, 0))
-        self.buttonUpdateForestTenure.setMaximumSize(QSize(16772155, 16777215))
-
-        self.horizontalLayout_7.addWidget(self.buttonUpdateForestTenure)
-
-        self.buttonForestTenureSettings = QPushButton(self.frameCrownTenures_3)
-        self.buttonForestTenureSettings.setObjectName(u"buttonForestTenureSettings")
-        self.buttonForestTenureSettings.setMaximumSize(QSize(100, 16777215))
-
-        self.horizontalLayout_7.addWidget(self.buttonForestTenureSettings)
-
-
-        self.verticalLayout_27.addLayout(self.horizontalLayout_7)
-
+        self.frameDatasets = QFrame(self.data)
+        self.frameDatasets.setObjectName(u"frameDatasets")
+        self.frameDatasets.setGeometry(QRect(10, 60, 841, 741))
+        self.frameDatasets.setFrameShape(QFrame.StyledPanel)
+        self.frameDatasets.setFrameShadow(QFrame.Raised)
         self.stackedWidget.addWidget(self.data)
         self.logs = QWidget()
         self.logs.setObjectName(u"logs")
@@ -1330,10 +1233,10 @@ class Ui_MainWindow(object):
         self.tableWidget.setHorizontalHeaderItem(3, __qtablewidgetitem3)
         if (self.tableWidget.rowCount() < 16):
             self.tableWidget.setRowCount(16)
-        font5 = QFont()
-        font5.setFamily(u"Segoe UI")
+        font4 = QFont()
+        font4.setFamily(u"Segoe UI")
         __qtablewidgetitem4 = QTableWidgetItem()
-        __qtablewidgetitem4.setFont(font5);
+        __qtablewidgetitem4.setFont(font4);
         self.tableWidget.setVerticalHeaderItem(0, __qtablewidgetitem4)
         __qtablewidgetitem5 = QTableWidgetItem()
         self.tableWidget.setVerticalHeaderItem(1, __qtablewidgetitem5)
@@ -1374,6 +1277,9 @@ class Ui_MainWindow(object):
         __qtablewidgetitem23 = QTableWidgetItem()
         self.tableWidget.setItem(0, 3, __qtablewidgetitem23)
         self.tableWidget.setObjectName(u"tableWidget")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
         self.tableWidget.setSizePolicy(sizePolicy3)
         palette = QPalette()
@@ -1604,45 +1510,7 @@ class Ui_MainWindow(object):
         self.closeAppBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Close", None))
 #endif // QT_CONFIG(tooltip)
         self.closeAppBtn.setText("")
-        ___qtreewidgetitem = self.qTreeCrownTenures.headerItem()
-        ___qtreewidgetitem.setText(0, QCoreApplication.translate("MainWindow", u"Crown Tenures - Date Change", None));
-
-        __sortingEnabled = self.qTreeCrownTenures.isSortingEnabled()
-        self.qTreeCrownTenures.setSortingEnabled(False)
-        ___qtreewidgetitem1 = self.qTreeCrownTenures.topLevelItem(0)
-        ___qtreewidgetitem1.setText(0, QCoreApplication.translate("MainWindow", u"Info:", None));
-        ___qtreewidgetitem2 = ___qtreewidgetitem1.child(0)
-        ___qtreewidgetitem2.setText(0, QCoreApplication.translate("MainWindow", u"Hosted File Date:", None));
-        ___qtreewidgetitem3 = ___qtreewidgetitem1.child(1)
-        ___qtreewidgetitem3.setText(0, QCoreApplication.translate("MainWindow", u"Size: ", None));
-        ___qtreewidgetitem4 = ___qtreewidgetitem1.child(2)
-        ___qtreewidgetitem4.setText(0, QCoreApplication.translate("MainWindow", u"File Path: ", None));
-        ___qtreewidgetitem5 = ___qtreewidgetitem1.child(3)
-        ___qtreewidgetitem5.setText(0, QCoreApplication.translate("MainWindow", u"Archive Folder:", None));
-        self.qTreeCrownTenures.setSortingEnabled(__sortingEnabled)
-
-        self.buttonUpdateCrownTenures.setText(QCoreApplication.translate("MainWindow", u"Update", None))
-        self.buttonCrownTenuresSettings.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
         self.labelData.setText(QCoreApplication.translate("MainWindow", u"Datasets", None))
-        ___qtreewidgetitem6 = self.qTreeForestTenure.headerItem()
-        ___qtreewidgetitem6.setText(0, QCoreApplication.translate("MainWindow", u"Forest Tenure - Date Change", None));
-
-        __sortingEnabled1 = self.qTreeForestTenure.isSortingEnabled()
-        self.qTreeForestTenure.setSortingEnabled(False)
-        ___qtreewidgetitem7 = self.qTreeForestTenure.topLevelItem(0)
-        ___qtreewidgetitem7.setText(0, QCoreApplication.translate("MainWindow", u"Info:", None));
-        ___qtreewidgetitem8 = ___qtreewidgetitem7.child(0)
-        ___qtreewidgetitem8.setText(0, QCoreApplication.translate("MainWindow", u"Hosted File Date:", None));
-        ___qtreewidgetitem9 = ___qtreewidgetitem7.child(1)
-        ___qtreewidgetitem9.setText(0, QCoreApplication.translate("MainWindow", u"Size: ", None));
-        ___qtreewidgetitem10 = ___qtreewidgetitem7.child(2)
-        ___qtreewidgetitem10.setText(0, QCoreApplication.translate("MainWindow", u"File Path: ", None));
-        ___qtreewidgetitem11 = ___qtreewidgetitem7.child(3)
-        ___qtreewidgetitem11.setText(0, QCoreApplication.translate("MainWindow", u"Archive Folder:", None));
-        self.qTreeForestTenure.setSortingEnabled(__sortingEnabled1)
-
-        self.buttonUpdateForestTenure.setText(QCoreApplication.translate("MainWindow", u"Update", None))
-        self.buttonForestTenureSettings.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
         self.labelBoxBlenderInstalation.setText(QCoreApplication.translate("MainWindow", u"FILE BOX", None))
         self.lineEdit.setText("")
         self.lineEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Type here", None))
@@ -1697,7 +1565,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem19 = self.tableWidget.verticalHeaderItem(15)
         ___qtablewidgetitem19.setText(QCoreApplication.translate("MainWindow", u"New Row", None));
 
-        __sortingEnabled2 = self.tableWidget.isSortingEnabled()
+        __sortingEnabled = self.tableWidget.isSortingEnabled()
         self.tableWidget.setSortingEnabled(False)
         ___qtablewidgetitem20 = self.tableWidget.item(0, 0)
         ___qtablewidgetitem20.setText(QCoreApplication.translate("MainWindow", u"Test", None));
@@ -1707,7 +1575,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem22.setText(QCoreApplication.translate("MainWindow", u"Cell", None));
         ___qtablewidgetitem23 = self.tableWidget.item(0, 3)
         ___qtablewidgetitem23.setText(QCoreApplication.translate("MainWindow", u"Line", None));
-        self.tableWidget.setSortingEnabled(__sortingEnabled2)
+        self.tableWidget.setSortingEnabled(__sortingEnabled)
 
         self.label.setText(QCoreApplication.translate("MainWindow", u"NEW PAGE TEST", None))
         self.btn_message.setText(QCoreApplication.translate("MainWindow", u"Message", None))

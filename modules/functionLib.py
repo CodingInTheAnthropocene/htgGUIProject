@@ -1,5 +1,6 @@
 # download imports
 
+
 from modules.dataSettings import *
 from requests import post, Session
 from urllib.request import urlopen, urlretrieve
@@ -24,46 +25,72 @@ def fieldsToDelete(featureClass, keepFields):
 
     return deleteFields
 
-def shapefileArchiving(shapefilePath, archiveFolder):
-    """ Takes the path of a shape file, and archives all files in that shapefile into the given archive folder"""
+def shapefileFieldRename(shapefile, currentFieldName, newFieldName):
+    
+    arcpy.AddField_management(shapefile, newFieldName)
+    cursor=arcpy.da.UpdateCursor(shapefile, [currentFieldName, newFieldName])
 
-    folderPath, shapefileNameWithExtension = path.split(shapefilePath)
-    shapefileNameWithoutExtension = path.splitext(
-        shapefileNameWithExtension)[0]
+    for row in cursor:
+        row[1] = row[0]
+        cursor.updateRow(row)
 
-    # get date modified timestamp from tenures.shp
-    tenuresModifiedTime = getFileCreatedDate(shapefilePath)
+    del cursor
 
-    # make a new directory in the name of the Shapefile with time added in archive folder
-    newDirectoryPath = f"{archiveFolder}\\{shapefileNameWithoutExtension}{tenuresModifiedTime}"
-    mkdir(newDirectoryPath)
+    arcpy.DeleteField_management(shapefile, currentFieldName)
 
-    # iterate through current .shp directory, pull out files with the name of the shapefile, add the time to thoes file names, move the file to previously created directory
-    count = 1
-    for _, _, files in walk(folderPath):
 
-        numberofFiles = len(files)
-        for fileNameWExtension in files:
-            filename, extension = path.splitext(fileNameWExtension)
-            if filename == shapefileNameWithoutExtension:
-                rename(path.join(folderPath, fileNameWExtension),
-                       path.join(folderPath, f"{filename}{tenuresModifiedTime}{extension}"))
-                move(f"{folderPath}\\{filename}{tenuresModifiedTime}{extension}",
-                     f"{newDirectoryPath}\\{filename}{tenuresModifiedTime}{extension}")
-            count += 1
+def archiving(currentPath, archiveFolder):
+    """ Takes the path of a shape file, and archives all files in that shapefile into the given archive folder. If path is gdb feature class, archives that whole GDB"""
+    
+    currentPathType = arcpy.Describe(currentPath).dataType
 
-        if count > numberofFiles:
-            break
+    if currentPathType == "ShapeFile":
+        folderPath, shapefileNameWithExtension = path.split(currentPath)
+        shapefileNameWithoutExtension = path.splitext(
+            shapefileNameWithExtension)[0]
 
-    # make a .zip of the shapefile directory in detectory folder
-    make_archive(
-        newDirectoryPath, "zip", newDirectoryPath)
+        # get date modified timestamp from tenures.shp
+        tenuresModifiedTime = getFileCreatedDate(currentPath)
 
-    # remove non zipped data
-    rmtree(newDirectoryPath)
-    # remove(f"{shapefilePath}.xml")
+        # make a new directory in the name of the Shapefile with time added in archive folder
+        newDirectoryPath = f"{archiveFolder}\\{shapefileNameWithoutExtension}{tenuresModifiedTime}"
+        mkdir(newDirectoryPath)
+
+        # iterate through current .shp directory, pull out files with the name of the shapefile, add the time to thoes file names, move the file to previously created directory
+        count = 1
+        for _, _, files in walk(folderPath):
+
+            numberofFiles = len(files)
+            for fileNameWExtension in files:
+                filename, extension = path.splitext(fileNameWExtension)
+                if filename == shapefileNameWithoutExtension:
+                    rename(path.join(folderPath, fileNameWExtension),
+                        path.join(folderPath, f"{filename}{tenuresModifiedTime}{extension}"))
+                    move(f"{folderPath}\\{filename}{tenuresModifiedTime}{extension}",
+                        f"{newDirectoryPath}\\{filename}{tenuresModifiedTime}{extension}")
+                count += 1
+
+            if count > numberofFiles:
+                break     
+    
+            
+        # make a .zip of the shapefile directory in detectory folder
+        make_archive(
+            newDirectoryPath, "zip", newDirectoryPath)
+
+        # remove non zipped data
+        rmtree(newDirectoryPath)
+
+    elif currentPathType == "FeatureClass":
+        currentGDB, fileName = path.split(currentPath)[0], path.split(currentPath)[1]
+        make_archive(f"{archiveFolder}\\{fileName}{getFileCreatedDate(currentPath)}", "zip", currentGDB)
+        arcpy.Delete_management(currentGDB)
+    
+    else:
+        print("File not Recognizable type")
 
     print("Done Archiving!")
+
 
 def shapeFileDownloadUnzip(url, downloadFolder, fileName):
     """Downloads a zipped shapefile from a specified url to a specified download folder. Unzips in download folder. Will walk through any number of directories to find shapefile. Returns z list of paths if multiple shapefiles exist, otherwise returns a path like string. He and allWill replace any identically named folders in the download location."""
@@ -168,8 +195,6 @@ def crownTenuresGeoprocessing(crownTenuresRawPath):
 
     fileName = crownTenuresSettings.fileName
 
-
-
     # ArcGIS environment settings
     arcpy.env.workspace = crownTenuresSettings.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
@@ -211,10 +236,10 @@ def crownTenuresGeoprocessing(crownTenuresRawPath):
 
     for row in cursor:
         # iterate over tenures dictionary
-        for i in crownTenuresSettings.tenuresDictionary:
+        for i in crownTenuresSettings.valuesDictionary:
             first2 = f"{row[0]}, {row[1]}"
             if first2 == i:
-                row[2] = crownTenuresSettings.tenuresDictionary[first2]
+                row[2] = crownTenuresSettings.valuesDictionary[first2]
                 cursor.updateRow(row)
                 break
 
@@ -270,7 +295,11 @@ def crownTenuresGeoprocessing(crownTenuresRawPath):
 
 def crownTenuresProcess():
     """Entire crown tenure chain: archive old, download new, process new. This function is called from the GUI"""
-    shapefileArchiving(crownTenuresSettings.currentPath, crownTenuresSettings.archiveFolder)
+    try:
+        archiving(crownTenuresSettings.currentPath, crownTenuresSettings.archiveFolder)
+    except:
+        print("cannot archive this file, check path")
+
     crownTenuresGeoprocessing(catalogueWarehouseDownload(crownTenuresSettings.downloadFolder, crownTenuresSettings.jsonPayload, crownTenuresSettings.fileName))
     
 ####################################################################################################################
@@ -373,7 +402,7 @@ def forestHarvestingAuthorityGeoprocessing(rawForestHarvestingAuthorityPath, dow
 
 
 def forestHarvestingAuthorityProcess(downloadFolder, currentForestHarvestingAuthorityPath, archiveFolder, fileName, htgLandsPath, arcgisWorkspaceFolder, jsonPayload):
-    shapefileArchiving(currentForestHarvestingAuthorityPath, archiveFolder)
+    archiving(currentForestHarvestingAuthorityPath, archiveFolder)
     forestHarvestingAuthorityGeoprocessing(catalogueWarehouseDownload(
         downloadFolder, jsonPayload, fileName), downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder)
 
@@ -470,7 +499,7 @@ def forestManagedLicenceGeoprocessing(rawForestManagedLicence, downloadFolder, f
 
 
 def forestManagedLicenceProcess(downloadFolder, currentForestManagedLicencePath, archiveFolder, fileName, htgLandsPath, arcgisWorkspaceFolder, jsonPayload, rawDownloadFolderName, rawShapefileName):
-    shapefileArchiving(currentForestManagedLicencePath, archiveFolder)
+    archiving(currentForestManagedLicencePath, archiveFolder)
     forestManagedLicenceGeoprocessing(catalogueWarehouseDownload(
         downloadFolder, jsonPayload, rawDownloadFolderName, rawShapefileName), downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder)
 
@@ -561,8 +590,8 @@ def harvestedAreasGeoprocessing(rawHarvestedAreas, downloadFolder, fileName, htg
     arcpy.management.Delete(htgLandsCopy)
     arcpy.management.Delete(tempGdbPath)
 
-def harvestAreasProcess(downloadFolder, currentForestManagedLicencePath, archiveFolder, fileName, htgLandsPath, arcgisWorkspaceFolder, jsonPayload, rawDownloadFolderName, rawShapefileName):
-    shapefileArchiving(currentForestManagedLicencePath, archiveFolder)
+def harvestedAreasProcess(downloadFolder, currentForestManagedLicencePath, archiveFolder, fileName, htgLandsPath, arcgisWorkspaceFolder, jsonPayload, rawDownloadFolderName, rawShapefileName):
+    archiving(currentForestManagedLicencePath, archiveFolder)
     harvestedAreasGeoprocessing(catalogueWarehouseDownload(
         downloadFolder, jsonPayload, rawDownloadFolderName, rawShapefileName), downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder)
 
@@ -1159,11 +1188,12 @@ def cvrdParksGeoprocessing(rawPath):
     return cvrdParksCopy
 
 
-def parksProcess():
-    arcpy.env.workspace = parksProcessedSettings.arcgisWorkspaceFolder
-    
-    shapefileArchiving(parksProcessedSettings.currentPath, parksProcessedSettings.archiveFolder)
-
+def parksRecreationDatasetsProcess():
+    arcpy.env.workspace = parksRecreationDatasetsSettings.arcgisWorkspaceFolder
+    try:
+        archiving(parksRecreationDatasetsSettings.currentPath, parksRecreationDatasetsSettings.archiveFolder)
+    except:
+        print("Can't Archive. Check File Path")
     #NOTE, north cowicahn parks are fragile if names change
 
     rawFilePaths = recreationDownload()
@@ -1187,7 +1217,200 @@ def parksProcess():
         elif parksEcologicalProtectedSettings.fileName in filePath:
             processedFilePaths.append(parksEcologicalProtectedGeoprocessing(filePath))
         
-    recreationMerged = arcpy.Merge_management(processedFilePaths, parksProcessedSettings.fileName)
+    recreationMerged = arcpy.Merge_management(processedFilePaths, parksRecreationDatasetsSettings.fileName)
 
     return recreationMerged
 
+
+####################################################################################################################
+# Parcel fabric file Geodatabase
+####################################################################################################################
+
+def parcelMapBCGeoprocessing(rawPath):
+    
+    print("Starting Parcel Map Geoprocessing")
+
+    newGDB = arcpy.CreateFileGDB_management(parcelMapBCSettings.downloadFolder, "parcelMapContainer")
+
+    arcpy.env.workspace = newGDB
+    arcpy.env.overwriteOutput = True
+    
+    #NOTE may be best to work with original data, copying takes a long time
+    parcelMapCopy= arcpy.CopyFeatures_management(rawPath, "tempParcelMapCopy")
+
+    fieldsToDelete = ['PARCEL_FABRIC_POLY_ID', 'PARCEL_STATUS', 'PARCEL_CLASS', 'PARCEL_START_DATE', 'WHEN_UPDATED', 'FEATURE_AREA_SQM', 'FEATURE_LENGTH_M', 'SE_ANNO_CAD_DATA']
+
+    arcpy.DeleteField_management(parcelMapCopy, fieldsToDelete)
+
+    print("Finished Copying Parcelmap")
+
+
+    parcelMapProcessedPath = arcpy.Intersect_analysis([parcelMapCopy, universalSettings.soiPath], parcelMapBCSettings.fileName)
+
+    arcpy.management.Delete(parcelMapCopy)
+
+    print("Finished Parcel Map Geoprocessing")
+
+    return parcelMapProcessedPath
+
+
+def parcelMapBCProcess():
+    try:
+        archiving(parcelMapBCSettings.currentPath, parcelMapBCSettings.archiveFolder)
+    except:
+        print("Can't Archive. Check File Path")
+   
+    parcelMapBCGeoprocessing(catalogueWarehouseDownload(parcelMapBCSettings.downloadFolder, parcelMapBCSettings.jsonPayload, parcelMapBCSettings.fileName))
+
+
+####################################################################################################################
+# Road Atlas
+####################################################################################################################
+
+def digitalRoadAtlasGeoprocessing(rawPath):
+    print("starting road atlas geoprocessing")
+
+    arcpy.env.workspace = digitalRoadAtlasSettings.arcgisWorkspaceFolder
+    arcpy.env.overwriteOutput = True
+
+    #NOTE, maybe best to work with original data for this one... Copying takes a long time
+    print("Copying features")
+    roadAtlasCopy= arcpy.CopyFeatures_management(rawPath, "tempRoad.shp")
+
+    fieldsToDelete = ['FTYPE', 'HWYEXITNUM', 'HWYRTENUM', 'SEGLNGTH2D', 'SEGLNGTH3D', 'RDALIAS1ID', 'RDALIAS3', 'RDALIAS3ID', 'RDALIAS4', 'RDALIAS4ID', 'RDNAMEID', 'FNODE', 'TNODE', 'SPPLR', 'SPPLR_DTL', 'CPTRCHN', 'FCODE', 'OBJECTID']
+
+    arcpy.DeleteField_management(roadAtlasCopy, fieldsToDelete)
+
+    arcpy.AddField_management(roadAtlasCopy, "road_type", "TEXT", field_length=30)
+
+    cursor = arcpy.da.UpdateCursor(roadAtlasCopy,  ["ROAD_CLASS", "road_type"])
+
+    print("starting field calculations")
+    for row in cursor:
+        for key in digitalRoadAtlasSettings.valuesDictionary:
+            if row[0] in key:
+                row[1] = digitalRoadAtlasSettings.valuesDictionary[key]
+                cursor.updateRow(row)
+                break
+    
+    del cursor
+    
+    #NOTE, can we just create multi_part features here instead of disolving then exploding? Do we still want those other fields Because if we dissolve without them aren't they gone??I'm not sure this is really doing what's wanted. Do we want this spatially joined to administrative areas Or municipalities or something then dissolved?? https://catalogue.data.gov.bc.ca/dataset/regional-districts-legally-defined-administrative-areas-of-bc. 
+
+    roadAtlasDisolve = arcpy.Dissolve_management(roadAtlasCopy, "tempRoadDisolve.shp", ["RDNAME", "road_type"], multi_part=False)
+    print("Starting Intersect")
+    roadAtlasIntersect = arcpy.Intersect_analysis([roadAtlasDisolve, universalSettings.soiPath], digitalRoadAtlasSettings.fileName, "NO_FID")
+
+    arcpy.Delete_management(roadAtlasDisolve)
+    arcpy.Delete_management(roadAtlasCopy)
+    
+    print("Finished Road atlas geoprocessing")
+
+    return roadAtlasIntersect
+
+def digitalRoadAtlasProcess():
+    try:
+        archiving(digitalRoadAtlasSettings.currentPath, digitalRoadAtlasSettings.archiveFolder)
+    except:
+        print("Can't Archive, Check file path")
+    
+    digitalRoadAtlasGeoprocessing((catalogueWarehouseDownload(digitalRoadAtlasSettings.downloadFolder, digitalRoadAtlasSettings.jsonPayload, digitalRoadAtlasSettings.fileName)))
+
+
+####################################################################################################################
+# Alc Alr Polygons
+####################################################################################################################
+
+def alcAlrPolygonsGeoprocessing(rawPath):
+
+    arcpy.env.workspace = alcAlrPolygonsSettings.arcgisWorkspaceFolder
+    arcpy.env.overwriteOutput = True
+    
+    alcAlrCopy = arcpy.CopyFeatures_management(rawPath, "tempALCALR.shp")
+
+    fieldsToDelete = ['STATUS', 'FTRCD', 'OBJECTID', 'AREA_SQM']
+
+    arcpy.DeleteField_management(alcAlrCopy, fieldsToDelete)
+
+    landsCopy = arcpy.CopyFeatures_management(universalSettings.htgLandsPath, f"{path.split(universalSettings.htgLandsPath)[0]}\\tempLandsCopy")
+
+    landsDeleteFields = ['LOCALAREA', 'ICF_AREA', 'GEOMETRY_SOURCE', 'ATTRIBUTE_SOURCE', 'PID', 'PIN', 'JUROL', 'LTSA_LOT', 'LTSA_BLOCK', 'LTSA_PARCEL', 'LTSA_PLAN', 'LEGAL_FREEFORM', 'LAND_DISTRICT', 'LAND_ACT_PRIMARY_DESCRIPTION', 'PARCEL_DESCRIPTION', 'SOURCE_PROVISION_DATE', 'landval_2017', 'valperHa_2017', 'result_val_2017', 'Ha', 'new_group', 'comments', 'new_ownership', 'PMBC', 'ICIS', 'ICF', 'landval_src', 'prop_class', 'needs_confirm', 'confirm_question', 'selected', 'label', 'location', 'specific_location', 'H_', 'use_on_prop', 'potential_FCyCmPD', 'interests', 'available', 'avail_issues', 'owner', 'EN', 'guide_outfit', 'trapline', 'ess_response', 'tourism_capability', 'access', 'zoning', 'zone_code', 'TENURES', 'parcel_num', 'PIN_DISTLE', 'PIN_SUBDLA', 'municipality', 'arch_sites', 'Title_num', 'Title_owner', 'Title_Info', 'essential', 'RoW', 'OtherComments', 'appraisal2work', 'apprais2HBU', 'apprais2reportID', 'apprais2BC_ID', 'apprais2Ha', 'TEMP_PolyID', 'TimbeTableLink', 'ownership_type']
+
+    arcpy.DeleteField_management(landsCopy, landsDeleteFields)
+
+    arcpy.AlterField_management(landsCopy, "OWNER_CLASS", "CROWN")
+
+    cursor = arcpy.da.UpdateCursor(landsCopy, ["CROWN"])
+
+    for row in cursor:
+        if "CROWN" in row[0]:
+            row[0] = "yes"
+        else:
+            row[0] = "no"
+        
+        cursor.updateRow(row)
+    
+    del cursor
+    
+    alcAlrProcessed = arcpy.Intersect_analysis([alcAlrCopy, landsCopy], alcAlrPolygonsSettings.fileName , join_attributes="NO_FID")
+
+    arcpy.DeleteField_management(alcAlrProcessed, ["FEAT_LEN", "Shape_Leng", "Shape_Area"])
+
+    arcpy.Delete_management(alcAlrCopy)
+    arcpy.Delete_management(landsCopy)
+
+
+    return alcAlrProcessed
+
+
+def alcAlrPolygonsProcess():
+    try : 
+        archiving(alcAlrPolygonsSettings.currentPath, alcAlrPolygonsSettings.archiveFolder)
+    except :
+        print("Can't Archive, Check file path")
+    
+    alcAlrPolygonsGeoprocessing(catalogueWarehouseDownload(alcAlrPolygonsSettings.downloadFolder, alcAlrPolygonsSettings.jsonPayload, alcAlrPolygonsSettings.fileName))
+
+####################################################################################################################
+# environmental remediation
+####################################################################################################################
+
+def environmentalRemediationSitesGeoprocessing(rawPath):
+    
+    arcpy.env.workspace = environmentalRemediationSitesSettings.arcgisWorkspaceFolder
+    arcpy.env.overwriteOutput = True
+
+    sitesCopy = arcpy.CopyFeatures_management(rawPath, "tempEnvRem.shp")
+
+    fieldsToDelete=['ENV_RMD_ID', 'GEN_DESC', 'VICFILENO', 'REGFILENO', 'COMMON_NM', 'LATITUDE', 'LONGITUDE', 'OBJECTID']
+
+    arcpy.DeleteField_management(sitesCopy, fieldsToDelete)
+
+    shapefileFieldRename(sitesCopy, "SITE_ID", "REMED_ID")
+    
+    landsCopy = arcpy.CopyFeatures_management(universalSettings.htgLandsPath, f"{path.split(universalSettings.htgLandsPath)[0]}\\tempLandsCopy")
+
+    landsDeleteFields = ['LOCALAREA', 'ICF_AREA', 'GEOMETRY_SOURCE', 'ATTRIBUTE_SOURCE', 'PID', 'PIN', 'JUROL', 'LTSA_LOT', 'LTSA_BLOCK', 'LTSA_PARCEL', 'LTSA_PLAN', 'LEGAL_FREEFORM', 'LAND_DISTRICT', 'LAND_ACT_PRIMARY_DESCRIPTION', 'PARCEL_DESCRIPTION', 'SOURCE_PROVISION_DATE', 'landval_2017', 'valperHa_2017', 'result_val_2017', 'Ha', 'new_group', 'comments', 'new_ownership', 'PMBC', 'ICIS', 'ICF', 'landval_src', 'prop_class', 'needs_confirm', 'confirm_question', 'selected', 'label', 'location', 'specific_location', 'H_', 'use_on_prop', 'potential_FCyCmPD', 'interests', 'available', 'avail_issues', 'owner', 'EN', 'guide_outfit', 'trapline', 'ess_response', 'tourism_capability', 'access', 'zoning', 'zone_code', 'TENURES', 'parcel_num', 'PIN_DISTLE', 'PIN_SUBDLA', 'municipality', 'arch_sites', 'Title_num', 'Title_owner', 'Title_Info', 'essential', 'RoW', 'OtherComments', 'appraisal2work', 'apprais2HBU', 'apprais2reportID', 'apprais2BC_ID', 'apprais2Ha', 'TEMP_PolyID', 'TimbeTableLink', 'ownership_type']
+
+    arcpy.DeleteField_management(landsCopy, landsDeleteFields)
+
+    remediationProcessed = arcpy.Intersect_analysis([landsCopy, sitesCopy], environmentalRemediationSitesSettings.fileName, join_attributes="NO_FID")
+
+    arcpy.DeleteField_management(remediationProcessed, ["Shape_Lengt","Shape_Area"])
+
+    arcpy.Delete_management(landsCopy)
+    arcpy.Delete_management(sitesCopy)
+
+    return remediationProcessed
+
+def environmentalRemediationSitesProcess():
+    try:
+        archiving(environmentalRemediationSitesSettings.currentPath, environmentalRemediationSitesSettings.archiveFolder)
+    
+    except:
+        print("Can't Archive, Check file path")
+    
+    environmentalRemediationSitesGeoprocessing(catalogueWarehouseDownload(environmentalRemediationSitesSettings.downloadFolder, environmentalRemediationSitesSettings.jsonPayload, environmentalRemediationSitesSettings.fileName))
+
+
+    
