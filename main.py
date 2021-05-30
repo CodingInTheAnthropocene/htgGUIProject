@@ -18,9 +18,6 @@
 
 from os.path import getsize
 import sys
-from traceback import print_exc
-from datetime import datetime, timedelta
-from modules import flowLayout
 from ui_main import *
 
 from PySide6 import QtWidgets
@@ -30,7 +27,6 @@ from widgets.custom_grips.custom_grips import Widgets
 # ///////////////////////////////////////////////////////////////
 from modules import *
 from widgets import *
-from modules.dataCurrency import *
 from modules.functionLib import *
 from modules.customWidgets import datasetFrame
 from modules.flowLayout import FlowLayout
@@ -68,10 +64,6 @@ class MainWindow(QMainWindow):
         # //////////////////////////////////////////////////////////////
         UIFunctions.uiDefinitions(self)
 
-        # QTableWidget PARAMETERS
-        # ///////////////////////////////////////////////////////////////
-        widgets.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-
                 # EXTRA LEFT BOX
         def openCloseLeftBox():
             UIFunctions.toggleLeftBox(self, True)
@@ -85,11 +77,14 @@ class MainWindow(QMainWindow):
 
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
+        
+
         self.show()
+
 
         # SET CUSTOM THEME
         # ///////////////////////////////////////////////////////////////
-        useCustomTheme = False
+        useCustomTheme =  False
         themeFile = "themes\py_dracula_light.qss"
 
         # SET THEME AND HACKS
@@ -141,16 +136,17 @@ class MainWindow(QMainWindow):
         datasetList = sorted([i for i in initiationFunctionDictionary], key=lambda x:x.name)
         
 
-        self.flowLayout = FlowLayout(widgets.frameDatasets)
+        #self.gridLayout = QGridLayout(widgets.frameDatasets)
+        self.gridLayout = FlowLayout(widgets.frameDatasets)        
 
         for i in datasetList:
             newDataSetFrame = datasetFrame(widgets.frameDatasets, i, initiationFunctionDictionary[i])
-            self.flowLayout.addWidget(newDataSetFrame)
+            self.gridLayout.addWidget(newDataSetFrame)
 
 
     # BUTTONS CLICK
     # Post here your functions for clicked buttons
-    # ///////////////////////////////////////////////////////////////
+    # //////////////////////////////////////////////////////////////
 
     
 
@@ -182,6 +178,11 @@ class MainWindow(QMainWindow):
     def resizeEvent(self, event):
         # Update Size Grips
         UIFunctions.resize_grips(self)
+    
+    def mousePressEvent(self, event):
+        # SET DRAG POS WINDOW
+        self.dragPos = event.globalPos()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -3,7 +3,7 @@ from modules import bbox_SOIs
 
 
 class universalSettings:
-    htgLandsPath = r"C:\Users\laure\Desktop\test\data\dummy_lands.gdb\lands1_sub_2"
+    htgLandsPath = r"C:\Users\laure\Desktop\test\data\lands_new.gdb\lands1_new"
     soiPath = r"C:\Users\laure\Desktop\test\data\HTG_SOIs_all.shp"
     soiCorePath = ""
     soiMarinePath = ""

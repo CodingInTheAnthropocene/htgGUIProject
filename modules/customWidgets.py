@@ -1,8 +1,6 @@
 from datetime import timedelta, date
-from genericpath import exists, getsize
-from modules.functionLib import getFileCreatedDate
-from modules.dataCurrency import getCurrency
-from traceback import print_exc
+from genericpath import getsize
+from modules.functionLib import getFileCreatedDate, getCurrency
 from PySide6.QtWidgets import * 
 from PySide6.QtGui import *
 from PySide6.QtCore import *
@@ -19,16 +17,21 @@ class datasetFrame(QFrame):
         self.archiveFolder = settingsClass.archiveFolder
         self.currentPath = settingsClass.currentPath
         self.updateDays = settingsClass.updateDays
-        self.multiplySizeCollapsed = len(self.name)*1.5+250
-        self.multiplySizeExpanded = len(max([self.downloadFolder, self.currentPath, self.archiveFolder]))+400
+        self.dataCatalogueId = settingsClass.dataCatalogueId
+        self.multiplySizeCollapsed = 250
+        self.multiplySizeExpanded = 400
+
+        if self.dataCatalogueId  != "N/A":
+            try:
+                self.hostedFileDate = getCurrency(self.dataCatalogueId)
+            except:
+                self.hostedFileDate = "Not Found"
+
+        else:
+            self.hostedFileDate = "N/A"
 
         try:
-            self.hostedFileDate = getCurrency(settingsClass.dataCatalogueId)
-        except:
-            self.hostedFileDate = "Not Found or N/A"   
-
-        try:
-            self.fileSize = getsize(self.currentPath)/1000000
+            self.fileSize = f"{getsize(self.currentPath)/1000000:.2} mb"
             self.date = getFileCreatedDate(self.currentPath)
         except:
             self.fileSize = "Not Found"
@@ -37,28 +40,28 @@ class datasetFrame(QFrame):
         #functions on init
         self.initFrame()
         self.turnPurple()
+        self.turnRed()
 
         #Signals and slots
         self.buttonUpdate.clicked.connect(processFunction)
+        self.buttonUpdate.clicked.connect(self.turnPurple)
         self.qtree.expanded.connect(self.qtreeExpand)
         self.qtree.collapsed.connect(self.qtreeCollapse)
 
     def initFrame(self):
-        self.setMinimumSize(QSize(self.multiplySizeCollapsed, 111))
-        self.frame = QFrame(self)
-        self.frame.setObjectName(f"frame_{self.alias}")
-        self.frame.setGeometry(QRect(0, 0, self.multiplySizeCollapsed, 111))
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.resize(QSize(self.multiplySizeCollapsed, 111))  
+        self.setObjectName(f"frame_{self.alias}")
+        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
-        self.frame.setSizePolicy(sizePolicy)
-        self.frame.setMaximumSize(QSize(500, 200))
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_4 = QVBoxLayout(self.frame)
+        sizePolicy.setHeightForWidth(self.sizePolicy().hasHeightForWidth())
+        self.setSizePolicy(sizePolicy)
+        self.setMaximumSize(QSize(500, 200))
+        self.setFrameShape(QFrame.StyledPanel)
+        self.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_4 = QVBoxLayout(self)
         self.verticalLayout_4.setObjectName(f"verticalLayout_{self.alias}")
-        self.qtree = QTreeWidget(self.frame)
+        self.qtree = QTreeWidget(self)
         font = QFont()
         font.setBold(True)
         __qtreewidgetitem = QTreeWidgetItem()
@@ -81,7 +84,7 @@ class datasetFrame(QFrame):
 
         self.layoutButtons = QHBoxLayout()
         self.layoutButtons.setObjectName(f"layoutButtons_{self.alias}")
-        self.buttonUpdate = QPushButton(self.frame)
+        self.buttonUpdate = QPushButton(self)
         self.buttonUpdate.setObjectName(f"buttonUpdate_{self.alias}")
         sizePolicy1 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
@@ -93,13 +96,13 @@ class datasetFrame(QFrame):
 
         self.layoutButtons.addWidget(self.buttonUpdate)
 
-        self.buttonSettings = QPushButton(self.frame)
+        self.buttonSettings = QPushButton(self)
         self.buttonSettings.setObjectName(f"buttonSettings_{self.alias}")
         self.buttonSettings.setMaximumSize(QSize(100, 16777215))
 
         self.layoutButtons.addWidget(self.buttonSettings)
         self.verticalLayout_4.addLayout(self.layoutButtons)
-        
+        self.setMinimumSize(QSize(self.multiplySizeCollapsed, 111))
         
         self.retranslateUi()            
 
@@ -107,8 +110,8 @@ class datasetFrame(QFrame):
     
 
     def retranslateUi(self):
-        ___qtreewidgetitem = self.qtree.headerItem()
-        ___qtreewidgetitem.setText(0, QCoreApplication.translate("Form", f"{self.name}", None));
+        qtreewidgetitem = self.qtree.headerItem()
+        qtreewidgetitem.setText(0, QCoreApplication.translate("Form", f"{self.name}", None));
 
         __sortingEnabled = self.qtree.isSortingEnabled()
         self.qtree.setSortingEnabled(False)
@@ -119,7 +122,10 @@ class datasetFrame(QFrame):
         ___qtreewidgetitem3 = ___qtreewidgetitem1.child(1)
         ___qtreewidgetitem3.setText(0, QCoreApplication.translate("Form", f"Date: {self.date}", None));
         ___qtreewidgetitem4 = ___qtreewidgetitem1.child(2)
-        ___qtreewidgetitem4.setText(0, QCoreApplication.translate("Form", f"Size: {self.fileSize:.2} mb", None));
+        
+
+        ___qtreewidgetitem4.setText(0, QCoreApplication.translate("Form", f"Size: {self.fileSize}", None));
+            
         ___qtreewidgetitem5 = ___qtreewidgetitem1.child(3)
         ___qtreewidgetitem5.setText(0, QCoreApplication.translate("Form", f"File Path: {self.currentPath}", None));
         ___qtreewidgetitem6 = ___qtreewidgetitem1.child(4)
@@ -133,18 +139,35 @@ class datasetFrame(QFrame):
         self.buttonSettings.setText(QCoreApplication.translate("Form", u"Settings", None))
     
     def qtreeExpand(self):
-        self.setMinimumSize(QSize(self.multiplySizeExpanded,175))
-        self.frame.resize(self.multiplySizeExpanded,175)
-        
+        self.animation = QPropertyAnimation(self, b"minimumSize")
+        self.animation.setDuration(400)
+        self.animation.setStartValue(QSize(self.multiplySizeCollapsed, 111))
+        self.animation.setEndValue(QSize(self.multiplySizeExpanded, 200))
+        self.animation.setEasingCurve(QEasingCurve.InOutQuart)
+
+        self.animation.start()        
 
     def qtreeCollapse(self):
-        self.setMinimumSize(QSize(self.multiplySizeCollapsed,111))
-        self.frame.resize(self.multiplySizeCollapsed, 111)
+        self.animationCollapse = QPropertyAnimation(self, b"minimumSize")
+        self.animationCollapse.setDuration(400)
+        self.animationCollapse.setStartValue(QSize(self.multiplySizeExpanded, 200))
+        self.animationCollapse.setEndValue(QSize(self.multiplySizeCollapsed, 111))       
+        self.animationCollapse.setEasingCurve(QEasingCurve.InOutQuart)
+
+        self.animationCollapse.start()      
 
     def turnPurple(self):
+        #NOTE, could turn various colours depending on how out-of-date it is safe
         if isinstance(self.date, date) == True and isinstance(self.hostedFileDate, date) == True:
             if self.date < self.hostedFileDate - timedelta(days=self.updateDays):
-                self.qtree.setStyleSheet("QHeaderView::section {border-radius: 5px; background: rgb(189, 147, 249);}")
+                self.qtree.setStyleSheet("QHeaderView::section {border-radius: 5px; background: rgb(189, 147, 249); color: black}")
                 self.qtree.header().setVisible(True)
+
+    def turnRed(self):
+        if "Not Found" in (self.date, self.hostedFileDate):
+                self.qtree.setStyleSheet("QHeaderView::section {border-radius: 5px; background: rgb(255,153,153); color:black}")
+                self.qtree.header().setVisible(True)
+            
+
 
 

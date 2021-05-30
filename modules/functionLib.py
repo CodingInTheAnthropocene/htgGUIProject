@@ -2,7 +2,7 @@
 
 
 from modules.dataSettings import *
-from requests import post, Session
+from requests import post, Session, get
 from urllib.request import urlopen, urlretrieve
 from lxml.html import fromstring
 from time import sleep
@@ -16,6 +16,11 @@ from shutil import move, make_archive, rmtree, unpack_archive
 ####################################################################################################################
 # Universal functions
 ####################################################################################################################
+def getCurrency(ID):
+    r= get(f'https://catalogue.data.gov.bc.ca/api/3/action/package_show?id={ID}').json()["result"]["record_last_modified"]
+
+    return datetime.strptime(str(r), '%Y-%m-%d').date()
+
 def getFileCreatedDate(filePath):
     return datetime.fromtimestamp(path.getctime(filePath)).date()
 
@@ -37,6 +42,20 @@ def shapefileFieldRename(shapefile, currentFieldName, newFieldName):
     del cursor
 
     arcpy.DeleteField_management(shapefile, currentFieldName)
+
+def writeCatalogueMetadata(processedFile, jsonPayload, rawPath):
+    newMetadata= arcpy.metadata.Metadata(processedFile)
+    if isinstance(rawPath, list):
+        originalName= str([path.splitext(path.split(i)[1])[0] for i  in rawPath])
+    else:
+        originalName = path.splitext(path.split(rawPath)[1])[0]
+
+
+    newMetadata.description = (f"Date Downloaded: {datetime.today().strftime('%Y-%m-%d')} from BC's data catalogue\n URL: {jsonPayload['featureItems'][0]['layerMetadataUrl']}\n Original name(s): {originalName}")
+
+    newMetadata.save()
+
+
 
 
 def archiving(currentPath, archiveFolder):
@@ -190,7 +209,7 @@ def catalogueWarehouseDownload(downloadFolder, jsonPayload, fileName):
 # Tantalis Crown Tenures
 ####################################################################################################################
 
-def crownTenuresGeoprocessing(crownTenuresRawPath):
+def crownTenuresGeoprocessing(rawPath):
     """Takes raw crown tenures data set and runs it through standardized Geoprocessing"""
 
     fileName = crownTenuresSettings.fileName
@@ -201,7 +220,7 @@ def crownTenuresGeoprocessing(crownTenuresRawPath):
 
     # copy Shapefile To leave original intact
     tenuresCopy = arcpy.CopyFeatures_management(
-        crownTenuresRawPath, "tenuresCopy.shp")
+        rawPath, "tenuresCopy.shp")
     print("Raw Shapefile copied")
 
     # delete fields from crown tenures
@@ -248,7 +267,7 @@ def crownTenuresGeoprocessing(crownTenuresRawPath):
     # intersect crown tenures with SOI, delete automatically created fields
     # FIX THIS: no_fid appropriate?? May eliminate need to delete added fields??
     tenuresSOIIntersect = arcpy.Intersect_analysis(
-        [tenuresCopy, universalSettings.soiPath], "tenureSOIIntersect", join_attributes="NO_FID")
+        [tenuresCopy, universalSettings.soiPath], "temptenureSOIIntersect", join_attributes="NO_FID")
 
     print("tenure and SOI's intersected")
 
@@ -258,10 +277,7 @@ def crownTenuresGeoprocessing(crownTenuresRawPath):
 
     # NOTE: should keep ['new_group', 'parcel_num', 'selected_by', 'new_ownership', 'ownership_type'] and default fields
 
-    # full field names
-    # fieldsToDeletehtgLandsCopy = [
-    #    'ATTRIBUTE_SOURCE', 'EN', 'GEOMETRY_SOURCE', 'H_', 'Ha', 'ICF', 'ICF_AREA', 'ICIS', 'JUROL', 'LAND_ACT_PRIMARY_DESCRIPTION', 'LAND_DISTRICT', 'LEGAL_FREEFOQRM', 'LOCALAREA', 'LTSA_BLOCK', 'LTSA_LOT', 'LTSA_PARCEL', 'LTSA_PLAN', 'OWNER_CLASS', 'OtherComments', 'PARCEL_DESCRIPTION', 'PID', 'PIN', 'PIN_DISTLE', 'PIN_SUBDLA', 'PMBC', 'RoW', 'SOURCE_PROVISION_DATE', 'TEMP_PolyID', 'TENURES', 'TimbeTableLink', 'Title_Info', 'Title_num', 'Title_owner', 'access', 'apprais2BC_ID', 'apprais2HBU', 'apprais2Ha', 'apprais2reportID', 'appraisal2work', 'arch_sites', 'avail_issues', 'available', 'comments', 'confirm_question', 'ess_response', 'essential', 'guide_outfit', 'interests', 'label', 'landval_2017', 'landval_src', 'location', 'municipality', 'needs_confirm', 'owner', 'potential_FCyCmPD', 'prop_class', 'result_val_2017', 'selected', 'specific_location', 'tourism_capability', 'trapline', 'use_on_prop', 'valperHa_2017', 'zone_code', 'zoning',
-    # ]
+
 
     fieldsToDeletehtgLandsCopy = ['ATTRIBUTE_', 'EN', 'GEOMETRY_S', 'H_', 'Ha', 'ICF', 'ICF_AREA', 'ICIS', 'JUROL', 'LAND_ACT_P', 'LAND_DISTR', 'LEGAL_FREE', 'LOCALAREA', 'LTSA_BLOCK', 'LTSA_LOT', 'LTSA_PARCE', 'LTSA_PLAN', 'OWNER_CLAS', 'OtherComme', 'PARCEL_DES', 'PID', 'PIN', 'PIN_DISTLE', 'PIN_SUBDLA', 'PMBC', 'RoW', 'SOURCE_PRO', 'TEMP_PolyI', 'TENURES', 'TimbeTable', 'Title_Info', 'Title_num', 'Title_owne', 'access',
                                   'apprais2BC', 'apprais2HB', 'apprais2Ha', 'apprais2re', 'appraisal2', 'arch_sites', 'avail_issu', 'available', 'comments', 'confirm_qu', 'ess_respon', 'essential', 'guide_outf', 'interests', 'label', 'landval_20', 'landval_sr', 'location', 'municipali', 'needs_conf', 'potential_', 'prop_class', 'result_val', 'selected', 'specific_l', 'tourism_ca', 'trapline', 'use_on_pro', 'valperHa_2', 'zone_code', 'zoning']
@@ -270,10 +286,17 @@ def crownTenuresGeoprocessing(crownTenuresRawPath):
 
     print("Fields deleted from lands copy")
 
-    # Intersect tenures/soi intersect with land parcels data
-    crownTenuresProcessedPath = arcpy.Identity_analysis(
-        tenuresSOIIntersect, htgLandsCopy, fileName, join_attributes="NO_FID")
+    # Identity tenures/soi intersect with land parcels data, Union workaround
+    crownTenuresProcessedPath = arcpy.Union_analysis(
+        [tenuresSOIIntersect, htgLandsCopy], fileName, join_attributes="NO_FID")
     print("tenure SOI lands intersect completed")
+
+    cursor = arcpy.da.UpdateCursor(crownTenuresProcessedPath, ["TEN_STAGE"])
+
+    for row in cursor:
+        if row[0]==" ":
+            cursor.deleteRow()
+    del cursor
 
     # add and calculate HA field to tenures/soi/lands intersect
     arcpy.AddField_management(crownTenuresProcessedPath, "HA", "FLOAT")
@@ -299,8 +322,13 @@ def crownTenuresProcess():
         archiving(crownTenuresSettings.currentPath, crownTenuresSettings.archiveFolder)
     except:
         print("cannot archive this file, check path")
+    
+    rawPath = catalogueWarehouseDownload(crownTenuresSettings.downloadFolder, crownTenuresSettings.jsonPayload, crownTenuresSettings.fileName)
+    
+    processedFile=crownTenuresGeoprocessing(rawPath)
+    
+    writeCatalogueMetadata(processedFile, crownTenuresSettings.jsonPayload, rawPath)
 
-    crownTenuresGeoprocessing(catalogueWarehouseDownload(crownTenuresSettings.downloadFolder, crownTenuresSettings.jsonPayload, crownTenuresSettings.fileName))
     
 ####################################################################################################################
 # Forest Tenure Harvesting Authority Polygons (Forest Tenure Cut Permits)
@@ -401,10 +429,10 @@ def forestHarvestingAuthorityGeoprocessing(rawForestHarvestingAuthorityPath, dow
     return forestHarvestingAuthorityProcessedPath
 
 
-def forestHarvestingAuthorityProcess(downloadFolder, currentForestHarvestingAuthorityPath, archiveFolder, fileName, htgLandsPath, arcgisWorkspaceFolder, jsonPayload):
-    archiving(currentForestHarvestingAuthorityPath, archiveFolder)
+def forestHarvestingAuthorityProcess():
+    archiving(forestHarvestingAuthoritySettings.currentPath, forestHarvestingAuthoritySettings.archiveFolder)
     forestHarvestingAuthorityGeoprocessing(catalogueWarehouseDownload(
-        downloadFolder, jsonPayload, fileName), downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder)
+        forestHarvestingAuthoritySettings.downloadFolder, forestHarvestingAuthoritySettings.jsonPayload, forestHarvestingAuthoritySettings.fileName), forestHarvestingAuthoritySettings.downloadFolder, forestHarvestingAuthoritySettings.fileName, universalSettings.htgLandsPath, forestHarvestingAuthoritySettings.arcgisWorkspaceFolder)
 
 # test
 #forestHarvestingAuthorityProcess(forestHarvestingAuthoritySettings.downloadFolder, forestHarvestingAuthoritySettings.currentPath, forestHarvestingAuthoritySettings.archiveFolder, forestHarvestingAuthoritySettings.fileName, universalSettings.htgLandsPath, forestHarvestingAuthoritySettings.arcgisWorkspaceFolder, forestHarvestingAuthoritySettings.jsonPayload)
@@ -498,10 +526,10 @@ def forestManagedLicenceGeoprocessing(rawForestManagedLicence, downloadFolder, f
     arcpy.management.Delete(tempGdbPath)
 
 
-def forestManagedLicenceProcess(downloadFolder, currentForestManagedLicencePath, archiveFolder, fileName, htgLandsPath, arcgisWorkspaceFolder, jsonPayload, rawDownloadFolderName, rawShapefileName):
-    archiving(currentForestManagedLicencePath, archiveFolder)
+def forestManagedLicenceProcess():
+    archiving(forestManagedLicenceSettings.currentPath, forestManagedLicenceSettings.archiveFolder)
     forestManagedLicenceGeoprocessing(catalogueWarehouseDownload(
-        downloadFolder, jsonPayload, rawDownloadFolderName, rawShapefileName), downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder)
+        forestManagedLicenceSettings.downloadFolder, forestManagedLicenceSettings.jsonPayload, forestManagedLicenceSettings.fileName), forestManagedLicenceSettings.downloadFolder, forestManagedLicenceSettings.fileName, universalSettings.htgLandsPath, forestManagedLicenceSettings.arcgisWorkspaceFolder)
 
 
 ####################################################################################################################
@@ -590,10 +618,9 @@ def harvestedAreasGeoprocessing(rawHarvestedAreas, downloadFolder, fileName, htg
     arcpy.management.Delete(htgLandsCopy)
     arcpy.management.Delete(tempGdbPath)
 
-def harvestedAreasProcess(downloadFolder, currentForestManagedLicencePath, archiveFolder, fileName, htgLandsPath, arcgisWorkspaceFolder, jsonPayload, rawDownloadFolderName, rawShapefileName):
-    archiving(currentForestManagedLicencePath, archiveFolder)
-    harvestedAreasGeoprocessing(catalogueWarehouseDownload(
-        downloadFolder, jsonPayload, rawDownloadFolderName, rawShapefileName), downloadFolder, fileName, htgLandsPath, arcgisWorkspaceFolder)
+def harvestedAreasProcess():
+    archiving(harvestedAreasSettings.currentPath, harvestedAreasSettings.archiveFolder)
+    harvestedAreasGeoprocessing(catalogueWarehouseDownload( harvestedAreasSettings.jsonPayload, harvestedAreasSettings.downloadFolder, harvestedAreasSettings.fileName), harvestedAreasSettings.downloadFolder, harvestedAreasSettings.fileName, universalSettings.htgLandsPath, harvestedAreasSettings.arcgisWorkspaceFolder)
 
 
 ####################################################################################################################

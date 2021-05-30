@@ -24,7 +24,6 @@ from ui_main import Ui_MainWindow
 #Data Settings
 from . dataSettings import *
 
-from . dataCurrency import *
 
 # APP SETTINGS
 from . app_settings import Settings
