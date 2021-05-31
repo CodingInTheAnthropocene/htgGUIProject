@@ -28,7 +28,7 @@ from widgets.custom_grips.custom_grips import Widgets
 from modules import *
 from widgets import *
 from modules.functionLib import *
-from modules.customWidgets import datasetFrame
+from modules.customWidgets import *
 from modules.flowLayout import FlowLayout
 
 
@@ -136,12 +136,24 @@ class MainWindow(QMainWindow):
         datasetList = sorted([i for i in initiationFunctionDictionary], key=lambda x:x.name)
         
 
-        #self.gridLayout = QGridLayout(widgets.frameDatasets)
-        self.gridLayout = FlowLayout(widgets.frameDatasets)        
+        #self.flowLayoutDatasets = QGridLayout(widgets.frameDatasets)
+        self.flowLayoutDatasets = FlowLayout(widgets.frameDatasets)        
 
         for i in datasetList:
             newDataSetFrame = datasetFrame(widgets.frameDatasets, i, initiationFunctionDictionary[i])
-            self.gridLayout.addWidget(newDataSetFrame)
+            self.flowLayoutDatasets.addWidget(newDataSetFrame)
+
+        ############################################################################################
+        #Log instantiation
+        ############################################################################################
+        self.flowLayoutLogs= FlowLayout(widgets.scrollAreaLogsButtons)
+        
+        for directoryName,_,files in walk(universalSettings.logFolder):
+            for file in files:
+                newMonthButton= logButton(widgets.scrollAreaLogsButtons, f"{directoryName}\\{file}", widgets.textEditLogs)     
+                self.flowLayoutLogs.addWidget(newMonthButton)
+
+
 
 
     # BUTTONS CLICK
@@ -182,6 +194,12 @@ class MainWindow(QMainWindow):
     def mousePressEvent(self, event):
         # SET DRAG POS WINDOW
         self.dragPos = event.globalPos()
+
+    ############################################################################################
+    #Dataset Instantiation
+    #############################################################################################
+
+
 
 
 if __name__ == "__main__":

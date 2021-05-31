@@ -251,6 +251,7 @@ QHeaderView::section{
 	border-style: none;
     border-bottom: 1px solid rgb(44, 49, 60);
     border-right: 1px solid rgb(44, 49, 60);
+
 }
 QTableWidget::horizontalHeader {	
 	background-color: rgb(33, 37, 43);
@@ -313,7 +314,7 @@ QTextEdit {
 	padding: 10px;
 	selection-color: rgb(255, 255, 255);
 	selection-background-color: rgb(255, 121, 198);
-	border:rgb(33, 37, 43);
+	border: 2px solid rgb(64, 71, 88);
 }
 QTextEdit  QScrollBar:vertical {
     width: 8px;
@@ -321,9 +322,7 @@ QTextEdit  QScrollBar:vertical {
 QTextEdit  QScrollBar:horizontal {
     height: 8px;
  }
-QTextEdit:hover {
-	border: 2px solid rgb(64, 71, 88);
-}
+
 QTextEdit:focus {
 	border: 2px solid rgb(91, 101, 124);
 }
@@ -335,7 +334,7 @@ QScrollArea {
 	padding: 10px;
 	selection-color: rgb(255, 255, 255);
 	selection-background-color: rgb(255, 121, 198);
-	border: rgb(33, 37, 43);
+	border: 2px solid rgb(64, 71, 88);
 }
 QScrollArea  QScrollBar:vertical {
     width: 8px;
@@ -343,10 +342,6 @@ QScrollArea  QScrollBar:vertical {
 QScrollArea QScrollBar:horizontal {
     height: 8px;
  }
-QScrollArea:hover {
-	border: 2px solid rgb(64, 71, 88);
-}
-
 
 
 
@@ -581,8 +576,14 @@ Button */
 QTreeWidget {
 	border: 2px solid rgb(61, 70, 86);
 	border-radius: 5px;
+	font:10pt &quot;Segoe UI Semibold&quot;;
 }
-</string>
+QHeaderView{
+color: rgb(207, 249, 147);
+font:10pt &quot;Segoe UI&quot;;
+text-decoration:underline;
+font-weight: bold;
+}</string>
    </property>
    <layout class="QVBoxLayout" name="appMargins">
     <property name="spacing">
@@ -1849,7 +1850,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                    <widget class="QWidget" name="wantToGetRidOfThis">
                     <property name="styleSheet">
-                     <string notr="true">b</string>
+                     <string notr="true"/>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout">
                      <property name="spacing">
@@ -1891,7 +1892,7 @@ p, li { white-space: pre-wrap; }
                       <rect>
                        <x>10</x>
                        <y>40</y>
-                       <width>821</width>
+                       <width>811</width>
                        <height>20</height>
                       </rect>
                      </property>
@@ -1941,8 +1942,8 @@ p, li { white-space: pre-wrap; }
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>791</width>
-                        <height>111</height>
+                        <width>787</width>
+                        <height>107</height>
                        </rect>
                       </property>
                      </widget>
@@ -1955,6 +1956,9 @@ p, li { white-space: pre-wrap; }
                        <width>811</width>
                        <height>571</height>
                       </rect>
+                     </property>
+                     <property name="readOnly">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </widget>

@@ -1,5 +1,5 @@
-
 from modules import bbox_SOIs
+
 
 
 class universalSettings:
@@ -12,6 +12,7 @@ class universalSettings:
     email = ""
     downloadFolder = r"C:\Users\laure\Desktop\test"
     archiveFolder = r"C:\Users\laure\Desktop\test\testArchive"
+    logFolder = r"C:\Users\laure\Desktop\test\testArchive\logs"
 
 
 class crownTenuresSettings:
@@ -25,6 +26,7 @@ class crownTenuresSettings:
     arcgisWorkspaceFolder = downloadFolder
     alias="crownTenures"
     updateDays = 1
+    
 
     jsonPayload = {
         "emailAddress": universalSettings.email,
@@ -147,6 +149,7 @@ class forestHarvestingAuthoritySettings:
     arcgisWorkspaceFolder = downloadFolder
     alias="forestHarvestingAuthority"
     updateDays = 1
+    
 
     jsonPayload = {
         "emailAddress": universalSettings.email,
@@ -183,6 +186,7 @@ class forestManagedLicenceSettings:
     arcgisWorkspaceFolder = downloadFolder
     alias="forestManagedLicence"
     updateDays = 1
+    
 
     jsonPayload = {
         "emailAddress": universalSettings.email,
@@ -219,6 +223,7 @@ class harvestedAreasSettings:
     arcgisWorkspaceFolder = downloadFolder
     alias="harvestedAreas"
     updateDays = 1
+    
 
     jsonPayload = {
         "emailAddress": universalSettings.email,
@@ -379,6 +384,7 @@ class parksRecreationDatasetsSettings:
     arcgisWorkspaceFolder = downloadFolder
     alias="parksRecreationDatasets"
     updateDays = 1
+    
 
 
 class parcelMapBCSettings:
@@ -391,6 +397,7 @@ class parcelMapBCSettings:
     arcgisWorkspaceFolder = downloadFolder
     alias="parcelMapBC"
     updateDays = 1
+    
 
     jsonPayload = {
         "emailAddress": universalSettings.email,
@@ -426,6 +433,7 @@ class digitalRoadAtlasSettings:
     arcgisWorkspaceFolder = downloadFolder
     alias="digitalRoadAtlas"
     updateDays = 1
+    
 
 
     jsonPayload = {
@@ -464,6 +472,7 @@ class alcAlrPolygonsSettings:
     arcgisWorkspaceFolder = downloadFolder
     alias="alcAlrPolygons"
     updateDays = 1
+    
 
     jsonPayload = {
 	"emailAddress": universalSettings.email,
@@ -498,6 +507,7 @@ class environmentalRemediationSitesSettings:
     arcgisWorkspaceFolder = downloadFolder
     alias="environmentalRemediationSites"
     updateDays=1
+    
 
     jsonPayload = {
 	"emailAddress": "laurencejperry@outlook.com",

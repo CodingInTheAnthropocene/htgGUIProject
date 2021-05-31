@@ -24,4 +24,8 @@ tenuresRaw=r"C:\Users\laure\Desktop\test\TA_CROWN_TENURES_SVW\TA_CRT_SVW_polygon
 #crownTenuresGeoprocessing(tenuresRaw)
 
 
-writeMetadata(r"C:\Users\laure\Desktop\test\crownTenuresProcessed.shp", crownTenuresSettings.jsonPayload, r"C:\Users\laure\Desktop\test\TA_CROWN_TENURES_SVW\TA_CRT_SVW_polygon.shp")
+#writeMetadata(r"C:\Users\laure\Desktop\test\crownTenuresProcessed.shp", crownTenuresSettings.jsonPayload, r"C:\Users\laure\Desktop\test\TA_CROWN_TENURES_SVW\TA_CRT_SVW_polygon.shp")
+
+writeLog(crownTenuresSettings, r"C:\Users\laure\Desktop\test\crownTenuresProcessed.shp",  True)
+
+

@@ -255,6 +255,7 @@ class Ui_MainWindow(object):
 "	border-style: none;\n"
 "    border-bottom: 1px solid rgb(44, 49, 60);\n"
 "    border-right: 1px solid rgb(44, 49, 60);\n"
+"\n"
 "}\n"
 "QTableWidget::horizontalHeader {	\n"
 "	background-color: rgb(33, 37, 43);\n"
@@ -262,8 +263,8 @@ class Ui_MainWindow(object):
 "QHeaderView::section:horizontal\n"
 "{\n"
 "    border: 1px solid rgb(33, 37, 43);\n"
-"	background-co"
-                        "lor: rgb(33, 37, 43);\n"
+"	backgrou"
+                        "nd-color: rgb(33, 37, 43);\n"
 "	padding: 3px;\n"
 "	border-top-left-radius: 7px;\n"
 "    border-top-right-radius: 7px;\n"
@@ -297,8 +298,8 @@ class Ui_MainWindow(object):
 "	border-radius: 5px;\n"
 "	padding: 10px;\n"
 "	selection-color: rgb(255, 255, 255);\n"
-"	selection-background-c"
-                        "olor: rgb(255, 121, 198);\n"
+"	selection-backgro"
+                        "und-color: rgb(255, 121, 198);\n"
 "}\n"
 "QPlainTextEdit  QScrollBar:vertical {\n"
 "    width: 8px;\n"
@@ -319,7 +320,7 @@ class Ui_MainWindow(object):
 "	padding: 10px;\n"
 "	selection-color: rgb(255, 255, 255);\n"
 "	selection-background-color: rgb(255, 121, 198);\n"
-"	border:rgb(33, 37, 43);\n"
+"	border: 2px solid rgb(64, 71, 88);\n"
 "}\n"
 "QTextEdit  QScrollBar:vertical {\n"
 "    width: 8px;\n"
@@ -327,9 +328,7 @@ class Ui_MainWindow(object):
 "QTextEdit  QScrollBar:horizontal {\n"
 "    height: 8px;\n"
 " }\n"
-"QTextEdit:hover {\n"
-"	border: 2px solid rgb(64, 71, 88);\n"
-"}\n"
+"\n"
 "QTextEdit:focus {\n"
 "	border: 2px solid rgb(91, 101, 124);\n"
 "}\n"
@@ -340,9 +339,9 @@ class Ui_MainWindow(object):
 "	border-radius: 5px;\n"
 "	padding: 10px;\n"
 "	selection-color: rgb(255, 255, 255);\n"
-"	selection-background-color: rgb(255, 12"
-                        "1, 198);\n"
-"	border: rgb(33, 37, 43);\n"
+"	selection-background-color: rgb(255, 121, 198);\n"
+"	border: 2px solid rgb(64, 71, 88)"
+                        ";\n"
 "}\n"
 "QScrollArea  QScrollBar:vertical {\n"
 "    width: 8px;\n"
@@ -350,10 +349,6 @@ class Ui_MainWindow(object):
 "QScrollArea QScrollBar:horizontal {\n"
 "    height: 8px;\n"
 " }\n"
-"QScrollArea:hover {\n"
-"	border: 2px solid rgb(64, 71, 88);\n"
-"}\n"
-"\n"
 "\n"
 "\n"
 "\n"
@@ -381,12 +376,12 @@ class Ui_MainWindow(object):
 "    subcontrol-origin: margin;\n"
 "}\n"
 "QScrollBar::sub-line:horizontal {\n"
-"    border: none;"
-                        "\n"
+"    border: none;\n"
 "    background: rgb(55, 63, 77);\n"
 "    width: 20px;\n"
 "	border-top-left-radius: 4px;\n"
-"    border-bottom-left-radius: 4px;\n"
+"    border-bott"
+                        "om-left-radius: 4px;\n"
 "    subcontrol-position: left;\n"
 "    subcontrol-origin: margin;\n"
 "}\n"
@@ -419,12 +414,12 @@ class Ui_MainWindow(object):
 "     subcontrol-position: bottom;\n"
 "     subcontrol-origin: margin;\n"
 " }\n"
-" QScrollBar::sub-li"
-                        "ne:vertical {\n"
+" QScrollBar::sub-line:vertical {\n"
 "	border: none;\n"
 "    background: rgb(55, 63, 77);\n"
 "     height: 20px;\n"
-"	border-top-left-radius: 4px;\n"
+"	border-top-lef"
+                        "t-radius: 4px;\n"
 "    border-top-right-radius: 4px;\n"
 "     subcontrol-position: top;\n"
 "     subcontrol-origin: margin;\n"
@@ -452,11 +447,11 @@ class Ui_MainWindow(object):
 "QCheckBox::indicator:checked {\n"
 "    background: 3px solid rgb(52, 59, 72);\n"
 "	border: 3px solid rgb(52, 59, 72);	\n"
-"	background-image: url(:/icons/images/icons/cil-check-alt.pn"
-                        "g);\n"
+"	background-image: url(:/icons/images/icons/cil-check-alt.png);\n"
 "}\n"
 "\n"
-"/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
+"/* //////////////////////////////////////////////////////////////////////////////////////////"
+                        "///////\n"
 "RadioButton */\n"
 "QRadioButton::indicator {\n"
 "    border: 3px solid rgb(52, 59, 72);\n"
@@ -489,11 +484,11 @@ class Ui_MainWindow(object):
 "	subcontrol-origin: padding;\n"
 "	subcontrol-position: top right;\n"
 "	width: 25px; \n"
-"	bord"
-                        "er-left-width: 3px;\n"
+"	border-left-width: 3px;\n"
 "	border-left-color: rgba(39, 44, 54, 150);\n"
 "	border-left-style: solid;\n"
-"	border-top-right-radius: 3px;\n"
+"	border-to"
+                        "p-right-radius: 3px;\n"
 "	border-bottom-right-radius: 3px;	\n"
 "	background-image: url(:/icons/images/icons/cil-arrow-bottom.png);\n"
 "	background-position: center;\n"
@@ -523,11 +518,11 @@ class Ui_MainWindow(object):
 "    height: 10px;\n"
 "    width: 10px;\n"
 "    margin: 0px;\n"
-""
-                        "	border-radius: 5px;\n"
+"	border-radius: 5px;\n"
 "}\n"
 "QSlider::handle:horizontal:hover {\n"
-"    background-color: rgb(195, 155, 255);\n"
+"    background-color: rgb(195, 155, 25"
+                        "5);\n"
 "}\n"
 "QSlider::handle:horizontal:pressed {\n"
 "    background-color: rgb(255, 121, 198);\n"
@@ -561,13 +556,13 @@ class Ui_MainWindow(object):
 "CommandLinkButton */\n"
 "QCommandLinkButton {	\n"
 "	color: rgb(255, 121, 198);\n"
-"	border-rad"
-                        "ius: 5px;\n"
+"	border-radius: 5px;\n"
 "	padding: 5px;\n"
 "	color: rgb(255, 170, 255);\n"
 "}\n"
 "QCommandLinkButton:hover {	\n"
-"	color: rgb(255, 170, 255);\n"
+"	colo"
+                        "r: rgb(255, 170, 255);\n"
 "	background-color: rgb(44, 49, 60);\n"
 "}\n"
 "QCommandLinkButton:pressed {	\n"
@@ -594,8 +589,14 @@ class Ui_MainWindow(object):
 "QTreeWidget {\n"
 "	border: 2px solid rgb(61, 70, 86);\n"
 "	border-radius: 5px;\n"
+"	font:10pt \"Segoe UI Semibold\";\n"
 "}\n"
-"")
+"QHeaderView{\n"
+"color: rgb(207, 249, 147);\n"
+"font:10pt \"Segoe UI\";\n"
+"text-decoration:underline;\n"
+"font-weight: bold;\n"
+"}")
         self.appMargins = QVBoxLayout(self.styleSheet)
         self.appMargins.setSpacing(0)
         self.appMargins.setObjectName(u"appMargins")
@@ -1062,7 +1063,7 @@ class Ui_MainWindow(object):
         self.stackedWidget.addWidget(self.data)
         self.wantToGetRidOfThis = QWidget()
         self.wantToGetRidOfThis.setObjectName(u"wantToGetRidOfThis")
-        self.wantToGetRidOfThis.setStyleSheet(u"b")
+        self.wantToGetRidOfThis.setStyleSheet(u"")
         self.verticalLayout = QVBoxLayout(self.wantToGetRidOfThis)
         self.verticalLayout.setSpacing(10)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -1080,7 +1081,7 @@ class Ui_MainWindow(object):
         self.logs.setObjectName(u"logs")
         self.lineLogs = QFrame(self.logs)
         self.lineLogs.setObjectName(u"lineLogs")
-        self.lineLogs.setGeometry(QRect(10, 40, 821, 20))
+        self.lineLogs.setGeometry(QRect(10, 40, 811, 20))
         sizePolicy.setHeightForWidth(self.lineLogs.sizePolicy().hasHeightForWidth())
         self.lineLogs.setSizePolicy(sizePolicy)
         self.lineLogs.setStyleSheet(u"background: none")
@@ -1096,11 +1097,12 @@ class Ui_MainWindow(object):
         self.scrollAreaLogsButtons.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 791, 111))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 787, 107))
         self.scrollAreaLogsButtons.setWidget(self.scrollAreaWidgetContents)
         self.textEditLogs = QTextEdit(self.logs)
         self.textEditLogs.setObjectName(u"textEditLogs")
         self.textEditLogs.setGeometry(QRect(10, 210, 811, 571))
+        self.textEditLogs.setReadOnly(True)
         self.stackedWidget.addWidget(self.logs)
         self.settings = QWidget()
         self.settings.setObjectName(u"settings")
