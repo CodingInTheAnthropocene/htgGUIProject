@@ -15,7 +15,6 @@
 # ///////////////////////////////////////////////////////////////
 
 
-
 from os.path import getsize
 import sys
 from ui_main import *
@@ -32,10 +31,10 @@ from modules.customWidgets import *
 from modules.flowLayout import FlowLayout
 
 
-
 # SET AS GLOBAL WIDGETS
 # ///////////////////////////////////////////////////////////////
-widgets = None,
+widgets = None
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -64,27 +63,27 @@ class MainWindow(QMainWindow):
         # //////////////////////////////////////////////////////////////
         UIFunctions.uiDefinitions(self)
 
-                # EXTRA LEFT BOX
+        # EXTRA LEFT BOX
         def openCloseLeftBox():
             UIFunctions.toggleLeftBox(self, True)
+
         widgets.toggleLeftBox.clicked.connect(openCloseLeftBox)
-        #widgets.extraCloseColuQ2mnBtn.clicked.connect(openCloseLeftBox)
+        # widgets.extraCloseColuQ2mnBtn.clicked.connect(openCloseLeftBox)
 
         # EXTRA RIGHT BOX
         def openCloseRightBox():
             UIFunctions.toggleRightBox(self, True)
+
         widgets.settingsTopBtn.clicked.connect(openCloseRightBox)
 
         # SHOW APP
         # ///////////////////////////////////////////////////////////////
-        
 
         self.show()
 
-
         # SET CUSTOM THEME
         # ///////////////////////////////////////////////////////////////
-        useCustomTheme =  False
+        useCustomTheme = False
         themeFile = "themes\py_dracula_light.qss"
 
         # SET THEME AND HACKS
@@ -95,18 +94,18 @@ class MainWindow(QMainWindow):
             # SET HACKS
             AppFunctions.setThemeHack(self)
 
-
-        
-        #widgets.gridLayout_3.addWidget(QPushButton("hellO!!"))
+        # widgets.gridLayout_3.addWidget(QPushButton("hellO!!"))
 
         ###
 
         # SET HOME PAGE AND SELECT MENUbe
         # ///////////////////////////////////////////////////////////////
         widgets.stackedWidget.setCurrentWidget(widgets.data)
-        widgets.buttonData.setStyleSheet(UIFunctions.selectMenu(widgets.buttonData.styleSheet()))
+        widgets.buttonData.setStyleSheet(
+            UIFunctions.selectMenu(widgets.buttonData.styleSheet())
+        )
 
-        #Main left menu
+        # Main left menu
         widgets.buttonData.clicked.connect(self.buttonClick)
         widgets.buttonLogs.clicked.connect(self.buttonClick)
         widgets.buttonDataSettings.clicked.connect(self.buttonClick)
@@ -116,51 +115,51 @@ class MainWindow(QMainWindow):
         widgets.buttonLogs.setToolTip("    Logs")
         widgets.buttonDataSettings.setToolTip("    Data Settings")
 
-
         ############################################################################################
-        #Dataset Instantiation
+        # Dataset Instantiation
         #############################################################################################
-        
+
         initiationFunctionDictionary = {
-            crownTenuresSettings : crownTenuresProcess,
-            forestHarvestingAuthoritySettings : forestHarvestingAuthorityProcess,
+            crownTenuresSettings: crownTenuresProcess,
+            forestHarvestingAuthoritySettings: forestHarvestingAuthorityProcess,
             forestManagedLicenceSettings: forestManagedLicenceProcess,
             harvestedAreasSettings: harvestedAreasProcess,
             parksRecreationDatasetsSettings: parksRecreationDatasetsProcess,
             parcelMapBCSettings: parcelMapBCProcess,
             digitalRoadAtlasSettings: digitalRoadAtlasProcess,
             alcAlrPolygonsSettings: alcAlrPolygonsProcess,
-            environmentalRemediationSitesSettings: environmentalRemediationSitesProcess           
+            environmentalRemediationSitesSettings: environmentalRemediationSitesProcess,
         }
 
-        datasetList = sorted([i for i in initiationFunctionDictionary], key=lambda x:x.name)
-        
+        datasetList = sorted(
+            [i for i in initiationFunctionDictionary], key=lambda x: x.name
+        )
 
-        #self.flowLayoutDatasets = QGridLayout(widgets.frameDatasets)
-        self.flowLayoutDatasets = FlowLayout(widgets.frameDatasets)        
+        self.flowLayoutDatasets = FlowLayout(widgets.frameDatasets)
 
         for i in datasetList:
-            newDataSetFrame = datasetFrame(widgets.frameDatasets, i, initiationFunctionDictionary[i])
+            newDataSetFrame = datasetFrame(
+                widgets.frameDatasets, i, initiationFunctionDictionary[i]
+            )
             self.flowLayoutDatasets.addWidget(newDataSetFrame)
 
         ############################################################################################
-        #Log instantiation
+        # Log instantiation
         ############################################################################################
-        self.flowLayoutLogs= FlowLayout(widgets.scrollAreaLogsButtons)
-        
-        for directoryName,_,files in walk(universalSettings.logFolder):
+        self.flowLayoutLogs = FlowLayout(widgets.scrollAreaLogsButtons)
+
+        for directoryName, _, files in walk(universalSettings.logFolder):
             for file in files:
-                newMonthButton= logButton(widgets.scrollAreaLogsButtons, f"{directoryName}\\{file}", widgets.textEditLogs)     
+                newMonthButton = logButton(
+                    widgets.scrollAreaLogsButtons,
+                    f"{directoryName}\\{file}",
+                    widgets.textEditLogs,
+                )
                 self.flowLayoutLogs.addWidget(newMonthButton)
-
-
-
 
     # BUTTONS CLICK
     # Post here your functions for clicked buttons
     # //////////////////////////////////////////////////////////////
-
-    
 
     def buttonClick(self):
         # get button clicked
@@ -181,25 +180,23 @@ class MainWindow(QMainWindow):
 
         # Show Data Settings
         if btnName == "buttonDataSettings":
-            widgets.stackedWidget.setCurrentWidget(widgets.settings) # SET PAGE
-            UIFunctions.resetStyle(self, btnName) # RESET ANOTHERS BUTTONS SELECTED
-            btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet())) # SELECT MENU
+            widgets.stackedWidget.setCurrentWidget(widgets.settings)  # SET PAGE
+            UIFunctions.resetStyle(self, btnName)  # RESET ANOTHERS BUTTONS SELECTED
+            btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))  # SELECT MENU
 
     # RESIZE EVENTS
     # ///////////////////////////////////////////////////////////////
     def resizeEvent(self, event):
         # Update Size Grips
         UIFunctions.resize_grips(self)
-    
+
     def mousePressEvent(self, event):
         # SET DRAG POS WINDOW
         self.dragPos = event.globalPos()
 
     ############################################################################################
-    #Dataset Instantiation
+    # Dataset Instantiation
     #############################################################################################
-
-
 
 
 if __name__ == "__main__":

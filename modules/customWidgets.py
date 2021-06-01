@@ -10,7 +10,9 @@ from re import sub
 
 
 class datasetFrame(QFrame):
+    ''' A datasetFrame is the primary intterface for updating datasets in the updater. It consists of a QTree for presenting dataset information, An update button which starts the update process for that dataset, as well as settings button which brings the user to the settings for that particular dataset. Is itself a custom qframe'''
     def __init__(self, parent, settingsClass, processFunction):
+        '''Initializes widget with parent widget, A dataset Setttings class, and the process function asssociated with that settings class'''
         super(datasetFrame, self).__init__(parent)
 
         # Attributes
@@ -24,6 +26,7 @@ class datasetFrame(QFrame):
         self.multiplySizeCollapsed = 250
         self.multiplySizeExpanded = 400
 
+        # get data currency from data catalogue API if Data has a data catalogue ID
         if self.dataCatalogueId != "N/A":
             try:
                 self.hostedFileDate = getCurrency(self.dataCatalogueId)
@@ -33,6 +36,7 @@ class datasetFrame(QFrame):
         else:
             self.hostedFileDate = "N/A"
 
+        # get information about local Current file, display "Not Found" if unable
         try:
             self.fileSize = f"{getsize(self.currentPath)/1000000:.2} mb"
             self.date = getFileCreatedDate(self.currentPath)
@@ -52,6 +56,7 @@ class datasetFrame(QFrame):
         self.qtree.collapsed.connect(self.qtreeCollapse)
 
     def initFrame(self):
+        '''Starting state for widget'''
         self.resize(QSize(self.multiplySizeCollapsed, 111))
         self.setObjectName(f"frame_{self.alias}")
         sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -79,8 +84,6 @@ class datasetFrame(QFrame):
         QTreeWidgetItem(__qtreewidgetitem1)
         self.qtree.setObjectName(f"qTree_{self.alias}")
         self.qtree.setMaximumSize(QSize(16777215, 16777212))
-        # self.qtree.setStyleSheet(u"QHeaderView::section {border-radius: 5px; background: rgb(189, 147, 249);}")
-        # self.qtree.header().setVisible(True)
         self.qtree.header().setCascadingSectionResizes(False)
 
         self.verticalLayout_4.addWidget(self.qtree)
@@ -187,6 +190,7 @@ class datasetFrame(QFrame):
         self.animationCollapse.start()
 
     def turnPurple(self):
+        '''Turns QTree header purple when dataset is out of date'''
         # NOTE, could turn various colours depending on how out-of-date it is safe
         if (
             isinstance(self.date, date) == True
@@ -199,6 +203,7 @@ class datasetFrame(QFrame):
                 self.qtree.header().setVisible(True)
 
     def turnRed(self):
+        '''Turns qTree headder red if there is a problem accessing the local File or BC data catalogue API Information About the data where applicable'''
         if "Not Found" in (self.date, self.hostedFileDate):
             self.qtree.setStyleSheet(
                 "QHeaderView::section {border-radius: 5px; background: rgb(255,153,153); color:black}"
@@ -207,15 +212,21 @@ class datasetFrame(QFrame):
 
 
 class logButton(QPushButton):
+    '''Buttons for switching the view of log information. A custom qpushbutton.'''
     def __init__(self, parent, logFile, textEdit):
+        '''Instantiated with the parent widget , the log file assoociated with the button, and  the QTextedit widget where the information will be displayed'''
         super(logButton, self).__init__(parent)
         self.logFile = logFile
         self.textEdit = textEdit
 
-        self.clicked.connect(self.updateTextEdit)
+        #functions on init
         self.initButton()
 
+        # signals and slots
+        self.clicked.connect(self.updateTextEdit)
+
     def initButton(self):
+        ''' Sttarting state for widget '''
         fileName = splitext(split(self.logFile)[1])[0]
         self.setObjectName(f"button{fileName}")
         self.setGeometry(QRect(130, 120, 150, 30))
@@ -234,10 +245,15 @@ class logButton(QPushButton):
         self.setIcon(icon)
 
     def updateTextEdit(self):
+        '''Updates target QTextedit widget with information from log and displays it in a fancy colour coordinated way '''
+        
+        # Read JSON Log into Python dictionary
         with open(self.logFile, "r") as log:
             logDictionary = load(log)["dates"]
-
+        #clear textedit widget
         self.textEdit.clear()
+        
+        # display and colour date information  in TextEdit widget
         for dateEntry in logDictionary:
             self.textEdit.setTextColor(QColor.fromRgb(207, 249, 147))
             font = QFont()
@@ -248,28 +264,36 @@ class logButton(QPushButton):
 
             self.textEdit.append(f"{dateEntry}")
             dateEntry = logDictionary[dateEntry]["times"]
-
+            
+            # display and colour time information
             for timeEntry in dateEntry:
                 self.textEdit.setTextColor(QColor.fromRgb(189, 147, 249))
                 font = QFont()
                 font.setFamily("Segoe UI")
                 font.setPointSize(10)
-                font.setBold( True)
+                font.setBold(True)
                 self.textEdit.setCurrentFont(font)
 
                 self.textEdit.append(f" {timeEntry}")
                 timeEntry = dateEntry[timeEntry]
-
+                
+                # display and colour dataset attributes
                 for datasetAttribute in timeEntry:
                     self.textEdit.setTextColor(QColor.fromRgb(221, 221, 221))
                     font = QFont()
                     font.setFamily("Segoe UI")
                     font.setPointSize(9)
-                    font.setBold(   True)
+                    font.setBold(True)
                     self.textEdit.setCurrentFont(font)
-                    
-                    formattedDatasetAttribute = sub(r"(\w)([A-Z])", r"\1 \2", datasetAttribute).title()
-                    self.textEdit.append(f'   {formattedDatasetAttribute}: {timeEntry[datasetAttribute]}')
+
+                    # display Dataset attribute key/value pair Splitting camel case on capital letters
+                    formattedDatasetAttribute = sub(
+                        r"(\w)([A-Z])", r"\1 \2", datasetAttribute
+                    ).title()
+                    self.textEdit.append(
+                        f"   {formattedDatasetAttribute}: {timeEntry[datasetAttribute]}"
+                    )
                 
+                #Space between update events
                 self.textEdit.append("\n")
 

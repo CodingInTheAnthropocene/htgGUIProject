@@ -2,7 +2,6 @@
 
 from modules.dataSettings import *
 from genericpath import exists, getsize
-from re import X
 from requests import post, Session, get
 from urllib.request import urlopen, urlretrieve
 from lxml.html import fromstring
