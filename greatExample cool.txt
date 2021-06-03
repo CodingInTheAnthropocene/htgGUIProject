@@ -1,0 +1,132 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Try the new cross-platform PowerShell https://aka.ms/pscore6
+
+PS C:\Users\laure\Desktop\htgGUIProject> conda activate arcgispro-py3-htg1
+conda : The term 'conda' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ conda activate arcgispro-py3-htg1
++ ~~~~~
+    + CategoryInfo          : ObjectNotFound: (conda:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+PS C:\Users\laure\Desktop\htgGUIProject> python
+Python 2.7.17 (v2.7.17:c2f86d86e6, Oct 19 2019, 20:49:36) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import json
+>>> blob = """
+... {
+...     "dataSets": {
+...         "catalogueDatasets": {
+...             "dataSetNamePH":{
+...                 "name": "namee placeholder ",
+...                 "alias": "aliasPlaceholder",
+...                 "dataCatalogueId": "ID  placeholder",
+...                 "fileName": "filenamePlaceholder",
+...                 "currentPath": "currentPathPlaceholder",
+...                 "jsonPayload": "marine",
+...                 "downloadFolder": "universal",
+...                 "archiveFolder": "universal",
+...                 "arcgisWorkspaceFolder": "universal",
+...                 "updateDays": 1
+...
+...
+...
+...
+...
+...             }
+...         }
+...
+...     }
+... }"""
+>>> json.loads(blob)
+{u'dataSets': {u'catalogueDatasets': {u'dataSetNamePH': {u'updateDays': 1, u'downloadFolder': u'universal', u'name': u'namee placeholder ', u'currentPath': u'currentPathPlaceholder', u'dataCatalogueId': u'ID  placeholder', u'fileName': u'filenamePlaceholder', u'alias': u'aliasPlaceholder', u'jsonPayload': u'marine', u'archiveFolder': u'universal', u'arcgisWorkspaceFolder': u'universal'}}}}
+>>> json.loads(blob).keys()
+[u'dataSets']
+>>> json.loads(blob).keys()
+[u'dataSets']
+>>>
+>>> blob = """
+... {
+...     "dataSets": {
+...         "catalogueDatasets": {
+...             "dataSetNamePH":{
+...                 "name": "namee placeholder ",
+...                 "alias": "aliasPlaceholder",
+...                 "dataCatalogueId": "ID  placeholder",
+...                 "fileName": "filenamePlaceholder",
+...                 "currentPath": "currentPathPlaceholder",
+...                 "jsonPayload": "marine",
+...                 "downloadFolder": "universal",
+...                 "archiveFolder": "universal",
+...                 "arcgisWorkspaceFolder": "universal",
+...                 "updateDays": 1
+...
+...
+...             }
+...         }
+...
+...     },
+...
+...     "universal": {
+...         "bestguy": "laurence"
+...
+...     }
+... }"""
+>>> configData = json.loads(blob)
+>>> configData
+{u'universal': {u'bestguy': u'laurence'}, u'dataSets': {u'catalogueDatasets': {u'dataSetNamePH': {u'updateDays': 1, u'downloadFolder': u'universal', u'name': u'namee placeholder ', u'currentPath': u'currentPathPlaceholder', u'dataCatalogueId': u'ID  placeholder', u'fileName': u'filenamePlaceholder', u'alias': u'aliasPlaceholder', u'jsonPayload': u'marine', u'archiveFolder': u'universal', u'arcgisWorkspaceFolder': u'universal'}}}}
+>>> configData["dataSets"]["catalogueDataSets"]["dataSetNamePH"]["downloadFolder"]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+KeyError: 'catalogueDataSets'
+>>> configData["dataSets"]["catalogueDatasets"]["dataSetNamePH"]["downloadFolder"] 
+u'universal'
+>>> configData["dataSets"]["catalogueDatasets"]["dataSetNamePH"]["downloadFolder"] = configData["universal"]["bestguy"
+... ]
+>>> import pprint
+>>> pprint(configdata)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'configdata' is not defined
+>>> pprint(configData)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'module' object is not callable
+>>> pprint.pprint(configData)
+{u'dataSets': {u'catalogueDatasets': {u'dataSetNamePH': {u'alias': u'aliasPlaceholder',
+                                                         u'arcgisWorkspaceFolder': u'universal',
+                                                         u'archiveFolder': u'universal',
+                                                         u'currentPath': u'currentPathPlaceholder',
+                                                         u'dataCatalogueId': u'ID  placeholder',
+                                                         u'downloadFolder': u'laurence',
+                                                         u'fileName': u'filenamePlaceholder',
+                                                         u'jsonPayload': u'marine',
+                                                         u'name': u'namee placeholder ',
+                                                         u'updateDays': 1}}},
+ u'universal': {u'bestguy': u'laurence'}}
+>>> pprint.pprint(configData) 
+{u'dataSets': {u'catalogueDatasets': {u'dataSetNamePH': {u'alias': u'aliasPlaceholder',
+                                                         u'arcgisWorkspaceFolder': u'universal',
+                                                         u'archiveFolder': u'universal',
+                                                         u'currentPath': u'currentPathPlaceholder',
+                                                         u'dataCatalogueId': u'ID  placeholder',
+                                                         u'downloadFolder': u'laurence',
+                                                         u'fileName': u'filenamePlaceholder',
+                                                         u'jsonPayload': u'marine',
+                                                         u'name': u'namee placeholder ',
+                                                         u'updateDays': 1}}},
+ u'universal': {u'bestguy': u'laurence'}}
+>>> def greggFunc():
+...     print("Gregg is actually the best!")
+... 
+>>> configData["dataSets"]["catalogueDatasets"]["dataSetNamePH"]["downloadFolder"] = greggFunc                        
+>>> configData["dataSets"]["catalogueDatasets"]["dataSetNamePH"]["downloadFolder"]            
+<function greggFunc at 0x032E09B0>
+>>> configData["dataSets"]["catalogueDatasets"]["dataSetNamePH"]["downloadFolder"]()
+Gregg is actually the best!
+>>> processingFunction = configData["dataSets"]["catalogueDatasets"]["dataSetNamePH"]["downloadFolder"] 
+>>> processingFunction()
+Gregg is actually the best!
+>>>

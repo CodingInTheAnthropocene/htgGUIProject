@@ -1,0 +1,37 @@
+{
+  "datasets": {
+    "catalogueDatasets": {
+      "tantalisCrownTenures": {
+        "name": "Tantalis Crown Tenures",
+        "dataCatalogueId": "3544ad91-0cf2-4926-a08a-bfe42d9a031d",
+        "alias": "crownTenures",
+        "currentPath": "C:\\Users\\laure\\Desktop\\test\\crownTenuresProcessed.shp",
+        "updateFrequency": 1,
+        "fileName": "crownTenuresProcessed.shp",
+        "downloadFolder": "universal",
+        "archiveFolder": "universal",
+        "arcgisWorkspaceFolder": "universal",
+        "soiArea": "marine",
+        "rawFormat": "shapefile"
+        
+      }
+    },
+    "hybridDatasets": {}
+  },
+
+  "universalPaths": {
+    "htgLandsPath": "C:\\Users\\laure\\Desktop\\test\\data\\lands_new.gdb\\lands1_new",
+    "soiPath": "C:\\Users\\laure\\Desktop\\test\\data\\HTG_SOIs_all.shp",
+    "soiCorePath": "",
+    "soiMarinePath": "",
+    "soiWHAPath": "",
+    "aoiPath": "C:\\Users\\laure\\Desktop\\test\\data\\SW_BC.shp"
+  },
+
+  "universalSettings": {
+    "email": "",
+    "downloadFolder": "C:\\Users\\laure\\Desktop\\test",
+    "archiveFolder": "C:\\Users\\laure\\Desktop\\test\\testArchive",
+    "logFolder": "C:\\Users\\laure\\Desktop\\test\\testArchive\\logs"
+  }
+}

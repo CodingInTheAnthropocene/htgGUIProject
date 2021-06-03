@@ -29,6 +29,7 @@ from widgets import *
 from modules.functionLib import *
 from modules.customWidgets import *
 from modules.flowLayout import FlowLayout
+from modules.geoprocessingFunctions import *
 
 
 # SET AS GLOBAL WIDGETS
@@ -120,7 +121,7 @@ class MainWindow(QMainWindow):
         #############################################################################################
 
         initiationFunctionDictionary = {
-            crownTenuresSettings: crownTenuresProcess,
+            crownTenuresSettings: crownTenuresGeoprocessing,
             forestHarvestingAuthoritySettings: forestHarvestingAuthorityProcess,
             forestManagedLicenceSettings: forestManagedLicenceProcess,
             harvestedAreasSettings: harvestedAreasProcess,

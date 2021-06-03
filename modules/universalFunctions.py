@@ -157,7 +157,7 @@ def writeLog(settingsClass, currentPath, archiveStatus):
 
     logFolder = f"{universalSettings.logFolder}"
 
-    # make directory if it doesn't exist
+    # make log directory if it doesn't exist
     if exists(logFolder) == False:
         mkdir(logFolder)
 
@@ -170,7 +170,7 @@ def writeLog(settingsClass, currentPath, archiveStatus):
     logPath = f'{logFolder}\\{today.strftime("%B-%Y")}.json'
     todayString = today.strftime("%Y-%m-%d")
     time = today.strftime("%H:%M:%S")
-    updateDataset = settingsClass.name
+    datasetName = settingsClass.name
 
     # build log dictionary
     logDictionary = {
@@ -178,7 +178,7 @@ def writeLog(settingsClass, currentPath, archiveStatus):
             todayString: {
                 "times": {
                     time: {
-                        "dataset": updateDataset,
+                        "dataset": datasetName,
                         "updateStack": updateStack,
                         "archiveFolder": archiveFolder,
                         "currentPath": currentPath,
@@ -261,7 +261,9 @@ def catalogueWarehouseDownload(downloadFolder, jsonPayload, fileName):
             json=json,
         )
 
-    # Check distribution.data.gov.bc.ca Every 15 seconds to see if order is available, download it To specified file path if it is
+    # Check distribution.data.gov.bc.ca Every 15 seconds to see if order is available, download it To specified file path if it is.
+
+    #NOTE: this Folloowing section is the most fragile piece of the whole software. If anything about the way the BC data catalogue operates changes, thiis function is likely to go down And break every data catalogue download. If there are problems with the download, this is the likely culprit.
     orderNumber = response.json()["Value"]
     orderURL = f"https://apps.gov.bc.ca/pub/dwds-rasp/pickup/{orderNumber}"
 
@@ -281,6 +283,7 @@ def catalogueWarehouseDownload(downloadFolder, jsonPayload, fileName):
                 stopLoop = True
                 break
 
+    # download file from link and unzip it
     rawPath = shapeFileDownloadUnzip(downloadURL, downloadFolder, fileName)
 
     print("done downloading!")

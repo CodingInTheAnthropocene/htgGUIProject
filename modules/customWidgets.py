@@ -7,11 +7,12 @@ from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import *
 from re import sub
+from modules.processClass import *
 
 
 class datasetFrame(QFrame):
     ''' A datasetFrame is the primary intterface for updating datasets in the updater. It consists of a QTree for presenting dataset information, An update button which starts the update process for that dataset, as well as settings button which brings the user to the settings for that particular dataset. Is itself a custom qframe'''
-    def __init__(self, parent, settingsClass, processFunction):
+    def __init__(self, parent, settingsClass, geoprocessingFunction):
         '''Initializes widget with parent widget, A dataset Setttings class, and the process function asssociated with that settings class'''
         super(datasetFrame, self).__init__(parent)
 
@@ -49,8 +50,11 @@ class datasetFrame(QFrame):
         self.turnPurple()
         self.turnRed()
 
+        # process class insstantiation
+        processClass = catalogueUpdateProcess(settingsClass, geoprocessingFunction)
+
         # Signals and slots
-        self.buttonUpdate.clicked.connect(processFunction)
+        self.buttonUpdate.clicked.connect(processClass.catalogueUpdateProcess)
         self.buttonUpdate.clicked.connect(self.turnPurple)
         self.qtree.expanded.connect(self.qtreeExpand)
         self.qtree.collapsed.connect(self.qtreeCollapse)
