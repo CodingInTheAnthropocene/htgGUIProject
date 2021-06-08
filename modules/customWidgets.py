@@ -11,10 +11,11 @@ from PySide6.QtCore import *
 from re import sub
 from traceback import print_exc
 
+
 class datasetFrame(QFrame):
     """ A datasetFrame is the primary intterface for updating datasets in the updater. It consists of a QTree for presenting dataset information, An update button which starts the update process for that dataset, as well as settings button which brings the user to the settings for that particular dataset. Is itself a custom qframe"""
 
-    def __init__(self, parent, dataset, updateFunction):
+    def __init__(self, parent, dataset, updateFunction, mainWindow, mainWidgets, settingsWidget):
         """Initializes widget with parent widget, A dataset Setttings class, and the process function asssociated with that settings class"""
         super(datasetFrame, self).__init__(parent)
 
@@ -28,8 +29,11 @@ class datasetFrame(QFrame):
         self.dataCatalogueIdList = dataset.dataCatalogueIdList
         self.xCollapsed= 250
         self.xExpanded = 400
-        self.yCollapsed= 100
+        self.yCollapsed= 115
         self.yExpanded= 200
+        self.mainWidgets=mainWidgets
+        self.settingsWidget=settingsWidget
+        self.mainWindow=mainWindow
 
         # get data currency from data catalogue API if Data has a data catalogue ID
         if self.dataCatalogueIdList != "N/A":
@@ -59,6 +63,7 @@ class datasetFrame(QFrame):
 
         # Signals and slots
         self.buttonUpdate.clicked.connect(lambda: updateFunction())
+        self.buttonSettings.clicked.connect(self.navigateToSettings)
         self.buttonUpdate.clicked.connect(self.turnPurple)
         self.qtree.expanded.connect(self.qtreeExpand)
         self.qtree.collapsed.connect(self.qtreeCollapse)
@@ -75,7 +80,7 @@ class datasetFrame(QFrame):
         self.setFrameShape(QFrame.StyledPanel)
         self.setFrameShadow(QFrame.Raised)
         #self.setMaximumSize( self.xCollapsed, self.yCollapsed )
-        self.setMinimumSize( self.xCollapsed,self.yCollapsed)
+        #self.setMinimumSize( self.xCollapsed,self.yCollapsed)
 
 
         self.verticalLayout_4 = QVBoxLayout(self)
@@ -95,7 +100,6 @@ class datasetFrame(QFrame):
         QTreeWidgetItem(__qtreewidgetitem1)
         QTreeWidgetItem(__qtreewidgetitem1)
         self.qtree.setObjectName(f"qTree_{self.alias}")
-        self.qtree.setMaximumSize(QSize(16777215, 16777212))
         self.qtree.header().setCascadingSectionResizes(False)
 
         self.verticalLayout_4.addWidget(self.qtree)
@@ -221,6 +225,18 @@ class datasetFrame(QFrame):
                 "QHeaderView::section {border-radius: 5px; background: rgb(255,153,153); color:black}"
             )
             self.qtree.header().setVisible(True)
+    
+    def navigateToSettings(self):
+        from modules.ui_functions import UIFunctions
+
+        self.mainWidgets.stackedWidget.setCurrentWidget(self.mainWidgets.settings)
+        self.mainWidgets.scrollAreaSettings.ensureWidgetVisible(self.settingsWidget)
+        btn=self.mainWidgets.buttonDataSettings
+        btnName = btn.objectName()
+        UIFunctions.resetStyle(self.mainWindow, btnName)
+        btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))  
+
+
 
 
 class logButton(QPushButton):

@@ -13,6 +13,7 @@ from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 
 import resources_rc
+import resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -28,6 +29,7 @@ class Ui_MainWindow(object):
         font.setBold(False)
         font.setItalic(False)
         self.styleSheet.setFont(font)
+        self.styleSheet.setCursor(QCursor(Qt.PointingHandCursor))
         self.styleSheet.setStyleSheet(u"/* /////////////////////////////////////////////////////////////////////////////////////////////////\n"
 "\n"
 "SET APP STYLESHEET - FULL STYLES HERE\n"
@@ -592,9 +594,7 @@ class Ui_MainWindow(object):
 "	font:10pt \"Segoe UI Semibold\";\n"
 "}\n"
 "QHeaderView{\n"
-"color: rgb(207, 249, 147);\n"
 "font:10pt \"Segoe UI\";\n"
-"text-decoration:underline;\n"
 "font-weight: bold;\n"
 "}")
         self.appMargins = QVBoxLayout(self.styleSheet)
@@ -1020,104 +1020,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setSpacing(0)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
-        self.pagesContainer = QFrame(self.content)
-        self.pagesContainer.setObjectName(u"pagesContainer")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.pagesContainer.sizePolicy().hasHeightForWidth())
-        self.pagesContainer.setSizePolicy(sizePolicy3)
-        self.pagesContainer.setStyleSheet(u"")
-        self.pagesContainer.setFrameShape(QFrame.NoFrame)
-        self.pagesContainer.setFrameShadow(QFrame.Raised)
-        self.stackedWidget = QStackedWidget(self.pagesContainer)
-        self.stackedWidget.setObjectName(u"stackedWidget")
-        self.stackedWidget.setGeometry(QRect(0, 0, 831, 791))
-        sizePolicy3.setHeightForWidth(self.stackedWidget.sizePolicy().hasHeightForWidth())
-        self.stackedWidget.setSizePolicy(sizePolicy3)
-        self.stackedWidget.setStyleSheet(u"background: transparent;")
-        self.data = QWidget()
-        self.data.setObjectName(u"data")
-        sizePolicy3.setHeightForWidth(self.data.sizePolicy().hasHeightForWidth())
-        self.data.setSizePolicy(sizePolicy3)
-        self.data.setStyleSheet(u"")
-        self.labelData = QLabel(self.data)
-        self.labelData.setObjectName(u"labelData")
-        self.labelData.setGeometry(QRect(10, 0, 181, 51))
-        self.labelData.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
-        self.datasetsline = QFrame(self.data)
-        self.datasetsline.setObjectName(u"datasetsline")
-        self.datasetsline.setGeometry(QRect(10, 40, 821, 20))
-        sizePolicy.setHeightForWidth(self.datasetsline.sizePolicy().hasHeightForWidth())
-        self.datasetsline.setSizePolicy(sizePolicy)
-        self.datasetsline.setStyleSheet(u"background: none")
-        self.datasetsline.setFrameShape(QFrame.HLine)
-        self.datasetsline.setFrameShadow(QFrame.Sunken)
-        self.frameDatasets = QFrame(self.data)
-        self.frameDatasets.setObjectName(u"frameDatasets")
-        self.frameDatasets.setGeometry(QRect(10, 60, 841, 741))
-        sizePolicy3.setHeightForWidth(self.frameDatasets.sizePolicy().hasHeightForWidth())
-        self.frameDatasets.setSizePolicy(sizePolicy3)
-        self.frameDatasets.setFrameShape(QFrame.StyledPanel)
-        self.frameDatasets.setFrameShadow(QFrame.Raised)
-        self.stackedWidget.addWidget(self.data)
-        self.wantToGetRidOfThis = QWidget()
-        self.wantToGetRidOfThis.setObjectName(u"wantToGetRidOfThis")
-        self.wantToGetRidOfThis.setStyleSheet(u"")
-        self.verticalLayout = QVBoxLayout(self.wantToGetRidOfThis)
-        self.verticalLayout.setSpacing(10)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(10, 10, 10, 10)
-        self.row_3 = QFrame(self.wantToGetRidOfThis)
-        self.row_3.setObjectName(u"row_3")
-        self.row_3.setMinimumSize(QSize(0, 150))
-        self.row_3.setFrameShape(QFrame.StyledPanel)
-        self.row_3.setFrameShadow(QFrame.Raised)
-
-        self.verticalLayout.addWidget(self.row_3)
-
-        self.stackedWidget.addWidget(self.wantToGetRidOfThis)
-        self.logs = QWidget()
-        self.logs.setObjectName(u"logs")
-        self.lineLogs = QFrame(self.logs)
-        self.lineLogs.setObjectName(u"lineLogs")
-        self.lineLogs.setGeometry(QRect(10, 40, 811, 20))
-        sizePolicy.setHeightForWidth(self.lineLogs.sizePolicy().hasHeightForWidth())
-        self.lineLogs.setSizePolicy(sizePolicy)
-        self.lineLogs.setStyleSheet(u"background: none")
-        self.lineLogs.setFrameShape(QFrame.HLine)
-        self.lineLogs.setFrameShadow(QFrame.Sunken)
-        self.labelLogs = QLabel(self.logs)
-        self.labelLogs.setObjectName(u"labelLogs")
-        self.labelLogs.setGeometry(QRect(10, 0, 181, 51))
-        self.labelLogs.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
-        self.scrollAreaLogsButtons = QScrollArea(self.logs)
-        self.scrollAreaLogsButtons.setObjectName(u"scrollAreaLogsButtons")
-        self.scrollAreaLogsButtons.setGeometry(QRect(10, 70, 811, 131))
-        self.scrollAreaLogsButtons.setWidgetResizable(True)
-        self.scrollAreaWidgetContents = QWidget()
-        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 787, 107))
-        self.scrollAreaLogsButtons.setWidget(self.scrollAreaWidgetContents)
-        self.textEditLogs = QTextEdit(self.logs)
-        self.textEditLogs.setObjectName(u"textEditLogs")
-        self.textEditLogs.setGeometry(QRect(10, 210, 811, 571))
-        self.textEditLogs.setReadOnly(True)
-        self.stackedWidget.addWidget(self.logs)
-        self.settings = QWidget()
-        self.settings.setObjectName(u"settings")
-        self.verticalLayout_20 = QVBoxLayout(self.settings)
-        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
-        self.label = QLabel(self.settings)
-        self.label.setObjectName(u"label")
-        self.label.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_20.addWidget(self.label)
-
-        self.stackedWidget.addWidget(self.settings)
-
-        self.horizontalLayout_4.addWidget(self.pagesContainer)
-
         self.extraRightBox = QFrame(self.content)
         self.extraRightBox.setObjectName(u"extraRightBox")
         self.extraRightBox.setMinimumSize(QSize(0, 0))
@@ -1197,6 +1099,582 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_4.addWidget(self.extraRightBox)
 
+        self.pagesContainer = QFrame(self.content)
+        self.pagesContainer.setObjectName(u"pagesContainer")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.pagesContainer.sizePolicy().hasHeightForWidth())
+        self.pagesContainer.setSizePolicy(sizePolicy3)
+        self.pagesContainer.setStyleSheet(u"")
+        self.pagesContainer.setFrameShape(QFrame.NoFrame)
+        self.pagesContainer.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_5 = QHBoxLayout(self.pagesContainer)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.stackedWidget = QStackedWidget(self.pagesContainer)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+        sizePolicy3.setHeightForWidth(self.stackedWidget.sizePolicy().hasHeightForWidth())
+        self.stackedWidget.setSizePolicy(sizePolicy3)
+        self.stackedWidget.setStyleSheet(u"background: transparent;")
+        self.data = QWidget()
+        self.data.setObjectName(u"data")
+        sizePolicy3.setHeightForWidth(self.data.sizePolicy().hasHeightForWidth())
+        self.data.setSizePolicy(sizePolicy3)
+        self.data.setStyleSheet(u"")
+        self.verticalLayout_4 = QVBoxLayout(self.data)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.labelData = QLabel(self.data)
+        self.labelData.setObjectName(u"labelData")
+        self.labelData.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
+
+        self.verticalLayout_4.addWidget(self.labelData)
+
+        self.line = QFrame(self.data)
+        self.line.setObjectName(u"line")
+        self.line.setStyleSheet(u"background: none")
+        self.line.setFrameShape(QFrame.HLine)
+        self.line.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_4.addWidget(self.line)
+
+        self.scrollArea_2 = QScrollArea(self.data)
+        self.scrollArea_2.setObjectName(u"scrollArea_2")
+        self.scrollArea_2.setWidgetResizable(True)
+        self.scrollAreaWidgetContents_2 = QWidget()
+        self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 929, 757))
+        self.verticalLayout_22 = QVBoxLayout(self.scrollAreaWidgetContents_2)
+        self.verticalLayout_22.setObjectName(u"verticalLayout_22")
+        self.verticalLayout_22.setContentsMargins(0, 0, 0, 0)
+        self.frame = QFrame(self.scrollAreaWidgetContents_2)
+        self.frame.setObjectName(u"frame")
+        self.frame.setFrameShape(QFrame.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_21 = QVBoxLayout(self.frame)
+        self.verticalLayout_21.setObjectName(u"verticalLayout_21")
+        self.verticalLayout_21.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_16 = QVBoxLayout()
+        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
+        self.labelCatalogueDatasets = QLabel(self.frame)
+        self.labelCatalogueDatasets.setObjectName(u"labelCatalogueDatasets")
+        self.labelCatalogueDatasets.setStyleSheet(u"font: 700 17pt \"Segoe UI Semibold\"; color: rgb(207,249,147)")
+
+        self.verticalLayout_16.addWidget(self.labelCatalogueDatasets)
+
+        self.frameCatalogueDatasets = QFrame(self.frame)
+        self.frameCatalogueDatasets.setObjectName(u"frameCatalogueDatasets")
+        sizePolicy3.setHeightForWidth(self.frameCatalogueDatasets.sizePolicy().hasHeightForWidth())
+        self.frameCatalogueDatasets.setSizePolicy(sizePolicy3)
+        self.frameCatalogueDatasets.setFrameShape(QFrame.StyledPanel)
+        self.frameCatalogueDatasets.setFrameShadow(QFrame.Raised)
+
+        self.verticalLayout_16.addWidget(self.frameCatalogueDatasets)
+
+
+        self.verticalLayout_21.addLayout(self.verticalLayout_16)
+
+        self.verticalLayout_19 = QVBoxLayout()
+        self.verticalLayout_19.setObjectName(u"verticalLayout_19")
+        self.labelOtherDatasets = QLabel(self.frame)
+        self.labelOtherDatasets.setObjectName(u"labelOtherDatasets")
+        self.labelOtherDatasets.setStyleSheet(u"font: 700 17pt \"Segoe UI Semibold\"; color: rgb(207,249,147)")
+
+        self.verticalLayout_19.addWidget(self.labelOtherDatasets)
+
+        self.frameOtherDatasets = QFrame(self.frame)
+        self.frameOtherDatasets.setObjectName(u"frameOtherDatasets")
+        sizePolicy3.setHeightForWidth(self.frameOtherDatasets.sizePolicy().hasHeightForWidth())
+        self.frameOtherDatasets.setSizePolicy(sizePolicy3)
+        self.frameOtherDatasets.setFrameShape(QFrame.StyledPanel)
+        self.frameOtherDatasets.setFrameShadow(QFrame.Raised)
+
+        self.verticalLayout_19.addWidget(self.frameOtherDatasets)
+
+
+        self.verticalLayout_21.addLayout(self.verticalLayout_19)
+
+
+        self.verticalLayout_22.addWidget(self.frame)
+
+        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
+
+        self.verticalLayout_4.addWidget(self.scrollArea_2)
+
+        self.stackedWidget.addWidget(self.data)
+        self.logs = QWidget()
+        self.logs.setObjectName(u"logs")
+        self.verticalLayout_15 = QVBoxLayout(self.logs)
+        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
+        self.labelLogs = QLabel(self.logs)
+        self.labelLogs.setObjectName(u"labelLogs")
+        self.labelLogs.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
+
+        self.verticalLayout_15.addWidget(self.labelLogs)
+
+        self.lineLogs = QFrame(self.logs)
+        self.lineLogs.setObjectName(u"lineLogs")
+        sizePolicy.setHeightForWidth(self.lineLogs.sizePolicy().hasHeightForWidth())
+        self.lineLogs.setSizePolicy(sizePolicy)
+        self.lineLogs.setStyleSheet(u"background: none")
+        self.lineLogs.setFrameShape(QFrame.HLine)
+        self.lineLogs.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_15.addWidget(self.lineLogs)
+
+        self.scrollAreaLogsButtons = QScrollArea(self.logs)
+        self.scrollAreaLogsButtons.setObjectName(u"scrollAreaLogsButtons")
+        self.scrollAreaLogsButtons.setMaximumSize(QSize(16777215, 150))
+        self.scrollAreaLogsButtons.setWidgetResizable(True)
+        self.scrollAreaWidgetContents = QWidget()
+        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 929, 126))
+        self.scrollAreaLogsButtons.setWidget(self.scrollAreaWidgetContents)
+
+        self.verticalLayout_15.addWidget(self.scrollAreaLogsButtons)
+
+        self.textEditLogs = QTextEdit(self.logs)
+        self.textEditLogs.setObjectName(u"textEditLogs")
+        self.textEditLogs.setReadOnly(True)
+
+        self.verticalLayout_15.addWidget(self.textEditLogs)
+
+        self.stackedWidget.addWidget(self.logs)
+        self.settings = QWidget()
+        self.settings.setObjectName(u"settings")
+        self.verticalLayout_20 = QVBoxLayout(self.settings)
+        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
+        self.labelSettings = QLabel(self.settings)
+        self.labelSettings.setObjectName(u"labelSettings")
+        self.labelSettings.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
+
+        self.verticalLayout_20.addWidget(self.labelSettings)
+
+        self.lineSettings = QFrame(self.settings)
+        self.lineSettings.setObjectName(u"lineSettings")
+        sizePolicy.setHeightForWidth(self.lineSettings.sizePolicy().hasHeightForWidth())
+        self.lineSettings.setSizePolicy(sizePolicy)
+        self.lineSettings.setStyleSheet(u"background: none")
+        self.lineSettings.setFrameShape(QFrame.HLine)
+        self.lineSettings.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_20.addWidget(self.lineSettings)
+
+        self.scrollAreaSettings = QScrollArea(self.settings)
+        self.scrollAreaSettings.setObjectName(u"scrollAreaSettings")
+        self.scrollAreaSettings.setMinimumSize(QSize(0, 0))
+        self.scrollAreaSettings.setMaximumSize(QSize(16777215, 16777215))
+        self.scrollAreaSettings.setWidgetResizable(True)
+        self.scrollAreaWidgetContents_6 = QWidget()
+        self.scrollAreaWidgetContents_6.setObjectName(u"scrollAreaWidgetContents_6")
+        self.scrollAreaWidgetContents_6.setGeometry(QRect(0, 0, 929, 711))
+        self.verticalLayout_17 = QVBoxLayout(self.scrollAreaWidgetContents_6)
+        self.verticalLayout_17.setSpacing(0)
+        self.verticalLayout_17.setObjectName(u"verticalLayout_17")
+        self.verticalLayout_17.setContentsMargins(0, -1, 0, 0)
+        self.frameAllSettings = QFrame(self.scrollAreaWidgetContents_6)
+        self.frameAllSettings.setObjectName(u"frameAllSettings")
+        self.frameAllSettings.setFrameShape(QFrame.StyledPanel)
+        self.frameAllSettings.setFrameShadow(QFrame.Raised)
+        self.verticalLayout = QVBoxLayout(self.frameAllSettings)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.frameUniversalSettings = QFrame(self.frameAllSettings)
+        self.frameUniversalSettings.setObjectName(u"frameUniversalSettings")
+        self.frameUniversalSettings.setFrameShape(QFrame.StyledPanel)
+        self.frameUniversalSettings.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_18 = QVBoxLayout(self.frameUniversalSettings)
+        self.verticalLayout_18.setObjectName(u"verticalLayout_18")
+        self.frame_36 = QFrame(self.frameUniversalSettings)
+        self.frame_36.setObjectName(u"frame_36")
+        self.frame_36.setFrameShape(QFrame.StyledPanel)
+        self.frame_36.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_39 = QHBoxLayout(self.frame_36)
+        self.horizontalLayout_39.setObjectName(u"horizontalLayout_39")
+        self.horizontalLayout_39.setContentsMargins(0, 0, 0, 0)
+        self.pushButton = QPushButton(self.frame_36)
+        self.pushButton.setObjectName(u"pushButton")
+        self.pushButton.setStyleSheet(u"font: 700 15pt \"Segoe UI Semibold\"; color: rgb(147, 249, 240); border:none;")
+
+        self.horizontalLayout_39.addWidget(self.pushButton, 0, Qt.AlignLeft)
+
+
+        self.verticalLayout_18.addWidget(self.frame_36, 0, Qt.AlignTop)
+
+        self.frame_17 = QFrame(self.frameUniversalSettings)
+        self.frame_17.setObjectName(u"frame_17")
+        self.frame_17.setFrameShape(QFrame.StyledPanel)
+        self.frame_17.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_20 = QHBoxLayout(self.frame_17)
+        self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
+        self.label_17 = QLabel(self.frame_17)
+        self.label_17.setObjectName(u"label_17")
+        self.label_17.setMaximumSize(QSize(110, 16777215))
+        self.label_17.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+
+        self.horizontalLayout_20.addWidget(self.label_17)
+
+        self.lineEditEmail = QLineEdit(self.frame_17)
+        self.lineEditEmail.setObjectName(u"lineEditEmail")
+        self.lineEditEmail.setMinimumSize(QSize(200, 25))
+        self.lineEditEmail.setMaximumSize(QSize(200, 16777215))
+
+        self.horizontalLayout_20.addWidget(self.lineEditEmail)
+
+
+        self.verticalLayout_18.addWidget(self.frame_17, 0, Qt.AlignLeft)
+
+        self.frame_18 = QFrame(self.frameUniversalSettings)
+        self.frame_18.setObjectName(u"frame_18")
+        self.frame_18.setFrameShape(QFrame.StyledPanel)
+        self.frame_18.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_21 = QHBoxLayout(self.frame_18)
+        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
+        self.label_18 = QLabel(self.frame_18)
+        self.label_18.setObjectName(u"label_18")
+        self.label_18.setMinimumSize(QSize(110, 0))
+        self.label_18.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+
+        self.horizontalLayout_21.addWidget(self.label_18)
+
+        self.lineEditDownloadFolder = QLineEdit(self.frame_18)
+        self.lineEditDownloadFolder.setObjectName(u"lineEditDownloadFolder")
+        self.lineEditDownloadFolder.setMinimumSize(QSize(0, 25))
+        self.lineEditDownloadFolder.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout_21.addWidget(self.lineEditDownloadFolder)
+
+        self.buttonDownloadPath = QPushButton(self.frame_18)
+        self.buttonDownloadPath.setObjectName(u"buttonDownloadPath")
+        self.buttonDownloadPath.setMinimumSize(QSize(120, 25))
+        self.buttonDownloadPath.setMaximumSize(QSize(120, 16777215))
+        self.buttonDownloadPath.setFont(font)
+        self.buttonDownloadPath.setCursor(QCursor(Qt.PointingHandCursor))
+        self.buttonDownloadPath.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        icon4 = QIcon()
+        icon4.addFile(u":/icons/images/icons/cil-folder-open.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.buttonDownloadPath.setIcon(icon4)
+
+        self.horizontalLayout_21.addWidget(self.buttonDownloadPath)
+
+
+        self.verticalLayout_18.addWidget(self.frame_18)
+
+        self.frame_19 = QFrame(self.frameUniversalSettings)
+        self.frame_19.setObjectName(u"frame_19")
+        self.frame_19.setFrameShape(QFrame.StyledPanel)
+        self.frame_19.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_22 = QHBoxLayout(self.frame_19)
+        self.horizontalLayout_22.setObjectName(u"horizontalLayout_22")
+        self.label_19 = QLabel(self.frame_19)
+        self.label_19.setObjectName(u"label_19")
+        self.label_19.setMinimumSize(QSize(110, 0))
+        self.label_19.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+
+        self.horizontalLayout_22.addWidget(self.label_19)
+
+        self.lineEditArchiveFolder = QLineEdit(self.frame_19)
+        self.lineEditArchiveFolder.setObjectName(u"lineEditArchiveFolder")
+        self.lineEditArchiveFolder.setMinimumSize(QSize(0, 25))
+        self.lineEditArchiveFolder.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout_22.addWidget(self.lineEditArchiveFolder)
+
+        self.buttonArchiveFolderPath = QPushButton(self.frame_19)
+        self.buttonArchiveFolderPath.setObjectName(u"buttonArchiveFolderPath")
+        self.buttonArchiveFolderPath.setMinimumSize(QSize(120, 25))
+        self.buttonArchiveFolderPath.setMaximumSize(QSize(120, 16777215))
+        self.buttonArchiveFolderPath.setFont(font)
+        self.buttonArchiveFolderPath.setCursor(QCursor(Qt.PointingHandCursor))
+        self.buttonArchiveFolderPath.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        self.buttonArchiveFolderPath.setIcon(icon4)
+
+        self.horizontalLayout_22.addWidget(self.buttonArchiveFolderPath)
+
+
+        self.verticalLayout_18.addWidget(self.frame_19)
+
+        self.frame_24 = QFrame(self.frameUniversalSettings)
+        self.frame_24.setObjectName(u"frame_24")
+        self.frame_24.setFrameShape(QFrame.StyledPanel)
+        self.frame_24.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_27 = QHBoxLayout(self.frame_24)
+        self.horizontalLayout_27.setObjectName(u"horizontalLayout_27")
+        self.label_24 = QLabel(self.frame_24)
+        self.label_24.setObjectName(u"label_24")
+        self.label_24.setMinimumSize(QSize(110, 0))
+        self.label_24.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+
+        self.horizontalLayout_27.addWidget(self.label_24)
+
+        self.lineEditLogFolder = QLineEdit(self.frame_24)
+        self.lineEditLogFolder.setObjectName(u"lineEditLogFolder")
+        self.lineEditLogFolder.setMinimumSize(QSize(0, 25))
+        self.lineEditLogFolder.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout_27.addWidget(self.lineEditLogFolder)
+
+        self.buttonLogFolderPath = QPushButton(self.frame_24)
+        self.buttonLogFolderPath.setObjectName(u"buttonLogFolderPath")
+        self.buttonLogFolderPath.setMinimumSize(QSize(120, 25))
+        self.buttonLogFolderPath.setMaximumSize(QSize(120, 16777215))
+        self.buttonLogFolderPath.setFont(font)
+        self.buttonLogFolderPath.setCursor(QCursor(Qt.PointingHandCursor))
+        self.buttonLogFolderPath.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        self.buttonLogFolderPath.setIcon(icon4)
+
+        self.horizontalLayout_27.addWidget(self.buttonLogFolderPath)
+
+
+        self.verticalLayout_18.addWidget(self.frame_24)
+
+        self.frame_40 = QFrame(self.frameUniversalSettings)
+        self.frame_40.setObjectName(u"frame_40")
+        self.frame_40.setFrameShape(QFrame.StyledPanel)
+        self.frame_40.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_43 = QHBoxLayout(self.frame_40)
+        self.horizontalLayout_43.setObjectName(u"horizontalLayout_43")
+        self.label_36 = QLabel(self.frame_40)
+        self.label_36.setObjectName(u"label_36")
+        self.label_36.setMinimumSize(QSize(110, 0))
+        self.label_36.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+
+        self.horizontalLayout_43.addWidget(self.label_36)
+
+        self.lineEditHtgLands = QLineEdit(self.frame_40)
+        self.lineEditHtgLands.setObjectName(u"lineEditHtgLands")
+        self.lineEditHtgLands.setMinimumSize(QSize(0, 25))
+        self.lineEditHtgLands.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout_43.addWidget(self.lineEditHtgLands)
+
+        self.buttonHtgLands = QPushButton(self.frame_40)
+        self.buttonHtgLands.setObjectName(u"buttonHtgLands")
+        self.buttonHtgLands.setMinimumSize(QSize(120, 25))
+        self.buttonHtgLands.setMaximumSize(QSize(120, 16777215))
+        self.buttonHtgLands.setFont(font)
+        self.buttonHtgLands.setCursor(QCursor(Qt.PointingHandCursor))
+        self.buttonHtgLands.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        self.buttonHtgLands.setIcon(icon4)
+
+        self.horizontalLayout_43.addWidget(self.buttonHtgLands)
+
+
+        self.verticalLayout_18.addWidget(self.frame_40)
+
+        self.frame_41 = QFrame(self.frameUniversalSettings)
+        self.frame_41.setObjectName(u"frame_41")
+        self.frame_41.setFrameShape(QFrame.StyledPanel)
+        self.frame_41.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_44 = QHBoxLayout(self.frame_41)
+        self.horizontalLayout_44.setObjectName(u"horizontalLayout_44")
+        self.label_37 = QLabel(self.frame_41)
+        self.label_37.setObjectName(u"label_37")
+        self.label_37.setMinimumSize(QSize(110, 0))
+        self.label_37.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+
+        self.horizontalLayout_44.addWidget(self.label_37)
+
+        self.lineEditSoiAll = QLineEdit(self.frame_41)
+        self.lineEditSoiAll.setObjectName(u"lineEditSoiAll")
+        self.lineEditSoiAll.setMinimumSize(QSize(0, 25))
+        self.lineEditSoiAll.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout_44.addWidget(self.lineEditSoiAll)
+
+        self.buttonSoiAll = QPushButton(self.frame_41)
+        self.buttonSoiAll.setObjectName(u"buttonSoiAll")
+        self.buttonSoiAll.setMinimumSize(QSize(120, 25))
+        self.buttonSoiAll.setMaximumSize(QSize(120, 16777215))
+        self.buttonSoiAll.setFont(font)
+        self.buttonSoiAll.setCursor(QCursor(Qt.PointingHandCursor))
+        self.buttonSoiAll.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        self.buttonSoiAll.setIcon(icon4)
+
+        self.horizontalLayout_44.addWidget(self.buttonSoiAll)
+
+
+        self.verticalLayout_18.addWidget(self.frame_41)
+
+        self.frame_34 = QFrame(self.frameUniversalSettings)
+        self.frame_34.setObjectName(u"frame_34")
+        self.frame_34.setFrameShape(QFrame.StyledPanel)
+        self.frame_34.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_37 = QHBoxLayout(self.frame_34)
+        self.horizontalLayout_37.setObjectName(u"horizontalLayout_37")
+        self.label_32 = QLabel(self.frame_34)
+        self.label_32.setObjectName(u"label_32")
+        self.label_32.setMinimumSize(QSize(110, 0))
+        self.label_32.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+
+        self.horizontalLayout_37.addWidget(self.label_32)
+
+        self.lineEditCore = QLineEdit(self.frame_34)
+        self.lineEditCore.setObjectName(u"lineEditCore")
+        self.lineEditCore.setMinimumSize(QSize(0, 25))
+        self.lineEditCore.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout_37.addWidget(self.lineEditCore)
+
+        self.buttonCorePath = QPushButton(self.frame_34)
+        self.buttonCorePath.setObjectName(u"buttonCorePath")
+        self.buttonCorePath.setMinimumSize(QSize(120, 25))
+        self.buttonCorePath.setMaximumSize(QSize(120, 16777215))
+        self.buttonCorePath.setFont(font)
+        self.buttonCorePath.setCursor(QCursor(Qt.PointingHandCursor))
+        self.buttonCorePath.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        self.buttonCorePath.setIcon(icon4)
+
+        self.horizontalLayout_37.addWidget(self.buttonCorePath)
+
+
+        self.verticalLayout_18.addWidget(self.frame_34)
+
+        self.frame_37 = QFrame(self.frameUniversalSettings)
+        self.frame_37.setObjectName(u"frame_37")
+        self.frame_37.setFrameShape(QFrame.StyledPanel)
+        self.frame_37.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_40 = QHBoxLayout(self.frame_37)
+        self.horizontalLayout_40.setObjectName(u"horizontalLayout_40")
+        self.label_33 = QLabel(self.frame_37)
+        self.label_33.setObjectName(u"label_33")
+        self.label_33.setMinimumSize(QSize(110, 0))
+        self.label_33.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+
+        self.horizontalLayout_40.addWidget(self.label_33)
+
+        self.lineEditMarine = QLineEdit(self.frame_37)
+        self.lineEditMarine.setObjectName(u"lineEditMarine")
+        self.lineEditMarine.setMinimumSize(QSize(0, 25))
+        self.lineEditMarine.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout_40.addWidget(self.lineEditMarine)
+
+        self.buttonMarinePath = QPushButton(self.frame_37)
+        self.buttonMarinePath.setObjectName(u"buttonMarinePath")
+        self.buttonMarinePath.setMinimumSize(QSize(120, 25))
+        self.buttonMarinePath.setMaximumSize(QSize(120, 16777215))
+        self.buttonMarinePath.setFont(font)
+        self.buttonMarinePath.setCursor(QCursor(Qt.PointingHandCursor))
+        self.buttonMarinePath.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        self.buttonMarinePath.setIcon(icon4)
+
+        self.horizontalLayout_40.addWidget(self.buttonMarinePath)
+
+
+        self.verticalLayout_18.addWidget(self.frame_37)
+
+        self.frame_38 = QFrame(self.frameUniversalSettings)
+        self.frame_38.setObjectName(u"frame_38")
+        self.frame_38.setFrameShape(QFrame.StyledPanel)
+        self.frame_38.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_41 = QHBoxLayout(self.frame_38)
+        self.horizontalLayout_41.setObjectName(u"horizontalLayout_41")
+        self.label_34 = QLabel(self.frame_38)
+        self.label_34.setObjectName(u"label_34")
+        self.label_34.setMinimumSize(QSize(110, 0))
+        self.label_34.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+
+        self.horizontalLayout_41.addWidget(self.label_34)
+
+        self.lineEditWha = QLineEdit(self.frame_38)
+        self.lineEditWha.setObjectName(u"lineEditWha")
+        self.lineEditWha.setMinimumSize(QSize(0, 25))
+        self.lineEditWha.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout_41.addWidget(self.lineEditWha)
+
+        self.buttonWhaPath = QPushButton(self.frame_38)
+        self.buttonWhaPath.setObjectName(u"buttonWhaPath")
+        self.buttonWhaPath.setMinimumSize(QSize(120, 25))
+        self.buttonWhaPath.setMaximumSize(QSize(120, 16777215))
+        self.buttonWhaPath.setFont(font)
+        self.buttonWhaPath.setCursor(QCursor(Qt.PointingHandCursor))
+        self.buttonWhaPath.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        self.buttonWhaPath.setIcon(icon4)
+
+        self.horizontalLayout_41.addWidget(self.buttonWhaPath)
+
+
+        self.verticalLayout_18.addWidget(self.frame_38)
+
+        self.frame_39 = QFrame(self.frameUniversalSettings)
+        self.frame_39.setObjectName(u"frame_39")
+        self.frame_39.setFrameShape(QFrame.StyledPanel)
+        self.frame_39.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_42 = QHBoxLayout(self.frame_39)
+        self.horizontalLayout_42.setObjectName(u"horizontalLayout_42")
+        self.label_35 = QLabel(self.frame_39)
+        self.label_35.setObjectName(u"label_35")
+        self.label_35.setMinimumSize(QSize(110, 0))
+        self.label_35.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+
+        self.horizontalLayout_42.addWidget(self.label_35)
+
+        self.lineEditSwBc = QLineEdit(self.frame_39)
+        self.lineEditSwBc.setObjectName(u"lineEditSwBc")
+        self.lineEditSwBc.setMinimumSize(QSize(0, 25))
+        self.lineEditSwBc.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout_42.addWidget(self.lineEditSwBc)
+
+        self.buttonSwBcPath = QPushButton(self.frame_39)
+        self.buttonSwBcPath.setObjectName(u"buttonSwBcPath")
+        self.buttonSwBcPath.setMinimumSize(QSize(120, 25))
+        self.buttonSwBcPath.setMaximumSize(QSize(120, 16777215))
+        self.buttonSwBcPath.setFont(font)
+        self.buttonSwBcPath.setCursor(QCursor(Qt.PointingHandCursor))
+        self.buttonSwBcPath.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        self.buttonSwBcPath.setIcon(icon4)
+
+        self.horizontalLayout_42.addWidget(self.buttonSwBcPath)
+
+
+        self.verticalLayout_18.addWidget(self.frame_39)
+
+        self.frame_2 = QFrame(self.frameUniversalSettings)
+        self.frame_2.setObjectName(u"frame_2")
+        self.frame_2.setMinimumSize(QSize(0, 10))
+        self.frame_2.setFrameShape(QFrame.StyledPanel)
+        self.frame_2.setFrameShadow(QFrame.Raised)
+        self.line_2 = QFrame(self.frame_2)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setGeometry(QRect(0, 30, 907, 3))
+        self.line_2.setStyleSheet(u"background:none")
+        self.line_2.setFrameShape(QFrame.HLine)
+        self.line_2.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_18.addWidget(self.frame_2)
+
+
+        self.verticalLayout.addWidget(self.frameUniversalSettings)
+
+
+        self.verticalLayout_17.addWidget(self.frameAllSettings)
+
+        self.scrollAreaSettings.setWidget(self.scrollAreaWidgetContents_6)
+
+        self.verticalLayout_20.addWidget(self.scrollAreaSettings)
+
+        self.buttonApplySettings = QPushButton(self.settings)
+        self.buttonApplySettings.setObjectName(u"buttonApplySettings")
+        self.buttonApplySettings.setMinimumSize(QSize(130, 40))
+        self.buttonApplySettings.setMaximumSize(QSize(120, 16777215))
+        self.buttonApplySettings.setFont(font)
+        self.buttonApplySettings.setCursor(QCursor(Qt.PointingHandCursor))
+        self.buttonApplySettings.setStyleSheet(u"background-color: rgb(52, 59, 72);")
+        icon5 = QIcon()
+        icon5.addFile(u":/icons/images/icons/cil-loop-circular.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.buttonApplySettings.setIcon(icon5)
+
+        self.verticalLayout_20.addWidget(self.buttonApplySettings)
+
+        self.stackedWidget.addWidget(self.settings)
+
+        self.horizontalLayout_5.addWidget(self.stackedWidget)
+
+
+        self.horizontalLayout_4.addWidget(self.pagesContainer)
+
 
         self.verticalLayout_6.addWidget(self.content)
 
@@ -1269,11 +1747,37 @@ class Ui_MainWindow(object):
         self.closeAppBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Close", None))
 #endif // QT_CONFIG(tooltip)
         self.closeAppBtn.setText("")
-        self.labelData.setText(QCoreApplication.translate("MainWindow", u"Datasets", None))
-        self.labelLogs.setText(QCoreApplication.translate("MainWindow", u"Logs", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"NEW PAGE TEST", None))
         self.btn_message.setText(QCoreApplication.translate("MainWindow", u"Message", None))
         self.btn_print.setText(QCoreApplication.translate("MainWindow", u"Print", None))
         self.btn_logout.setText(QCoreApplication.translate("MainWindow", u"Logout", None))
+        self.labelData.setText(QCoreApplication.translate("MainWindow", u"Datasets", None))
+        self.labelCatalogueDatasets.setText(QCoreApplication.translate("MainWindow", u"Catalogue Datasets", None))
+        self.labelOtherDatasets.setText(QCoreApplication.translate("MainWindow", u"Other  Datasets", None))
+        self.labelLogs.setText(QCoreApplication.translate("MainWindow", u"Logs", None))
+        self.labelSettings.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
+#if QT_CONFIG(tooltip)
+        self.pushButton.setToolTip(QCoreApplication.translate("MainWindow", u"Click to hide", None))
+#endif // QT_CONFIG(tooltip)
+        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Universal Settings", None))
+        self.label_17.setText(QCoreApplication.translate("MainWindow", u"E-mail:", None))
+        self.label_18.setText(QCoreApplication.translate("MainWindow", u"Download Folder:", None))
+        self.buttonDownloadPath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
+        self.label_19.setText(QCoreApplication.translate("MainWindow", u"Archive Folder: ", None))
+        self.buttonArchiveFolderPath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
+        self.label_24.setText(QCoreApplication.translate("MainWindow", u"Log Folder", None))
+        self.buttonLogFolderPath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
+        self.label_36.setText(QCoreApplication.translate("MainWindow", u"HTG Lands", None))
+        self.buttonHtgLands.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
+        self.label_37.setText(QCoreApplication.translate("MainWindow", u"HTG SOIs All", None))
+        self.buttonSoiAll.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
+        self.label_32.setText(QCoreApplication.translate("MainWindow", u"Core:", None))
+        self.buttonCorePath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
+        self.label_33.setText(QCoreApplication.translate("MainWindow", u"Marine:", None))
+        self.buttonMarinePath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
+        self.label_34.setText(QCoreApplication.translate("MainWindow", u"WHA:", None))
+        self.buttonWhaPath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
+        self.label_35.setText(QCoreApplication.translate("MainWindow", u"SW BC (Roads Mask):", None))
+        self.buttonSwBcPath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
+        self.buttonApplySettings.setText(QCoreApplication.translate("MainWindow", u"Apply Settings", None))
     # retranslateUi
 

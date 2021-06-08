@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainZvCkGR.ui'
+## Form generated from reading UI file 'mainAEvvRx.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.0.3
 ##
@@ -594,9 +594,7 @@ class Ui_MainWindow(object):
 "	font:10pt \"Segoe UI Semibold\";\n"
 "}\n"
 "QHeaderView{\n"
-"color: rgb(207, 249, 147);\n"
 "font:10pt \"Segoe UI\";\n"
-"text-decoration:underline;\n"
 "font-weight: bold;\n"
 "}")
         self.appMargins = QVBoxLayout(self.styleSheet)
@@ -1111,9 +1109,10 @@ class Ui_MainWindow(object):
         self.pagesContainer.setStyleSheet(u"")
         self.pagesContainer.setFrameShape(QFrame.NoFrame)
         self.pagesContainer.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_5 = QHBoxLayout(self.pagesContainer)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.stackedWidget = QStackedWidget(self.pagesContainer)
         self.stackedWidget.setObjectName(u"stackedWidget")
-        self.stackedWidget.setGeometry(QRect(0, 0, 831, 871))
         sizePolicy3.setHeightForWidth(self.stackedWidget.sizePolicy().hasHeightForWidth())
         self.stackedWidget.setSizePolicy(sizePolicy3)
         self.stackedWidget.setStyleSheet(u"background: transparent;")
@@ -1122,30 +1121,43 @@ class Ui_MainWindow(object):
         sizePolicy3.setHeightForWidth(self.data.sizePolicy().hasHeightForWidth())
         self.data.setSizePolicy(sizePolicy3)
         self.data.setStyleSheet(u"")
+        self.verticalLayout_4 = QVBoxLayout(self.data)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.labelData = QLabel(self.data)
         self.labelData.setObjectName(u"labelData")
-        self.labelData.setGeometry(QRect(10, -1, 181, 51))
         self.labelData.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
-        self.datasetsline = QFrame(self.data)
-        self.datasetsline.setObjectName(u"datasetsline")
-        self.datasetsline.setGeometry(QRect(10, 40, 821, 20))
-        sizePolicy.setHeightForWidth(self.datasetsline.sizePolicy().hasHeightForWidth())
-        self.datasetsline.setSizePolicy(sizePolicy)
-        self.datasetsline.setStyleSheet(u"background: none")
-        self.datasetsline.setFrameShape(QFrame.HLine)
-        self.datasetsline.setFrameShadow(QFrame.Sunken)
-        self.frame = QFrame(self.data)
+
+        self.verticalLayout_4.addWidget(self.labelData)
+
+        self.line = QFrame(self.data)
+        self.line.setObjectName(u"line")
+        self.line.setStyleSheet(u"background: none")
+        self.line.setFrameShape(QFrame.HLine)
+        self.line.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_4.addWidget(self.line)
+
+        self.scrollArea_2 = QScrollArea(self.data)
+        self.scrollArea_2.setObjectName(u"scrollArea_2")
+        self.scrollArea_2.setWidgetResizable(True)
+        self.scrollAreaWidgetContents_2 = QWidget()
+        self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 929, 757))
+        self.verticalLayout_22 = QVBoxLayout(self.scrollAreaWidgetContents_2)
+        self.verticalLayout_22.setObjectName(u"verticalLayout_22")
+        self.verticalLayout_22.setContentsMargins(0, 0, 0, 0)
+        self.frame = QFrame(self.scrollAreaWidgetContents_2)
         self.frame.setObjectName(u"frame")
-        self.frame.setGeometry(QRect(10, 70, 771, 771))
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_20 = QVBoxLayout(self.frame)
-        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
+        self.verticalLayout_21 = QVBoxLayout(self.frame)
+        self.verticalLayout_21.setObjectName(u"verticalLayout_21")
+        self.verticalLayout_21.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_16 = QVBoxLayout()
         self.verticalLayout_16.setObjectName(u"verticalLayout_16")
         self.labelCatalogueDatasets = QLabel(self.frame)
         self.labelCatalogueDatasets.setObjectName(u"labelCatalogueDatasets")
-        self.labelCatalogueDatasets.setStyleSheet(u"font: 700 15pt \"Segoe UI Semibold\"; color: rgb(207,249,147)")
+        self.labelCatalogueDatasets.setStyleSheet(u"font: 700 17pt \"Segoe UI Semibold\"; color: rgb(207,249,147)")
 
         self.verticalLayout_16.addWidget(self.labelCatalogueDatasets)
 
@@ -1159,13 +1171,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_16.addWidget(self.frameCatalogueDatasets)
 
 
-        self.verticalLayout_20.addLayout(self.verticalLayout_16)
+        self.verticalLayout_21.addLayout(self.verticalLayout_16)
 
         self.verticalLayout_19 = QVBoxLayout()
         self.verticalLayout_19.setObjectName(u"verticalLayout_19")
         self.labelOtherDatasets = QLabel(self.frame)
         self.labelOtherDatasets.setObjectName(u"labelOtherDatasets")
-        self.labelOtherDatasets.setStyleSheet(u"font: 700 15pt \"Segoe UI Semibold\"; color: rgb(207,249,147)")
+        self.labelOtherDatasets.setStyleSheet(u"font: 700 17pt \"Segoe UI Semibold\"; color: rgb(207,249,147)")
 
         self.verticalLayout_19.addWidget(self.labelOtherDatasets)
 
@@ -1179,67 +1191,93 @@ class Ui_MainWindow(object):
         self.verticalLayout_19.addWidget(self.frameOtherDatasets)
 
 
-        self.verticalLayout_20.addLayout(self.verticalLayout_19)
+        self.verticalLayout_21.addLayout(self.verticalLayout_19)
+
+
+        self.verticalLayout_22.addWidget(self.frame)
+
+        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_2)
+
+        self.verticalLayout_4.addWidget(self.scrollArea_2)
 
         self.stackedWidget.addWidget(self.data)
         self.logs = QWidget()
         self.logs.setObjectName(u"logs")
+        self.verticalLayout_15 = QVBoxLayout(self.logs)
+        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
+        self.labelLogs = QLabel(self.logs)
+        self.labelLogs.setObjectName(u"labelLogs")
+        self.labelLogs.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
+
+        self.verticalLayout_15.addWidget(self.labelLogs)
+
         self.lineLogs = QFrame(self.logs)
         self.lineLogs.setObjectName(u"lineLogs")
-        self.lineLogs.setGeometry(QRect(10, 40, 811, 20))
         sizePolicy.setHeightForWidth(self.lineLogs.sizePolicy().hasHeightForWidth())
         self.lineLogs.setSizePolicy(sizePolicy)
         self.lineLogs.setStyleSheet(u"background: none")
         self.lineLogs.setFrameShape(QFrame.HLine)
         self.lineLogs.setFrameShadow(QFrame.Sunken)
-        self.labelLogs = QLabel(self.logs)
-        self.labelLogs.setObjectName(u"labelLogs")
-        self.labelLogs.setGeometry(QRect(10, -5, 181, 51))
-        self.labelLogs.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
+
+        self.verticalLayout_15.addWidget(self.lineLogs)
+
         self.scrollAreaLogsButtons = QScrollArea(self.logs)
         self.scrollAreaLogsButtons.setObjectName(u"scrollAreaLogsButtons")
-        self.scrollAreaLogsButtons.setGeometry(QRect(20, 70, 801, 131))
+        self.scrollAreaLogsButtons.setMaximumSize(QSize(16777215, 150))
         self.scrollAreaLogsButtons.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 777, 107))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 929, 126))
         self.scrollAreaLogsButtons.setWidget(self.scrollAreaWidgetContents)
+
+        self.verticalLayout_15.addWidget(self.scrollAreaLogsButtons)
+
         self.textEditLogs = QTextEdit(self.logs)
         self.textEditLogs.setObjectName(u"textEditLogs")
-        self.textEditLogs.setGeometry(QRect(20, 210, 801, 571))
         self.textEditLogs.setReadOnly(True)
+
+        self.verticalLayout_15.addWidget(self.textEditLogs)
+
         self.stackedWidget.addWidget(self.logs)
         self.settings = QWidget()
         self.settings.setObjectName(u"settings")
+        self.verticalLayout_20 = QVBoxLayout(self.settings)
+        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
         self.labelSettings = QLabel(self.settings)
         self.labelSettings.setObjectName(u"labelSettings")
-        self.labelSettings.setGeometry(QRect(10, -7, 181, 61))
         self.labelSettings.setStyleSheet(u"font: 700 30pt \"Segoe UI\";")
+
+        self.verticalLayout_20.addWidget(self.labelSettings)
+
         self.lineSettings = QFrame(self.settings)
         self.lineSettings.setObjectName(u"lineSettings")
-        self.lineSettings.setGeometry(QRect(10, 40, 811, 20))
         sizePolicy.setHeightForWidth(self.lineSettings.sizePolicy().hasHeightForWidth())
         self.lineSettings.setSizePolicy(sizePolicy)
         self.lineSettings.setStyleSheet(u"background: none")
         self.lineSettings.setFrameShape(QFrame.HLine)
         self.lineSettings.setFrameShadow(QFrame.Sunken)
-        self.scrollArea = QScrollArea(self.settings)
-        self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setGeometry(QRect(10, 60, 700, 701))
-        self.scrollArea.setMinimumSize(QSize(600, 0))
-        self.scrollArea.setMaximumSize(QSize(700, 16777215))
-        self.scrollArea.setWidgetResizable(True)
+
+        self.verticalLayout_20.addWidget(self.lineSettings)
+
+        self.scrollAreaSettings = QScrollArea(self.settings)
+        self.scrollAreaSettings.setObjectName(u"scrollAreaSettings")
+        self.scrollAreaSettings.setMinimumSize(QSize(0, 0))
+        self.scrollAreaSettings.setMaximumSize(QSize(16777215, 16777215))
+        self.scrollAreaSettings.setWidgetResizable(True)
         self.scrollAreaWidgetContents_6 = QWidget()
         self.scrollAreaWidgetContents_6.setObjectName(u"scrollAreaWidgetContents_6")
-        self.scrollAreaWidgetContents_6.setGeometry(QRect(0, 0, 676, 677))
+        self.scrollAreaWidgetContents_6.setGeometry(QRect(0, 0, 929, 711))
         self.verticalLayout_17 = QVBoxLayout(self.scrollAreaWidgetContents_6)
+        self.verticalLayout_17.setSpacing(0)
         self.verticalLayout_17.setObjectName(u"verticalLayout_17")
+        self.verticalLayout_17.setContentsMargins(0, -1, 0, 0)
         self.frameAllSettings = QFrame(self.scrollAreaWidgetContents_6)
         self.frameAllSettings.setObjectName(u"frameAllSettings")
         self.frameAllSettings.setFrameShape(QFrame.StyledPanel)
         self.frameAllSettings.setFrameShadow(QFrame.Raised)
         self.verticalLayout = QVBoxLayout(self.frameAllSettings)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.frameUniversalSettings = QFrame(self.frameAllSettings)
         self.frameUniversalSettings.setObjectName(u"frameUniversalSettings")
         self.frameUniversalSettings.setFrameShape(QFrame.StyledPanel)
@@ -1252,6 +1290,7 @@ class Ui_MainWindow(object):
         self.frame_36.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_39 = QHBoxLayout(self.frame_36)
         self.horizontalLayout_39.setObjectName(u"horizontalLayout_39")
+        self.horizontalLayout_39.setContentsMargins(0, 0, 0, 0)
         self.pushButton = QPushButton(self.frame_36)
         self.pushButton.setObjectName(u"pushButton")
         self.pushButton.setStyleSheet(u"font: 700 15pt \"Segoe UI Semibold\"; color: rgb(147, 249, 240); border:none;")
@@ -1259,7 +1298,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_39.addWidget(self.pushButton, 0, Qt.AlignLeft)
 
 
-        self.verticalLayout_18.addWidget(self.frame_36)
+        self.verticalLayout_18.addWidget(self.frame_36, 0, Qt.AlignTop)
 
         self.frame_17 = QFrame(self.frameUniversalSettings)
         self.frame_17.setObjectName(u"frame_17")
@@ -1592,16 +1631,32 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_18.addWidget(self.frame_39)
 
+        self.frame_2 = QFrame(self.frameUniversalSettings)
+        self.frame_2.setObjectName(u"frame_2")
+        self.frame_2.setMinimumSize(QSize(0, 10))
+        self.frame_2.setFrameShape(QFrame.StyledPanel)
+        self.frame_2.setFrameShadow(QFrame.Raised)
+        self.line_2 = QFrame(self.frame_2)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setGeometry(QRect(0, 30, 907, 3))
+        self.line_2.setStyleSheet(u"background:none")
+        self.line_2.setFrameShape(QFrame.HLine)
+        self.line_2.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_18.addWidget(self.frame_2)
+
 
         self.verticalLayout.addWidget(self.frameUniversalSettings)
 
 
         self.verticalLayout_17.addWidget(self.frameAllSettings)
 
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents_6)
+        self.scrollAreaSettings.setWidget(self.scrollAreaWidgetContents_6)
+
+        self.verticalLayout_20.addWidget(self.scrollAreaSettings)
+
         self.buttonApplySettings = QPushButton(self.settings)
         self.buttonApplySettings.setObjectName(u"buttonApplySettings")
-        self.buttonApplySettings.setGeometry(QRect(10, 770, 130, 40))
         self.buttonApplySettings.setMinimumSize(QSize(130, 40))
         self.buttonApplySettings.setMaximumSize(QSize(120, 16777215))
         self.buttonApplySettings.setFont(font)
@@ -1610,7 +1665,13 @@ class Ui_MainWindow(object):
         icon5 = QIcon()
         icon5.addFile(u":/icons/images/icons/cil-loop-circular.png", QSize(), QIcon.Normal, QIcon.Off)
         self.buttonApplySettings.setIcon(icon5)
+
+        self.verticalLayout_20.addWidget(self.buttonApplySettings)
+
         self.stackedWidget.addWidget(self.settings)
+
+        self.horizontalLayout_5.addWidget(self.stackedWidget)
+
 
         self.horizontalLayout_4.addWidget(self.pagesContainer)
 
@@ -1630,7 +1691,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

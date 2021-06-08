@@ -128,20 +128,22 @@ class MainWindow(QMainWindow):
             [i for i in initiationDictionary["datasets"]["catalogueDatasets"]], key=lambda x: initiationDictionary["datasets"]["catalogueDatasets"][x]["name"]
         )
 
-        flowLayoutCatalogue= QGridLayout(widgets.frameCatalogueDatasets)
+        flowLayoutCatalogue= FlowLayout(widgets.frameCatalogueDatasets)
        
         
 
         for i in datasetList:
             newDatasetObject= Dataset(i)
-            newDatasetFrame = datasetFrame(widgets.frameCatalogueDatasets, newDatasetObject, newDatasetObject.catalogueUpdateProcess)
 
             # instantiate dataset setttings Widget
             newDatasetSettingsWidget = DatasetSettingsWidget(widgets.frameAllSettings, newDatasetObject)
             self.datasetSettingsList.append(newDatasetSettingsWidget)
-            
 
-            flowLayoutCatalogue.addWidget(newDatasetFrame)       
+            newDatasetFrame = datasetFrame(widgets.frameCatalogueDatasets, newDatasetObject, newDatasetObject.catalogueUpdateProcess, self, widgets, newDatasetSettingsWidget)
+
+            flowLayoutCatalogue.addWidget(newDatasetFrame) 
+            widgets.verticalLayout.addWidget(newDatasetSettingsWidget)
+      
 
         
         # instantiate hybrid datasets
@@ -149,17 +151,20 @@ class MainWindow(QMainWindow):
             [i for i in initiationDictionary["datasets"]["hybridDatasets"]], key=lambda x: initiationDictionary["datasets"]["hybridDatasets"][x]["name"]
         )
 
-        flowLayoutHybridDatasets= QGridLayout(widgets.frameOtherDatasets)
+        flowLayoutHybridDatasets= FlowLayout(widgets.frameOtherDatasets)
         widgets.frameCatalogueDatasets.setLayout(flowLayoutHybridDatasets)
 
         
         for i in datasetList:
             newDatasetObject= Dataset(i)
-            newDatasetFrame = datasetFrame(widgets.frameOtherDatasets, newDatasetObject, newDatasetObject.catalogueUpdateProcess)
 
             # instantiate dataset settings widget
             newDatasetSettingsWidget = DatasetSettingsWidget(widgets.frameAllSettings, newDatasetObject)
             self.datasetSettingsList.append(newDatasetSettingsWidget)
+
+            newDatasetFrame = datasetFrame(widgets.frameOtherDatasets, newDatasetObject, newDatasetObject.catalogueUpdateProcess, self, widgets, newDatasetSettingsWidget)
+
+
 
 
             flowLayoutHybridDatasets.addWidget(newDatasetFrame)
@@ -180,6 +185,7 @@ class MainWindow(QMainWindow):
                     widgets.textEditLogs,
                 )
                 self.flowLayoutLogs.addWidget(newMonthButton)
+                newMonthButton.updateTextEdit()
         
         ############################################################################################
         # Settings
