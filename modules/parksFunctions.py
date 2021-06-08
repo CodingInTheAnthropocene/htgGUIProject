@@ -1,58 +1,21 @@
+import arcpy
+from os import path
+from modules.settingsWrapper import *
 
 
-def recreationDownload():
-    print("Starting Parks download")
-    settingsList = nanaimoParksSettings, northCowichanParksSettings, cvrdParksSettings
+def northCowichanRecreationGeoprocessing(rawPath, datasetClass):
 
-    filePaths = list(
-        flatten(
-            [
-                shapeFileDownloadUnzip(i.downloadURL, i.downloadFolder, i.fileName)
-                for i in settingsList
-            ]
-        )
-    )
-
-    dataList = [
-        (
-            parksEcologicalProtectedSettings.downloadFolder,
-            parksEcologicalProtectedSettings.jsonPayload,
-            parksEcologicalProtectedSettings.fileName,
-        ),
-        (
-            northCowichanParksSettings.downloadFolder,
-            nationalParksSettings.jsonPayload,
-            nationalParksSettings.fileName,
-        ),
-        (
-            recreationPolygonsSettings.downloadFolder,
-            recreationPolygonsSettings.jsonPayload,
-            recreationPolygonsSettings.fileName,
-        ),
-    ]
-
-    for i in dataList:
-        filePaths.append(catalogueWarehouseDownload(*i))
-
-    print("Finished Parks Donnload")
-    return filePaths
-
-
-def northCowichanRecreationGeoprocessing(rawPath):
-    downloadFolder = northCowichanParksSettings.downloadFolder
-    arcgisWorkspaceFolder = downloadFolder
-
-    arcpy.env.workspace = arcgisWorkspaceFolder
+    arcpy.env.workspace = datasetClass.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
-    print("Starting North Cowichan Recreation Geoprocessing")
+    print(f"{datasetClass.alias}: Starting North Cowichan Recreation Geoprocessing")
 
     # get name of Raw shape fileNo
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # Create a temporary GDB and create a copy feature class in it. This is a workaround so that renaming fields is easy.
-    arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
-    tempGdbPath = f"{downloadFolder}\\temp.gdb"
+    arcpy.CreateFileGDB_management(datasetClass.downloadFolder, "temp.gdb")
+    tempGdbPath = f"{datasetClass.downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
 
@@ -126,23 +89,22 @@ def northCowichanRecreationGeoprocessing(rawPath):
     )
     arcpy.management.Delete(tempGdbPath)
 
-    print("Finished North Cowichan Recreation Geoprocessing")
+    
     return northCowichanRecreationCopy
 
 
-def northCowichanNonDNCRecreationGeoprocessing(rawPath):
+def northCowichanNonDNCRecreationGeoprocessing(rawPath, datasetClass):
 
-    downloadFolder = northCowichanParksSettings.downloadFolder
-    arcpy.env.workspace = downloadFolder
+    arcpy.env.workspace = datasetClass.downloadFolder
     arcpy.env.overwriteOutput = True
-    print("Starting north Cowichan non-DNC Recreation geoprocessing")
+    print(f"{datasetClass.alias}: Starting north Cowichan non-DNC Recreation geoprocessing")
 
     # get Name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # Create a temporary GDB and create new copy feature class there. This is a workaround so that renaming fields is easy.
-    arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
-    tempGdbPath = f"{downloadFolder}\\temp.gdb"
+    arcpy.CreateFileGDB_management(datasetClass.downloadFolder, "temp.gdb")
+    tempGdbPath = f"{datasetClass.downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
 
@@ -222,24 +184,23 @@ def northCowichanNonDNCRecreationGeoprocessing(rawPath):
     )
     arcpy.management.Delete(tempGdbPath)
 
-    print("Finished North Cowichan non-DNC recreation geoprocessing")
+    
 
     return northCowichanNonDNCRecreationCopy
 
 
-def northCowichanForestryRecreationGeoprocessing(rawPath):
+def northCowichanForestryRecreationGeoprocessing(rawPath, datasetClass):
 
-    downloadFolder = northCowichanParksSettings.downloadFolder
-    arcpy.env.workspace = downloadFolder
+    arcpy.env.workspace = datasetClass.downloadFolder
     arcpy.env.overwriteOutput = True
-    print("Starting north Cowichan Forestry Recreation geoprocessing")
+    print(f"{datasetClass.alias}: Starting north Cowichan Forestry Recreation geoprocessing")
 
     # get Name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # Create a temporary GDB and create new copy feature class there. This is a workaround so that renaming fields is easy.
-    arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
-    tempGdbPath = f"{downloadFolder}\\temp.gdb"
+    arcpy.CreateFileGDB_management(datasetClass.downloadFolder, "temp.gdb")
+    tempGdbPath = f"{datasetClass.downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
 
@@ -315,27 +276,28 @@ def northCowichanForestryRecreationGeoprocessing(rawPath):
     )
     arcpy.management.Delete(tempGdbPath)
 
-    print("Finished North Cowichan Forestry recreation geoprocessing")
+    
 
     return northCowichanForestryRecreationCopy
 
 
-def parksEcologicalProtectedGeoprocessing(rawPath):
+def parksEcologicalProtectedGeoprocessing(rawPath, datasetClass):
 
-    downloadFolder = parksEcologicalProtectedSettings.downloadFolder
-    arcpy.env.workspace = downloadFolder
+    arcpy.env.workspace = datasetClass.downloadFolder
     arcpy.env.overwriteOutput = True
-    print("starting BC Parks, Ecological, Rserve Areas Geoprocessing")
+    print(f"{datasetClass.alias}: starting BC Parks, Ecological, Rserve Areas Geoprocessing")
 
     # get Name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # clip to htg AOI
-    clippedFeatures = arcpy.Clip_analysis(rawPath, universalSettings.aoiPath, rawName)
+    clippedFeatures = arcpy.Clip_analysis(
+        rawPath, UniversalPathsWrapper.aoiPath, rawName
+    )
 
     # Create a temporary GDB and create new copy feature class there. This is a workaround so that renaming fields is easy.
-    arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
-    tempGdbPath = f"{downloadFolder}\\temp.gdb"
+    arcpy.CreateFileGDB_management(datasetClass.downloadFolder, "temp.gdb")
+    tempGdbPath = f"{datasetClass.downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(clippedFeatures, tempGdbPath)
 
@@ -380,7 +342,7 @@ def parksEcologicalProtectedGeoprocessing(rawPath):
 
     # intersect wwith SOI
     parksEcologicalProtectedCopy = arcpy.Intersect_analysis(
-        [parksEcologicalProtectedCopy, universalSettings.soiPath],
+        [parksEcologicalProtectedCopy, UniversalPathsWrapper.soiPath],
         "tempParksEcoPro_SOIintersect",
         join_attributes="NO_FID",
     )
@@ -411,27 +373,28 @@ def parksEcologicalProtectedGeoprocessing(rawPath):
     arcpy.management.Delete(clippedFeatures)
     arcpy.management.Delete(tempGdbPath)
 
-    print("Finished BC Parks, Ecological, Reserve areas geoprocessing")
+    
 
     return parksEcologicalProtectedCopy
 
 
-def nationalParksGeoprocessing(rawPath):
+def nationalParksGeoprocessing(rawPath, datasetClass):
 
-    downloadFolder = nationalParksSettings.downloadFolder
-    arcpy.env.workspace = downloadFolder
+    arcpy.env.workspace = datasetClass.downloadFolder
     arcpy.env.overwriteOutput = True
-    print("starting National Parks Geoprocessing")
+    print(f"{datasetClass.alias}: starting National Parks Geoprocessing")
 
     # get Name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # clip to htg AOI
-    clippedFeatures = arcpy.Clip_analysis(rawPath, universalSettings.aoiPath, rawName)
+    clippedFeatures = arcpy.Clip_analysis(
+        rawPath, UniversalPathsWrapper.aoiPath, rawName
+    )
 
     # Create a temporary GDB and create new copy feature class there. This is a workaround so that renaming fields is easy.
-    arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
-    tempGdbPath = f"{downloadFolder}\\temp.gdb"
+    arcpy.CreateFileGDB_management(datasetClass.downloadFolder, "temp.gdb")
+    tempGdbPath = f"{datasetClass.downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(clippedFeatures, tempGdbPath)
 
@@ -467,7 +430,7 @@ def nationalParksGeoprocessing(rawPath):
 
     # intersect with SOI
     nationalParksCopy = arcpy.Intersect_analysis(
-        [nationalParksCopy, universalSettings.soiPath],
+        [nationalParksCopy, UniversalPathsWrapper.soiPath],
         "tempNatParks_SOIintersect",
         join_attributes="NO_FID",
     )
@@ -502,22 +465,24 @@ def nationalParksGeoprocessing(rawPath):
     return nationalParksCopy
 
 
-def recreationPolygonsGeoprocessing(rawPath):
-    downloadFolder = recreationPolygonsSettings.downloadFolder
-    arcpy.env.workspace = downloadFolder
+def recreationPolygonsGeoprocessing(rawPath, datasetClass):
+
+    arcpy.env.workspace = datasetClass.downloadFolder
     arcpy.env.overwriteOutput = True
 
-    print("starting Recreation polygons Geoprocessing")
+    print(f"{datasetClass.alias}: starting Recreation polygons Geoprocessing")
 
     # get Name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # clip to htg AOI
-    clippedFeatures = arcpy.Clip_analysis(rawPath, universalSettings.aoiPath, rawName)
+    clippedFeatures = arcpy.Clip_analysis(
+        rawPath, UniversalPathsWrapper.aoiPath, rawName
+    )
 
     # Create a temporary GDB and create new copy feature class there. This is a workaround so that renaming fields is easy.
-    arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
-    tempGdbPath = f"{downloadFolder}\\temp.gdb"
+    arcpy.CreateFileGDB_management(datasetClass.downloadFolder, "temp.gdb")
+    tempGdbPath = f"{datasetClass.downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(clippedFeatures, tempGdbPath)
 
@@ -573,7 +538,7 @@ def recreationPolygonsGeoprocessing(rawPath):
 
     # intersect with SOI
     recreationPolygonsCopy = arcpy.Intersect_analysis(
-        [recreationPolygonsCopy, universalSettings.soiPath],
+        [recreationPolygonsCopy, UniversalPathsWrapper.soiPath],
         "tempRecPoly_SOIintersect",
         join_attributes="NO_FID",
     )
@@ -599,15 +564,14 @@ def recreationPolygonsGeoprocessing(rawPath):
     arcpy.management.Delete(clippedFeatures)
     arcpy.management.Delete(tempGdbPath)
 
-    print("Finished Recreation polygons geoprocessing")
+    
 
     return recreationPolygonsCopy
 
 
-def nanaimoCityParksGeoprocessing(rawPath):
+def nanaimoCityParksGeoprocessing(rawPath, datasetClass):
 
-    downloadFolder = nanaimoParksSettings.downloadFolder
-    arcpy.env.workspace = downloadFolder
+    arcpy.env.workspace = datasetClass.downloadFolder
     arcpy.env.overwriteOutput = True
 
     print("starting nanaimo parks Geoprocessing")
@@ -616,8 +580,8 @@ def nanaimoCityParksGeoprocessing(rawPath):
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # Create a temporary GDB and create new copy feature class there. This is a workaround so that renaming fields is easy.
-    arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
-    tempGdbPath = f"{downloadFolder}\\temp.gdb"
+    arcpy.CreateFileGDB_management(datasetClass.downloadFolder, "temp.gdb")
+    tempGdbPath = f"{datasetClass.downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
 
@@ -685,25 +649,24 @@ def nanaimoCityParksGeoprocessing(rawPath):
     arcpy.DeleteField_management(nanaimoCityParksCopy, ["Shape_Leng", "Shape_Area"])
     arcpy.management.Delete(tempGdbPath)
 
-    print("Finished Nanaimo Parks geoprocessing")
+    
 
     return nanaimoCityParksCopy
 
 
-def cvrdParksGeoprocessing(rawPath):
+def cvrdParksGeoprocessing(rawPath, datasetClass):
 
-    downloadFolder = cvrdParksSettings.downloadFolder
-    arcpy.env.workspace = downloadFolder
+    arcpy.env.workspace = datasetClass.downloadFolder
     arcpy.env.overwriteOutput = True
 
-    print("starting cvrd parks Geoprocessing")
+    print(f"{datasetClass.alias}starting cvrd parks Geoprocessing")
 
     # get Name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # Create a temporary GDB and create new copy feature class there. This is a workaround so that renaming fields is easy.
-    arcpy.CreateFileGDB_management(downloadFolder, "temp.gdb")
-    tempGdbPath = f"{downloadFolder}\\temp.gdb"
+    arcpy.CreateFileGDB_management(datasetClass.downloadFolder, "temp.gdb")
+    tempGdbPath = f"{datasetClass.downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
 
@@ -762,58 +725,44 @@ def cvrdParksGeoprocessing(rawPath):
     arcpy.DeleteField_management(cvrdParksCopy, ["Shape_Leng", "Shape_Area"])
     arcpy.management.Delete(tempGdbPath)
 
-    print("Finished cvrd parks geoprocessing")
+    
 
     return cvrdParksCopy
 
 
-def parksRecreationDatasetsProcess():
-    arcpy.env.workspace = parksRecreationDatasetsSettings.arcgisWorkspaceFolder
-    try:
-        archiving(
-            parksRecreationDatasetsSettings.currentPath,
-            parksRecreationDatasetsSettings.archiveFolder,
-        )
-    except:
-        print("Can't Archive. Check File Path")
-    # NOTE, north cowicahn parks are fragile if names change
+def parksRecreationDatasetsGeoprocessing(rawFilePaths, datasetClass):
+    def parksGeoprocessingChain():
+        for filePath in rawFilePaths:
+            fileName = path.split(filePath)[1]
 
-    rawFilePaths = recreationDownload()
-    processedFilePaths = []
+            if "CLAB_NATPK_polygon.shp" == fileName:
+                yield nationalParksGeoprocessing(filePath, datasetClass)
+            elif "FTN_REC_PL_polygon.shp" == fileName:
+                yield recreationPolygonsGeoprocessing(filePath, datasetClass)
+            elif "TA_PEP_SVW_polygon.shp" == fileName:
+                yield parksEcologicalProtectedGeoprocessing(filePath, datasetClass)
+            elif "PARKS.shp" == fileName:
+                yield nanaimoCityParksGeoprocessing(filePath, datasetClass)
+            elif "ForestryRecreation.shp" == fileName:
+                yield northCowichanForestryRecreationGeoprocessing(
+                    filePath, datasetClass
+                )
+            elif "NonDNCRecreation.shp" == fileName:
+                yield northCowichanNonDNCRecreationGeoprocessing(
+                    filePath, datasetClass
+                )
+            elif "Recreation.shp" == fileName:
+                yield northCowichanRecreationGeoprocessing(filePath, datasetClass)
+            elif "Park.shp" == fileName:
+                yield cvrdParksGeoprocessing(filePath, datasetClass)
 
-    for filePath in rawFilePaths:
-        if (
-            northCowichanParksSettings.fileName in filePath
-            and "ForestryRecreation" in filePath
-        ):
-            processedFilePaths.append(
-                northCowichanForestryRecreationGeoprocessing(filePath)
-            )
-        elif (
-            northCowichanParksSettings.fileName in filePath
-            and "nonDNCRecreation" in filePath
-        ):
-            processedFilePaths.append(
-                northCowichanNonDNCRecreationGeoprocessing(filePath)
-            )
-        elif (
-            northCowichanParksSettings.fileName in filePath
-            and path.split(filePath)[1] == "Recreation"
-        ):
-            processedFilePaths.append(northCowichanRecreationGeoprocessing(filePath))
-        elif cvrdParksSettings.fileName in filePath:
-            processedFilePaths.append(cvrdParksGeoprocessing(filePath))
-        elif nanaimoParksSettings.fileName in filePath:
-            processedFilePaths.append(nanaimoCityParksGeoprocessing(filePath))
-        elif recreationPolygonsSettings.fileName in filePath:
-            processedFilePaths.append(recreationPolygonsGeoprocessing(filePath))
-        elif nationalParksSettings.fileName in filePath:
-            processedFilePaths.append(nationalParksGeoprocessing(filePath))
-        elif parksEcologicalProtectedSettings.fileName in filePath:
-            processedFilePaths.append(parksEcologicalProtectedGeoprocessing(filePath))
+    processedFilePaths = [i for i in parksGeoprocessingChain()]
 
     recreationMerged = arcpy.Merge_management(
-        processedFilePaths, parksRecreationDatasetsSettings.fileName
+        processedFilePaths, datasetClass.fileName
     )
+
+    for i in processedFilePaths:
+        arcpy.Delete_management(i)
 
     return recreationMerged

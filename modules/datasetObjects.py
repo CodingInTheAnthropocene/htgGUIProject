@@ -1,7 +1,11 @@
+from pathlib import Path
 from modules.universalFunctions import *
 from modules.settingsWrapper import *
-from genericpath import exists, getsize
-from requests import post, Session, get
+from modules.catalogueFunctions import *
+from modules.parksFunctions import *
+
+from genericpath import exists
+from requests import post, Session
 from urllib.request import urlopen, urlretrieve
 from lxml.html import fromstring
 from time import sleep
@@ -10,19 +14,27 @@ import arcpy
 from os import path, mkdir, walk, rename, remove
 from datetime import datetime
 from shutil import move, make_archive, rmtree, unpack_archive
-from json import dumps, loads, load, dump
+from json import load, dump
 
 
-class CatalogueDataUpdate:
-    def __init__(self, settingsClass, geoprocessingFunction):
-        self.name = settingsClass.name
-        self.dataCatalogueId = settingsClass.dataCatalogueId
-        self.fileName = settingsClass.fileName
-        self.downloadFolder = settingsClass.downloadFolder
-        self.archiveFolder = settingsClass.archiveFolder
-        self.currentPath = settingsClass.currentPath
-        self.jsonPayload = settingsClass.jsonPayload
-        self.geoprocessingFunction = geoprocessingFunction
+class Dataset:    
+    def __init__(self, datasetAlias):
+
+        self.settingsWrapper = DatasetSettingsWrapper(datasetAlias)
+
+        self.name = self.settingsWrapper.name
+        self.dataCatalogueIdList = self.settingsWrapper.dataCatalogueIdList
+        self.fileName = self.settingsWrapper.fileName
+        self.downloadFolder = self.settingsWrapper.downloadFolder
+        self.archiveFolder = self.settingsWrapper.archiveFolder
+        self.currentPath = self.settingsWrapper.currentPath
+        self.jsonPayload = self.settingsWrapper.jsonPayload
+        self.updateFrequency = self.settingsWrapper.updateFrequency
+        self.arcgisWorkspaceFolder = self.settingsWrapper.arcgisWorkspaceFolder
+        self.urlList=self.settingsWrapper.urlList
+
+        self.alias = datasetAlias
+        self.geoprocessingFunction = eval(self.settingsWrapper.geoprocessingFunction)
 
     def archiving(self):
         """ Takes the path of a shape file, and archives all files in that shapefile into the given archive folder. If path is gdb feature class, archives that whole GDB"""
@@ -42,7 +54,7 @@ class CatalogueDataUpdate:
                 newDirectoryPath = f"{self.archiveFolder}\\{shapefileNameWithoutExtension}{tenuresModifiedTime}"
                 mkdir(newDirectoryPath)
 
-                #TODO: couuld we use arcpy to really simplify this section??
+                # TODO: couuld we use arcpy to really simplify this section??
 
                 # iterate through current .shp directory, pull out files with the name of the shapefile, add the time to thoes file names, move the file to previously created directory
                 count = 1
@@ -82,6 +94,8 @@ class CatalogueDataUpdate:
                     path.split(self.currentPath)[0],
                     path.split(self.currentPath)[1],
                 )
+                
+                self.archivedFile=f"{self.archiveFolder}\\{fileName}{getFileCreatedDate(self.currentPath)}"
                 make_archive(
                     f"{self.archiveFolder}\\{fileName}{getFileCreatedDate(self.currentPath)}",
                     "zip",
@@ -90,19 +104,20 @@ class CatalogueDataUpdate:
                 arcpy.Delete_management(currentGDB)
 
             else:
-                print("File not Recognizable type")
-
-            print("Done Archiving!")
+                print("Archiving Error")
+                self.archiveStatus= False
+            
+            self.archiveStatus = True
 
         except:
-            print("Cannot archive, check file")
+            "Archiving Error"
             self.archiveStatus = False
 
     def catalogueWarehouseDownload(self):
         """requests link to download raw download from data catalogue warehouse, and downloads and unzips file from that link"""
 
         with Session() as s:
-            # instantiate session with BC data catalogue, save important cookies in variable
+            # self.settingsWrapper session with BC data catalogue, save important cookies in variable
             s.get(
                 "https://apps.gov.bc.ca/pub/dwds-ofi/jsp/dwds_pow_current_order.jsp?publicUrl=https%3A%2F%2Fapps.gov.bc.ca%2Fpub%2Fdwds-ofi%2Fpublic%2F&secureUrl=https%3A%2F%2Fapps.gov.bc.ca%2Fpub%2Fdwds-ofi%2Fsecure%2F&customAoiUrl=http%3A%2F%2Fmaps.gov.bc.ca%2Fess%2Fhm%2Faoi%2F&pastOrdersNbr=5&secureSite=false&orderSource=bcdc"
             )
@@ -138,7 +153,8 @@ class CatalogueDataUpdate:
             }
 
             # Send request
-            print("sending request")
+            print(f"{self.alias}: Sending request")
+
             response = post(
                 "https://apps.gov.bc.ca/pub/dwds-ofi/public/order/createOrderFiltered/",
                 headers=headers,
@@ -156,7 +172,7 @@ class CatalogueDataUpdate:
 
         while stopLoop == False:
             sleep(15)
-            print("checking...")
+            print(f"{self.alias}: Checking...")
             connection = urlopen(orderURL)
             dom = fromstring(connection.read())
             for link in dom.xpath("//a/@href"):
@@ -170,9 +186,8 @@ class CatalogueDataUpdate:
 
         # create folder for  raw data,remove it first if it already exists
         folderPath = f"{self.downloadFolder}\\raw{self.fileName}"
-        if path.exists(folderPath):
-            rmtree(folderPath)
-        mkdir(folderPath)
+        if path.exists(folderPath)==False:
+            mkdir(folderPath)
 
         # retrieve info from URL
         urlretrieve(downloadURL, f"{folderPath}.zip")
@@ -181,59 +196,82 @@ class CatalogueDataUpdate:
         unpack_archive(f"{folderPath}.zip", folderPath)
         remove(f"{folderPath}.zip")
 
-        # hunt through unzipped folder for shapefiles and HTML
-        rawShapefilePaths = []
+        # hunt through unzipped folder for gbd, shapefiles and HTML File paths, Store as list if there is more than one
+        rawFilePaths = []
         rawHtmlPaths = []
 
+        #NOTE: must add GDB here!!
         for dirname, _, files in walk(folderPath):
             for i in files:
+                if i[:4]==".gbd":
+                    for feature  in arcpy.ListFeatureClasses(i):
+                        rawFilePaths.append(f"{dirname}\\{i}\\{feature}")
                 if i[-4:] == ".shp":
-                    rawShapefilePaths.append(f"{dirname}\\{i}")
+                    rawFilePaths.append(f"{dirname}\\{i}")
+
                 if i[-5:] == ".html":
                     rawHtmlPaths.append(f"{dirname}\\{i}")
+                
+
+        # download and unzip any Auxiliary shape files, add their paths to list
+        try: 
+            print(f"{self.alias}: Downloading auxiliary datasets")
+            for url in self.urlList:
+                rawFilePaths.extend(shapeFileDownloadUnzip(url, self.downloadFolder, self.fileName))
+        except:
+            print("this dataset has no auxiliary URLs")
+
+
+        if len(rawFilePaths)> 1:
+            
+            self.rawFilePaths = list(dict.fromkeys(rawFilePaths))       
+            s
         
-
-
-        if len(rawShapefilePaths) > 1:
-            self.rawShapefilePaths = rawShapefilePaths
         else:
-            self.rawShapefilePaths = rawShapefilePaths[0]
+            self.rawFilePaths=rawFilePaths[0]
 
-        if len(rawHtmlPaths) > 1:
-            self.rawHtmlPaths = rawHtmlPaths
-        else:
-            self.rawHtmlPaths = rawHtmlPaths[0]
+        self.rawHtmlPaths = list(dict.fromkeys(rawHtmlPaths))
 
-        print("done downloading!")
+        print(f"{self.alias}: Done downloading!")
 
-    def geoprocessing(self):
-        self.resultObject = self.geoprocessingFunction(self.rawShapefilePaths)
+    def geoprocessing(self):      
+        self.resultObject = self.geoprocessingFunction(self.rawFilePaths, self)
         self.processedFile = arcpyGetPath(self.resultObject)
+    
+    def writeToSettings(self):
+        self.settingsWrapper.settingsWriter("currentPath", self.processedFile)
+
 
     def writeDownloadInfo(self):
-        """creates downnload info for metadata, text file, and log"""
+        """creates download info for metadata, text file, and log"""
+
         # gets List of original filenames If more than one data source, otherwise gets original filename
-        if isinstance(self.rawShapefilePaths, list):
+        if isinstance(self.rawFilePaths, list):
             originalName = str(
-                [path.splitext(path.split(i)[1])[0] for i in self.rawShapefilePaths]
+                [path.splitext(path.split(i)[1])[0] for i in self.rawFilePaths]
             )
         else:
-            originalName = path.splitext(path.split(self.rawShapefilePaths)[1])[0]
+            originalName = path.splitext(path.split(self.rawFilePaths)[1])[0]
 
         # gets List of original HTML files If more than one data source, otherwise gets original HTML file name
         if isinstance(self.rawHtmlPaths, list):
-            originalHtml = str(
-                [path.splitext(path.split(i)[1])[0] for i in self.rawHtmlPaths]
-            )
+            originalHtml = str([path.split(i)[1] for i in self.rawHtmlPaths])
         else:
-            originalHtml = path.splitext(path.split(self.rawHtmlPaths)[1])[0]
+            originalHtml = path.split(self.rawHtmlPaths)[1]
+        
+        
+        auxiliaryDownloadInfo= f"Auxiliary Downloads from : {self.urlList}" if len(self.urlList) > 0 else None
 
-        self.catalogueDownloadInfo = f"Date Downloaded: {datetime.today().strftime('%Y-%m-%d')} from BC's data catalogue\n URL: {self.jsonPayload['featureItems'][0]['layerMetadataUrl']}\n Original Catalogue downnload name(s): {originalName}\nSee {originalHtml} for licence information and metadata for  catalogue downnloads\n For more information about downloading data, email data@gov.bc.ca.\nTo report downloading errors email NRSApplications@gov.bc.ca."
+        self.catalogueDownloadInfo = f"Date Downloaded: {datetime.today().strftime('%Y-%m-%d')} from BC's data catalogue\n URL: {self.jsonPayload['featureItems'][0]['layerMetadataUrl']}\n Original Catalogue downnload name(s): {originalName}\n See {originalHtml} for licence information and metadata for catalogue downloads\n For more information about downloading data, email data@gov.bc.ca.\n To report downloading errors email NRSApplications@gov.bc.ca. \n{auxiliaryDownloadInfo}"
 
     def writeTextAndMetadata(self):
         """writes download information from BC Data catalogue to File metadata"""
-        with open(f"{self.downloadFolder}\\{self.fileName}.txt", "w") as textFile:
-            textFile.write(self.catalogueDownloadInfo)
+        
+        if arcpy.Describe(self.processedFile).dataType=="ShapeFile":
+            with open(
+                f"{self.downloadFolder}\\{path.splitext(self.fileName)[0]}.txt", "w"
+            ) as textFile:
+                textFile.write(self.catalogueDownloadInfo)
 
         newMetadata = arcpy.metadata.Metadata(self.processedFile)
         newMetadata.description = self.catalogueDownloadInfo
@@ -247,7 +285,7 @@ class CatalogueDataUpdate:
         if exists(logFolder) == False:
             mkdir(logFolder)
 
-        # instantiate variables
+        # self.settingsWrapper variables
         archivedFile = (
             "Archiving Error" if self.archiveStatus == False else self.archivedFile
         )
@@ -275,11 +313,15 @@ class CatalogueDataUpdate:
         }
 
         # Create new empty JSON if log doesn't exist,Read JSON file if it does
+
+
         if exists(logPath) == False:
-            with open(logPath, "w") as logFile:
+
+            with open(logPath, "w"):
                 jsonIn = logDictionary
         else:
-            with open(logPath) as logFile:
+
+            with open(logPath, "r") as logFile:
                 jsonIn = load(logFile)
 
         # write JSON to file
@@ -292,13 +334,30 @@ class CatalogueDataUpdate:
                 jsonIn["dates"][todayString]["times"][time] = logDictionary["dates"][
                     todayString
                 ]["times"][time]
-        # write JSON to file
-        dump(jsonIn, logFile)
+            # write JSON to file
+            dump(jsonIn, logFile)
+    
+    def writeToSettings(self):
+        self.settingsWrapper.settingsWriter("currentPath", self.processedFile)
 
     def catalogueUpdateProcess(self):
+        print(f"{self.alias}: Starting update process!")
         self.archiving()
+        if self.archiveStatus == False:
+            print(f"{self.alias}: Archiving error, check file path")
+
+        print(f"{self.alias}: Starting catalogue download")
         self.catalogueWarehouseDownload()
+
+        print(f"{self.alias}: Starting geoprocessing")
         self.geoprocessing()
+        self.writeToSettings()
+
+        f"{self.alias}: Logging…"
         self.writeDownloadInfo()
         self.writeTextAndMetadata()
         self.writeLog()
+        
+
+        f"{self.alias}: Finished update process!"
+

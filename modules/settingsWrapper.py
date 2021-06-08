@@ -1,24 +1,12 @@
-import bbox_SOIs
-from json import load
-from catalogueFunctions import *
+from modules import bbox_SOIs
+from json import dump, load
 
-configurationDictionary = load("settings.json")
+from modules.universalFunctions import *
+from modules.initiationDictionary import initiationDictionary
 
-initDictionary = {
-    "crownTenures": {
-        "geoprocessingFunction": crownTenuresGeoprocessing,
-        "rawFormat": "shapefile",
-        "jsonPayloadFeatureItems": {
-            "featureItem": "WHSE_TANTALIS.TA_CROWN_TENURES_SVW",
-            "filterValue": "",
-            "layerName": "TANTALIS - Crown Tenures",
-            "layerMetadataUrl": "https://catalogue.data.gov.bc.ca/dataset/tantalis-crown-tenures",
-            "filterType": "No Filter",
-            "pctOfMax": 3,
-        },
-    }
-}
 
+with open("modules\\settings.json") as settingsFile:
+    configurationDictionary = load(settingsFile)
 
 
 class UniversalSettingsWrapper:
@@ -27,51 +15,133 @@ class UniversalSettingsWrapper:
     archiveFolder = configurationDictionary["universalSettings"]["archiveFolder"]
     logFolder = configurationDictionary["universalSettings"]["logFolder"]
 
+    def settingsWriter(attributeDictionary):
+        with open("modules\\settings.json", "r") as settingsFile:
+            configurationDictionary = load(settingsFile)
+        
+        with open("modules\\settings.json", "w") as settingsFile:
+            for attribute in attributeDictionary:
+
+                configurationDictionary["universalSettings"][attribute] = attributeDictionary[attribute]
+            
+            dump(configurationDictionary, settingsFile)
+
 
 class UniversalPathsWrapper:
-    htgLandsPath = configurationDictionary["universalPaths"]["htgLands"]
+    htgLandsPath = configurationDictionary["universalPaths"]["htgLandsPath"]
     soiPath = configurationDictionary["universalPaths"]["soiPath"]
     soiCorePath = configurationDictionary["universalPaths"]["soiCorePath"]
     soiMarinePath = configurationDictionary["universalPaths"]["soiMarinePath"]
     soiWhaPath = configurationDictionary["universalPaths"]["soiWhaPath"]
-    aoiPath = configurationDictionary["universalPaths"]["htgLands"]
+    aoiSwBcPath = configurationDictionary["universalPaths"]["aoiSwBcPath"]
+
+    def settingsWriter(attributeDictionary):
+        with open("modules\\settings.json", "r") as settingsFile:
+            configurationDictionary = load(settingsFile)
+        
+        with open("modules\\settings.json", "w") as settingsFile:
+            for attribute in attributeDictionary:
+                configurationDictionary["universalPaths"][attribute] = attributeDictionary[attribute]
+            
+            dump(configurationDictionary, settingsFile)
+    
 
 
-class CatalogueDatasetsSettingsWrapper:
+class DatasetSettingsWrapper:
     def __init__(self, datasetAlias):
-        datasetSettings = configurationDictionary["datasets"]["catalogueDatasets"][
-            datasetAlias
+
+        # catalogue dictionaries
+        catalogueDatasetsConfigurationDictionary = configurationDictionary["datasets"][
+            "catalogueDatasets"
+        ]
+        catalogueDatasetsInitiationDictionary = initiationDictionary["datasets"][
+            "catalogueDatasets"
         ]
 
-        self.name = datasetSettings["name"]
-        self.dataCatalogueId = datasetSettings["Data catalogueId"]
-        self.alias = datasetSettings["alias"]
-        self.currentPath = datasetSettings["currentPath"]
-        self.updateFrequency = datasetSettings["updateFrequency"]
-        self.fileName = datasetSettings["fileName"]
-        self.downloadFolder = datasetSettings["archiveFolder"]
-        self.archiveFolder = datasetSettings["archiveFolder"]
-        self.arcgisWorkspaceFolder = datasetSettings["arcgisWorkspaceFolder"]
-        self.soiArea = datasetSettings["soiArea"]
-        self.rawFormat = initDictionary["shapefile"]
-        self.jsonPayloadFeatureItems = initDictionary["jsonPayloadFeatureItems"]
+        # hybrid dictionaries
+        hybridDatasetsConfigurationDictionary = configurationDictionary["datasets"][
+            "hybridDatasets"
+        ]
+        hybridDatasetsInitiationDictionary = initiationDictionary["datasets"][
+            "hybridDatasets"
+        ]
 
-        if self.soiArea == "marine":
-            soiChoice = bbox_SOIs.marine
-        elif self.soiArea == "core":
-            soiChoice = bbox_SOIs.core
-        elif self.soiArea == "wha":
-            soiChoice = bbox_SOIs.wha
+        # if dataset is a catalogue Dataset
+        if datasetAlias in catalogueDatasetsConfigurationDictionary.keys():
+            # configuration from settings.json
+            self.configuration = catalogueDatasetsConfigurationDictionary[datasetAlias]
+            # configuration from initiationDictionary.py
+            self.initiation = catalogueDatasetsInitiationDictionary[datasetAlias]
+            self.type="catalogue"
+        
+        # if dataset is a hybrid Dataset
+        elif datasetAlias in hybridDatasetsConfigurationDictionary.keys():
+            # configuration from settings.json
+            self.configuration = hybridDatasetsConfigurationDictionary[datasetAlias]
+            # configuration from initiationDictionary.py
+            self.initiation = hybridDatasetsInitiationDictionary[datasetAlias]
+            self.type= "hybrid"
+
+        # attribute instantiation
+        self.name = self.initiation["name"]
+        self.alias = datasetAlias
+
+        self.rawFormat = self.initiation["rawFormat"]
+        self.geoprocessingFunction=self.initiation["geoprocessingFunction"]
+        
+
+        self.currentPath = self.configuration["currentPath"]
+        self.updateFrequency = self.configuration["updateFrequency"]
+        self.fileName = self.configuration["fileName"]
+        self.aoi = self.configuration["aoi"]
+
+        self.downloadFolder = (
+            UniversalSettingsWrapper.downloadFolder
+            if self.configuration["downloadFolder"] == "universal"
+            else self.configuration["downloadFolder"]
+        )
+
+        self.archiveFolder = (
+            UniversalSettingsWrapper.archiveFolder
+            if self.configuration["archiveFolder"] == "universal"
+            else self.configuration["archiveFolder"]
+        )
+
+        self.arcgisWorkspaceFolder = (
+            self.downloadFolder
+            if self.configuration["arcgisWorkspaceFolder"] == "download"
+            else self.configuration["arcgisWorkspaceFolder"]
+        )
+
+        if self.aoi == "marine":
+            aoiChoice = bbox_SOIs.marine
+        elif self.aoi == "core":
+            aoiChoice = bbox_SOIs.core
+        elif self.aoi == "wha":
+            aoiChoice = bbox_SOIs.wha
+        elif self.aoi == "swbc":
+            aoiChoice = bbox_SOIs.roadsMask
 
         if self.rawFormat == "shapefile":
             formatChoice = "0"
         elif self.rawFormat == "geodatabase":
             formatChoice = "3"
+        
+        # get list of all URLs
+        self.urlList=itemGeneratorList(self.initiation, "url")
+
+
+        # get list of all data catalog IDs For dataset
+        self.dataCatalogueIdList = itemGeneratorList(self.initiation, "dataCatalogueId")
+
+
+        #Create list of all JSON payload feature items For dataset
+        self.jsonPayloadFeatureItems=itemGeneratorList(self.initiation, "jsonPayloadFeatureItems")
 
         self.jsonPayload = {
             "emailAddress": UniversalSettingsWrapper.email,
             "aoiType": "1",
-            "aoi": soiChoice,
+            "aoi": aoiChoice,
             "orderingApplication": "BCDC",
             "crsType": "0",
             "clippingMethodType": "1",
@@ -79,10 +149,33 @@ class CatalogueDatasetsSettingsWrapper:
             "useAOIBounds": "",
             "prepackagedItems": "",
             "aoiName": "",
-            "featureItems": [self.jsonPayloadFeatureItems],
+            "featureItems": self.jsonPayloadFeatureItems,
         }
 
+    def settingsWriter(self, attributeDictionary):
+        with open("modules\\settings.json", "r") as settingsFile:
+            configurationDictionary = load(settingsFile)
+        
+        with open("modules\\settings.json", "w") as settingsFile:
+            for attribute in attributeDictionary:
+                if self.type == "catalogue":
+                    configurationDictionary["datasets"]["catalogueDatasets"][self.alias][attribute] = attributeDictionary[attribute]
+                elif self.type == "hybrid":
+                    configurationDictionary["datasets"]["hybridDatasets"][self.alias][attribute] = attributeDictionary[attribute]
+                
+            dump(configurationDictionary, settingsFile)
+        
 
-class HybridDatasetsSettingsWraper:
-    pass
+    
+
+
+
+
+
+
+
+        
+    
+    
+        
 

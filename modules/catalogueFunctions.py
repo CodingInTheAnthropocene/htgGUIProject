@@ -1,16 +1,8 @@
-from modules.dataSettings import *
+from modules.settingsWrapper import *
 from modules.universalFunctions import *
-from genericpath import exists, getsize
-from requests import post, Session, get
-from urllib.request import urlopen, urlretrieve
-from lxml.html import fromstring
-from time import sleep
-from pandas.core.common import flatten
 import arcpy
-from os import path, mkdir, walk, rename, remove
-from datetime import datetime
-from shutil import move, make_archive, rmtree, unpack_archive
-from json import dumps, loads, load, dump
+from os import path
+
 
 
 def crownTenuresGeoprocessing(rawPath, settingsClass):
@@ -107,7 +99,8 @@ def crownTenuresGeoprocessing(rawPath, settingsClass):
 
     # copy Shapefile To leave original intact
     tenuresCopy = arcpy.CopyFeatures_management(rawPath, "tenuresCopy.shp")
-    print("Raw Shapefile copied")
+    
+    print(f"{settingsClass.alias}: Raw shapefile copied")
 
     # delete fields from crown tenures
     # NOTE: This May error with GDB instead of Shapefile
@@ -126,7 +119,7 @@ def crownTenuresGeoprocessing(rawPath, settingsClass):
     ]
 
     arcpy.DeleteField_management(tenuresCopy, fieldsToDelete)
-    print("Fields deleted")
+
 
     # delete records which meet specified criteria
     cursor = arcpy.da.UpdateCursor(
@@ -144,7 +137,6 @@ def crownTenuresGeoprocessing(rawPath, settingsClass):
         if row[2] == "TREATY AREA":
             cursor.deleteRow()
 
-    print("Rows deleted")
 
     # add display_cd field
     arcpy.AddField_management(tenuresCopy, "display_cd", "TEXT", field_length=30)
@@ -164,17 +156,16 @@ def crownTenuresGeoprocessing(rawPath, settingsClass):
                 cursor.updateRow(row)
                 break
 
-    print("Fields added to display_cd")
 
-    # intersect crown tenures with SOI, delete automatically created fields
-    # FIX THIS: no_fid appropriate?? May eliminate need to delete added fields??
+    print(f"{settingsClass.alias}: Starting tenures/SOI intersect")
+    # intersect crown tenures with SOI, delete automatically created fields.
     tenuresSOIIntersect = arcpy.Intersect_analysis(
         [tenuresCopy, UniversalPathsWrapper.soiPath],
         "temptenureSOIIntersect",
         join_attributes="NO_FID",
     )
 
-    print("tenure and SOI's intersected")
+    
 
     # create new lands feature Class with removed fields. This is a workaround as disabling fields in arcpy is apparently very cumbersome.
     htgLandsCopy = arcpy.CopyFeatures_management(
@@ -253,7 +244,7 @@ def crownTenuresGeoprocessing(rawPath, settingsClass):
 
     arcpy.DeleteField_management(htgLandsCopy, fieldsToDeletehtgLandsCopy)
 
-    print("Fields deleted from lands copy")
+    print(f"{settingsClass.alias}: Starting 'identity'" )
 
     # Identity tenures/soi intersect with land parcels data, This performs a workaround with the union tool and then subsequently deleting records That aren't wanted.
     crownTenuresProcessedPath = arcpy.Union_analysis(
@@ -269,7 +260,7 @@ def crownTenuresGeoprocessing(rawPath, settingsClass):
             cursor.deleteRow()
     del cursor
 
-    print("tenure SOI lands 'identity' completed")
+    
     # add and calculate HA field to tenures/soi/lands intersect
     arcpy.AddField_management(crownTenuresProcessedPath, "HA", "FLOAT")
 
@@ -277,7 +268,6 @@ def crownTenuresGeoprocessing(rawPath, settingsClass):
         crownTenuresProcessedPath, [["HA", "AREA"]], area_unit="HECTARES"
     )
 
-    print("Done Crown Tenures Geoprocessing!")
 
     # delete working copies
     arcpy.management.Delete(tenuresCopy)
@@ -675,6 +665,8 @@ def forestManagedLicenceGeoprocessing(rawPath, settingsClass):
     arcpy.management.Delete(htgLandsCopy)
     arcpy.management.Delete(tempGdbPath)
 
+    return forestManagedLicenceProcessedPath
+
 
 ####################################################################################################################
 # Harvested areas of BC (Consolidated Cut Blocks)
@@ -1050,10 +1042,10 @@ def alcAlrPolygonsGeoprocessing(rawPath, settingsClass):
 
     arcpy.AlterField_management(landsCopy, "OWNER_CLASS", "CROWN")
 
-    cursor = arcpy.da.UpdateCursor(landsCopy, ["CROWN"])
+    cursor = arcpy.da.UpdateCursor(landsCopy, ["CROWN", "OBJECTID"])
 
     for row in cursor:
-        if "CROWN" in row[0]:
+        if "CROWN" in f"{row[0]}":
             row[0] = "yes"
         else:
             row[0] = "no"
