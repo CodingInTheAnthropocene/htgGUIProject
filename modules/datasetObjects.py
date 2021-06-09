@@ -4,7 +4,7 @@ from modules.settingsWrapper import *
 from modules.catalogueFunctions import *
 from modules.parksFunctions import *
 
-from genericpath import exists
+from genericpath import exists, getsize
 from requests import post, Session
 from urllib.request import urlopen, urlretrieve
 from lxml.html import fromstring
@@ -16,6 +16,8 @@ from datetime import datetime
 from shutil import move, make_archive, rmtree, unpack_archive
 from json import load, dump
 import time
+from traceback import print_exc
+
 
 
 class Dataset:
@@ -110,7 +112,7 @@ class Dataset:
             self.archiveStatus = True
 
         except:
-            "Archiving Error"
+            print("Archiving error Check file path")
             self.archiveStatus = False
 
     def catalogueWarehouseDownload(self):
@@ -320,29 +322,30 @@ class Dataset:
             }
         }
 
-        # Create new empty JSON if log doesn't exist,Read JSON file if it does
+        # If log doesn't exist or is empty for some reason, Create A new JSON file and populate With dictionary
+        if exists(logPath) == False or getsize(logPath)==0:
+            with open(logPath, "w")  as logFile:
+                dump(logDictionary, logFile)
+        
 
-        if exists(logPath) == False:
-
-            with open(logPath, "w"):
-                jsonIn = logDictionary
+        # it log already exists
         else:
-
             with open(logPath, "r") as logFile:
                 jsonIn = load(logFile)
 
-        # write JSON to file
-        with open(logPath, "w") as logFile:
-            # if there is no entry for today
-            if todayString not in jsonIn["dates"].keys():
-                jsonIn["dates"] = logDictionary[todayString]
-            # if today's entry already exists
-            else:
-                jsonIn["dates"][todayString]["times"][time] = logDictionary["dates"][
-                    todayString
-                ]["times"][time]
-            # write JSON to file
-            dump(jsonIn, logFile)
+            with open(logPath, "w") as logFile:
+
+                # if there is no entry for today
+                if todayString not in jsonIn["dates"].keys():
+                    jsonIn["dates"] = logDictionary["dates"][todayString]
+                # if today's entry already exists
+                else:
+                    jsonIn["dates"][todayString]["times"][time] = logDictionary["dates"][
+                        todayString
+                    ]["times"][time]
+
+                # write JSON to file
+                dump(jsonIn, logFile)
 
     def writeToSettings(self):
         dictToSettings = {"currentPath": self.processedFile}
@@ -351,8 +354,6 @@ class Dataset:
     def catalogueUpdateProcess(self):
         print(f"{self.alias}: Starting update process!")
         self.archiving()
-        if self.archiveStatus == False:
-            print(f"{self.alias}: Archiving error, check file path")
 
         print(f"{self.alias}: Starting catalogue download")
         self.catalogueWarehouseDownload()
@@ -362,9 +363,15 @@ class Dataset:
         self.writeToSettings()
 
         print(f"{self.alias}: Logging…")
-        self.writeDownloadInfo()
-        self.writeTextAndMetadata()
-        self.writeLog()
+ 
+        try:
+            self.writeDownloadInfo()
+            self.writeTextAndMetadata()
+            self.writeLog()
+        except:
+            print("Logging error")
+            print_exc()
+
 
         print(f"{self.alias}: Finished update process!")
 

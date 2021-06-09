@@ -175,17 +175,20 @@ class MainWindow(QMainWindow):
         ############################################################################################
         # Log instantiation
         ############################################################################################
-        self.flowLayoutLogs = FlowLayout(widgets.scrollAreaLogsButtons)
+        try:
+            self.flowLayoutLogs = FlowLayout(widgets.scrollAreaLogsButtons)
 
-        for directoryName, _, files in walk(UniversalSettingsWrapper.logFolder):
-            for file in files:
-                newMonthButton = logButton(
-                    widgets.scrollAreaLogsButtons,
-                    f"{directoryName}\\{file}",
-                    widgets.textEditLogs,
-                )
-                self.flowLayoutLogs.addWidget(newMonthButton)
-                newMonthButton.updateTextEdit()
+            for directoryName, _, files in walk(UniversalSettingsWrapper.logFolder):
+                for file in files:
+                    newMonthButton = logButton(
+                        widgets.scrollAreaLogsButtons,
+                        f"{directoryName}\\{file}",
+                        widgets.textEditLogs,
+                    )
+                    self.flowLayoutLogs.addWidget(newMonthButton)
+                    newMonthButton.updateTextEdit()
+        except:
+            print_exc
         
         ############################################################################################
         # Settings

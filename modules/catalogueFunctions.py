@@ -5,7 +5,7 @@ from os import path
 
 
 
-def crownTenuresGeoprocessing(rawPath, settingsClass):
+def crownTenuresGeoprocessing(rawPath, dataset):
     """Takes raw crown tenures data set and runs it through standardized Geoprocessing"""
 
     fieldValueDictionary = {
@@ -94,13 +94,13 @@ def crownTenuresGeoprocessing(rawPath, settingsClass):
     }
 
     # ArcGIS environment settings
-    arcpy.env.workspace = settingsClass.arcgisWorkspaceFolder
+    arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
     # copy Shapefile To leave original intact
     tenuresCopy = arcpy.CopyFeatures_management(rawPath, "tenuresCopy.shp")
     
-    print(f"{settingsClass.alias}: Raw shapefile copied")
+    print(f"{dataset.alias}: Raw shapefile copied")
 
     # delete fields from crown tenures
     # NOTE: This May error with GDB instead of Shapefile
@@ -157,7 +157,7 @@ def crownTenuresGeoprocessing(rawPath, settingsClass):
                 break
 
 
-    print(f"{settingsClass.alias}: Starting tenures/SOI intersect")
+    print(f"{dataset.alias}: Starting tenures/SOI intersect")
     # intersect crown tenures with SOI, delete automatically created fields.
     tenuresSOIIntersect = arcpy.Intersect_analysis(
         [tenuresCopy, UniversalPathsWrapper.soiPath],
@@ -244,12 +244,12 @@ def crownTenuresGeoprocessing(rawPath, settingsClass):
 
     arcpy.DeleteField_management(htgLandsCopy, fieldsToDeletehtgLandsCopy)
 
-    print(f"{settingsClass.alias}: Starting 'identity'" )
+    print(f"{dataset.alias}: Starting 'identity'" )
 
     # Identity tenures/soi intersect with land parcels data, This performs a workaround with the union tool and then subsequently deleting records That aren't wanted.
     crownTenuresProcessedPath = arcpy.Union_analysis(
         [tenuresSOIIntersect, htgLandsCopy],
-        settingsClass.fileName,
+        dataset.fileName,
         join_attributes="NO_FID",
     )
 
@@ -277,20 +277,20 @@ def crownTenuresGeoprocessing(rawPath, settingsClass):
     return arcpyGetPath(crownTenuresProcessedPath)
 
 
-def forestHarvestingAuthorityGeoprocessing(rawPath, settingsClass):
+def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
 
     print("Starting forest tenure geoprocessing")
 
     # env variables
-    arcpy.env.workspace = settingsClass.arcgisWorkspaceFolder
+    arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
     # get Name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # Create a temporary GDB and create a copy of forest tenure in it. This is a workaround so that renaming fields is easy.
-    arcpy.CreateFileGDB_management(settingsClass.downloadFolder, "temp.gdb")
-    tempGdbPath = f"{settingsClass.downloadFolder}\\temp.gdb"
+    arcpy.CreateFileGDB_management(dataset.downloadFolder, "temp.gdb")
+    tempGdbPath = f"{dataset.downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
 
@@ -466,7 +466,7 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, settingsClass):
     # intersect forest tenure with HTG lands
     forestHarvestingAuthorityProcessedPath = arcpy.Intersect_analysis(
         [forestHarvestingAuthorityCopy, htgLandsCopy],
-        settingsClass.fileName,
+        dataset.fileName,
         join_attributes="NO_FID",
     )
 
@@ -488,17 +488,17 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, settingsClass):
     return forestHarvestingAuthorityProcessedPath
 
 
-def forestManagedLicenceGeoprocessing(rawPath, settingsClass):
+def forestManagedLicenceGeoprocessing(rawPath, dataset):
     # environment settings
-    arcpy.env.workspace = settingsClass.arcgisWorkspaceFolder
+    arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
     # get name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # create temporary GDB and copy raw shape file to it
-    arcpy.CreateFileGDB_management(settingsClass.downloadFolder, "temp.gdb")
-    tempGdbPath = f"{settingsClass.downloadFolder}\\temp.gdb"
+    arcpy.CreateFileGDB_management(dataset.downloadFolder, "temp.gdb")
+    tempGdbPath = f"{dataset.downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
 
@@ -650,7 +650,7 @@ def forestManagedLicenceGeoprocessing(rawPath, settingsClass):
     # intersect HTG lands and forest managed licenses
     forestManagedLicenceProcessedPath = arcpy.Intersect_analysis(
         [forestManagedLicenceCopy, htgLandsCopy],
-        settingsClass.fileName,
+        dataset.fileName,
         join_attributes="NO_FID",
     )
 
@@ -673,18 +673,18 @@ def forestManagedLicenceGeoprocessing(rawPath, settingsClass):
 ####################################################################################################################
 
 
-def harvestedAreasGeoprocessing(rawPath, settingsClass):
+def harvestedAreasGeoprocessing(rawPath, dataset):
 
     # environment settings
-    arcpy.env.workspace = settingsClass.arcgisWorkspaceFolder
+    arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
     # get name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # create temporary GDB and copy raw shape file to it
-    arcpy.CreateFileGDB_management(settingsClass.downloadFolder, "temp.gdb")
-    tempGdbPath = f"{settingsClass.downloadFolder}\\temp.gdb"
+    arcpy.CreateFileGDB_management(dataset.downloadFolder, "temp.gdb")
+    tempGdbPath = f"{dataset.downloadFolder}\\temp.gdb"
 
     arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
 
@@ -808,7 +808,7 @@ def harvestedAreasGeoprocessing(rawPath, settingsClass):
     # intersect HTG landS and harvested areas
     harvestedAreasProcessedPath = arcpy.Intersect_analysis(
         [harvestedAreasCopy, htgLandsCopy],
-        settingsClass.fileName,
+        dataset.fileName,
         join_attributes="NO_FID",
     )
 
@@ -823,12 +823,12 @@ def harvestedAreasGeoprocessing(rawPath, settingsClass):
     return harvestedAreasProcessedPath
 
 
-def parcelMapBCGeoprocessing(rawPath, settingsClass):
+def parcelMapBCGeoprocessing(rawPath, dataset):
 
     print("Starting Parcel Map Geoprocessing")
 
     newGDB = arcpy.CreateFileGDB_management(
-        settingsClass.downloadFolder, "parcelMapContainer"
+        dataset.downloadFolder, "parcelMapContainer"
     )
 
     arcpy.env.workspace = newGDB
@@ -853,7 +853,7 @@ def parcelMapBCGeoprocessing(rawPath, settingsClass):
     print("Finished Copying Parcelmap")
 
     parcelMapProcessedPath = arcpy.Intersect_analysis(
-        [parcelMapCopy, UniversalPathsWrapper.soiPath], settingsClass.fileName
+        [parcelMapCopy, UniversalPathsWrapper.soiPath], dataset.fileName
     )
 
     arcpy.management.Delete(parcelMapCopy)
@@ -863,7 +863,7 @@ def parcelMapBCGeoprocessing(rawPath, settingsClass):
     return parcelMapProcessedPath
 
 
-def digitalRoadAtlasGeoprocessing(rawPath, settingsClass):
+def digitalRoadAtlasGeoprocessing(rawPath, dataset):
     fieldValueDictionary = {
         ("freeway", "highway"): "highway",
         ("arterial", "collector", "ramp"): "main",
@@ -888,7 +888,7 @@ def digitalRoadAtlasGeoprocessing(rawPath, settingsClass):
 
     print("starting road atlas geoprocessing")
 
-    arcpy.env.workspace = settingsClass.arcgisWorkspaceFolder
+    arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
     # NOTE, maybe best to work with original data for this one... Copying takes a long time
@@ -940,7 +940,7 @@ def digitalRoadAtlasGeoprocessing(rawPath, settingsClass):
     print("Starting Intersect")
     roadAtlasIntersect = arcpy.Intersect_analysis(
         [roadAtlasDisolve, UniversalPathsWrapper.soiPath],
-        settingsClass.fileName,
+        dataset.fileName,
         "NO_FID",
     )
 
@@ -952,9 +952,9 @@ def digitalRoadAtlasGeoprocessing(rawPath, settingsClass):
     return roadAtlasIntersect
 
 
-def alcAlrPolygonsGeoprocessing(rawPath, settingsClass):
+def alcAlrPolygonsGeoprocessing(rawPath, dataset):
 
-    arcpy.env.workspace = settingsClass.arcgisWorkspaceFolder
+    arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
     alcAlrCopy = arcpy.CopyFeatures_management(rawPath, "tempALCALR.shp")
@@ -1056,8 +1056,9 @@ def alcAlrPolygonsGeoprocessing(rawPath, settingsClass):
 
     del cursor
 
+    f"{dataset.alias}: Starting intersect"
     alcAlrProcessed = arcpy.Intersect_analysis(
-        [alcAlrCopy, landsCopy], settingsClass.fileName, join_attributes="NO_FID",
+        [alcAlrCopy, landsCopy], dataset.fileName, join_attributes="NO_FID",
     )
 
     arcpy.DeleteField_management(
@@ -1070,9 +1071,9 @@ def alcAlrPolygonsGeoprocessing(rawPath, settingsClass):
     return alcAlrProcessed
 
 
-def environmentalRemediationSitesGeoprocessing(rawPath, settingsClass):
+def environmentalRemediationSitesGeoprocessing(rawPath, dataset):
 
-    arcpy.env.workspace = settingsClass.arcgisWorkspaceFolder
+    arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
     sitesCopy = arcpy.CopyFeatures_management(rawPath, "tempEnvRem.shp")
@@ -1172,7 +1173,7 @@ def environmentalRemediationSitesGeoprocessing(rawPath, settingsClass):
     arcpy.DeleteField_management(landsCopy, landsDeleteFields)
 
     remediationProcessed = arcpy.Intersect_analysis(
-        [landsCopy, sitesCopy], settingsClass.fileName, join_attributes="NO_FID",
+        [landsCopy, sitesCopy], dataset.fileName, join_attributes="NO_FID",
     )
 
     arcpy.DeleteField_management(remediationProcessed, ["Shape_Lengt", "Shape_Area"])
