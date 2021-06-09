@@ -290,16 +290,13 @@ def parksEcologicalProtectedGeoprocessing(rawPath, datasetClass):
     # get Name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
-    # clip to htg AOI
-    clippedFeatures = arcpy.Clip_analysis(
-        rawPath, UniversalPathsWrapper.aoiPath, rawName
-    )
+
 
     # Create a temporary GDB and create new copy feature class there. This is a workaround so that renaming fields is easy.
     arcpy.CreateFileGDB_management(datasetClass.downloadFolder, "temp.gdb")
     tempGdbPath = f"{datasetClass.downloadFolder}\\temp.gdb"
 
-    arcpy.FeatureClassToGeodatabase_conversion(clippedFeatures, tempGdbPath)
+    arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
 
     parksEcologicalProtectedCopy = f"{tempGdbPath}\\{rawName}"
 
@@ -370,7 +367,7 @@ def parksEcologicalProtectedGeoprocessing(rawPath, datasetClass):
     arcpy.DeleteField_management(
         parksEcologicalProtectedCopy, ["Shape_Leng", "Shape_Area"]
     )
-    arcpy.management.Delete(clippedFeatures)
+    
     arcpy.management.Delete(tempGdbPath)
 
     
@@ -387,16 +384,12 @@ def nationalParksGeoprocessing(rawPath, datasetClass):
     # get Name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
-    # clip to htg AOI
-    clippedFeatures = arcpy.Clip_analysis(
-        rawPath, UniversalPathsWrapper.aoiPath, rawName
-    )
 
     # Create a temporary GDB and create new copy feature class there. This is a workaround so that renaming fields is easy.
     arcpy.CreateFileGDB_management(datasetClass.downloadFolder, "temp.gdb")
     tempGdbPath = f"{datasetClass.downloadFolder}\\temp.gdb"
 
-    arcpy.FeatureClassToGeodatabase_conversion(clippedFeatures, tempGdbPath)
+    arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
 
     nationalParksCopy = f"{tempGdbPath}\\{rawName}"
 
@@ -457,7 +450,6 @@ def nationalParksGeoprocessing(rawPath, datasetClass):
 
     # delete extraneous fields and temp GDB
     arcpy.DeleteField_management(nationalParksCopy, ["Shape_Leng", "Shape_Area"])
-    arcpy.management.Delete(clippedFeatures)
     arcpy.management.Delete(tempGdbPath)
 
     print("Finished National parks geoprocessing")
@@ -475,16 +467,13 @@ def recreationPolygonsGeoprocessing(rawPath, datasetClass):
     # get Name of Raw shape file
     rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
-    # clip to htg AOI
-    clippedFeatures = arcpy.Clip_analysis(
-        rawPath, UniversalPathsWrapper.aoiPath, rawName
-    )
+
 
     # Create a temporary GDB and create new copy feature class there. This is a workaround so that renaming fields is easy.
     arcpy.CreateFileGDB_management(datasetClass.downloadFolder, "temp.gdb")
     tempGdbPath = f"{datasetClass.downloadFolder}\\temp.gdb"
 
-    arcpy.FeatureClassToGeodatabase_conversion(clippedFeatures, tempGdbPath)
+    arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
 
     recreationPolygonsCopy = f"{tempGdbPath}\\{rawName}"
 
@@ -561,7 +550,7 @@ def recreationPolygonsGeoprocessing(rawPath, datasetClass):
 
     # delete extraneous fields and temp GDB
     arcpy.DeleteField_management(recreationPolygonsCopy, ["Shape_Leng", "Shape_Area"])
-    arcpy.management.Delete(clippedFeatures)
+    
     arcpy.management.Delete(tempGdbPath)
 
     

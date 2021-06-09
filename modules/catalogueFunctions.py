@@ -819,6 +819,8 @@ def harvestedAreasGeoprocessing(rawPath, settingsClass):
     # remove working files
     arcpy.management.Delete(htgLandsCopy)
     arcpy.management.Delete(tempGdbPath)
+    
+    return harvestedAreasProcessedPath
 
 
 def parcelMapBCGeoprocessing(rawPath, settingsClass):

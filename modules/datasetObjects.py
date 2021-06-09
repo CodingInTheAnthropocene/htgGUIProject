@@ -15,9 +15,10 @@ from os import path, mkdir, walk, rename, remove
 from datetime import datetime
 from shutil import move, make_archive, rmtree, unpack_archive
 from json import load, dump
+import time
 
 
-class Dataset:    
+class Dataset:
     def __init__(self, datasetAlias):
 
         self.settingsWrapper = DatasetSettingsWrapper(datasetAlias)
@@ -31,13 +32,13 @@ class Dataset:
         self.jsonPayload = self.settingsWrapper.jsonPayload
         self.updateFrequency = self.settingsWrapper.updateFrequency
         self.arcgisWorkspaceFolder = self.settingsWrapper.arcgisWorkspaceFolder
-        self.urlList=self.settingsWrapper.urlList
+        self.urlList = self.settingsWrapper.urlList
 
         self.alias = datasetAlias
         self.geoprocessingFunction = eval(self.settingsWrapper.geoprocessingFunction)
 
     def archiving(self):
-        """ Takes the path of a shape file, and archives all files in that shapefile into the given archive folder. If path is gdb feature class, archives that whole GDB"""
+        """ Takes the path of a shape file, and archives all files in that shapefile into the given archive folder. If path is gdb feature class, archives that whole G in DB"""
         try:
             currentPathType = arcpy.Describe(self.currentPath).dataType
 
@@ -94,8 +95,8 @@ class Dataset:
                     path.split(self.currentPath)[0],
                     path.split(self.currentPath)[1],
                 )
-                
-                self.archivedFile=f"{self.archiveFolder}\\{fileName}{getFileCreatedDate(self.currentPath)}"
+
+                self.archivedFile = f"{self.archiveFolder}\\{fileName}{getFileCreatedDate(self.currentPath)}"
                 make_archive(
                     f"{self.archiveFolder}\\{fileName}{getFileCreatedDate(self.currentPath)}",
                     "zip",
@@ -104,10 +105,9 @@ class Dataset:
                 arcpy.Delete_management(currentGDB)
 
             else:
-                print("Archiving Error")
-                self.archiveStatus= False
-            
-            self.archiveStatus = True
+                raise ValueError("Incorrect file type")
+
+            self.archivesStatus = True
 
         except:
             "Archiving Error"
@@ -186,11 +186,15 @@ class Dataset:
 
         # create folder for  raw data,remove it first if it already exists
         folderPath = f"{self.downloadFolder}\\raw{self.fileName}"
-        if path.exists(folderPath)==False:
-            mkdir(folderPath)
+
+        if path.exists(folderPath) == True:
+            rmtree(folderPath)
 
         # retrieve info from URL
+
+        print(time.time())
         urlretrieve(downloadURL, f"{folderPath}.zip")
+        print(time.time())
 
         # unzipp the file and remove original zipped file
         unpack_archive(f"{folderPath}.zip", folderPath)
@@ -200,47 +204,48 @@ class Dataset:
         rawFilePaths = []
         rawHtmlPaths = []
 
-        #NOTE: must add GDB here!!
+        # NOTE: must add GDB here!!
         for dirname, _, files in walk(folderPath):
+            if dirname[-4:] == ".gdb":
+                arcpy.env.workspace= dirname
+                rawFilePaths.append(
+                    arcpy.Describe(
+                        arcpy.ListFeatureClasses()[0]
+                    ).catalogPatharcpy.ListFeatureClasses()
+                )
+
             for i in files:
-                if i[:4]==".gbd":
-                    for feature  in arcpy.ListFeatureClasses(i):
-                        rawFilePaths.append(f"{dirname}\\{i}\\{feature}")
                 if i[-4:] == ".shp":
                     rawFilePaths.append(f"{dirname}\\{i}")
-
                 if i[-5:] == ".html":
                     rawHtmlPaths.append(f"{dirname}\\{i}")
-                
 
         # download and unzip any Auxiliary shape files, add their paths to list
-        try: 
-            print(f"{self.alias}: Downloading auxiliary datasets")
+        try:
+            if self.urlList > 0:
+                print(f"{self.alias}: Downloading auxiliary datasets")
             for url in self.urlList:
-                rawFilePaths.extend(shapeFileDownloadUnzip(url, self.downloadFolder, self.fileName))
+                rawFilePaths.extend(
+                    shapeFileDownloadUnzip(url, folderPath, self.fileName)
+                )
         except:
-            print("this dataset has no auxiliary URLs")
+            print(f"{self.alias}: This dataset has no auxiliary URLs")
 
-
-        if len(rawFilePaths)> 1:
-            
-            self.rawFilePaths = list(dict.fromkeys(rawFilePaths))       
-            s
-        
+        if len(rawFilePaths) > 1:
+            self.rawFilePaths = list(dict.fromkeys(rawFilePaths))
         else:
-            self.rawFilePaths=rawFilePaths[0]
+            self.rawFilePaths = rawFilePaths[0]
 
         self.rawHtmlPaths = list(dict.fromkeys(rawHtmlPaths))
 
         print(f"{self.alias}: Done downloading!")
 
-    def geoprocessing(self):      
+    def geoprocessing(self):
         self.resultObject = self.geoprocessingFunction(self.rawFilePaths, self)
         self.processedFile = arcpyGetPath(self.resultObject)
-    
+
     def writeToSettings(self):
         self.settingsWrapper.settingsWriter("currentPath", self.processedFile)
-
 
     def writeDownloadInfo(self):
         """creates download info for metadata, text file, and log"""
@@ -258,16 +263,19 @@ class Dataset:
             originalHtml = str([path.split(i)[1] for i in self.rawHtmlPaths])
         else:
             originalHtml = path.split(self.rawHtmlPaths)[1]
-        
-        
-        auxiliaryDownloadInfo= f"Auxiliary Downloads from : {self.urlList}" if len(self.urlList) > 0 else None
 
-        self.catalogueDownloadInfo = f"Date Downloaded: {datetime.today().strftime('%Y-%m-%d')} from BC's data catalogue\n URL: {self.jsonPayload['featureItems'][0]['layerMetadataUrl']}\n Original Catalogue downnload name(s): {originalName}\n See {originalHtml} for licence information and metadata for catalogue downloads\n For more information about downloading data, email data@gov.bc.ca.\n To report downloading errors email NRSApplications@gov.bc.ca. \n{auxiliaryDownloadInfo}"
+        auxiliaryDownloadInfo = (
+            f"Auxiliary Downloads from : {self.urlList}"
+            if len(self.urlList) > 0
+            else None
+        )
+
+        self.catalogueDownloadInfo = f"\n     Date Downloaded: {datetime.today().strftime('%Y-%m-%d')} from BC's data catalogue\n     URL: {self.jsonPayload['featureItems'][0]['layerMetadataUrl']}\n     Original Catalogue download name(s): {originalName}\n     See {originalHtml} for licence information and metadata for catalogue downloads\n     For more information about downloading data, email data@gov.bc.ca.\n     To report downloading errors email NRSApplications@gov.bc.ca. \n     Auxiliary download links: {auxiliaryDownloadInfo}"
 
     def writeTextAndMetadata(self):
         """writes download information from BC Data catalogue to File metadata"""
-        
-        if arcpy.Describe(self.processedFile).dataType=="ShapeFile":
+
+        if arcpy.Describe(self.processedFile).dataType == "ShapeFile":
             with open(
                 f"{self.downloadFolder}\\{path.splitext(self.fileName)[0]}.txt", "w"
             ) as textFile:
@@ -314,7 +322,6 @@ class Dataset:
 
         # Create new empty JSON if log doesn't exist,Read JSON file if it does
 
-
         if exists(logPath) == False:
 
             with open(logPath, "w"):
@@ -328,7 +335,7 @@ class Dataset:
         with open(logPath, "w") as logFile:
             # if there is no entry for today
             if todayString not in jsonIn["dates"].keys():
-                jsonIn["dates"][todayString] = logDictionary[todayString]["dates"]
+                jsonIn["dates"] = logDictionary[todayString]
             # if today's entry already exists
             else:
                 jsonIn["dates"][todayString]["times"][time] = logDictionary["dates"][
@@ -336,9 +343,10 @@ class Dataset:
                 ]["times"][time]
             # write JSON to file
             dump(jsonIn, logFile)
-    
+
     def writeToSettings(self):
-        self.settingsWrapper.settingsWriter("currentPath", self.processedFile)
+        dictToSettings = {"currentPath": self.processedFile}
+        self.settingsWrapper.settingsWriter(dictToSettings)
 
     def catalogueUpdateProcess(self):
         print(f"{self.alias}: Starting update process!")
@@ -353,11 +361,10 @@ class Dataset:
         self.geoprocessing()
         self.writeToSettings()
 
-        f"{self.alias}: Logging…"
+        print(f"{self.alias}: Logging…")
         self.writeDownloadInfo()
         self.writeTextAndMetadata()
         self.writeLog()
-        
 
-        f"{self.alias}: Finished update process!"
+        print(f"{self.alias}: Finished update process!")
 

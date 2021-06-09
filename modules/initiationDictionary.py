@@ -102,7 +102,7 @@ initiationDictionary = {
             "environmentalRemediationSites": {
                 "name": "Environmental Remediation Sites",
                 "dataCatalogueId": "63804e64-a4f3-4bc7-b1e3-5f736bbc3967",
-                "geoprocessingFunction": "alcAlrPolygonsGeoprocessing",
+                "geoprocessingFunction": "environmentalRemediationSitesGeoprocessing",
                 "rawFormat": "shapefile",
                 "jsonPayloadFeatureItems": {
                     "featureItem": "WHSE_WASTE.SITE_ENV_RMDTN_SITES_SVW",

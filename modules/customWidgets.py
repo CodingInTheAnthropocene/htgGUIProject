@@ -15,7 +15,9 @@ from traceback import print_exc
 class datasetFrame(QFrame):
     """ A datasetFrame is the primary intterface for updating datasets in the updater. It consists of a QTree for presenting dataset information, An update button which starts the update process for that dataset, as well as settings button which brings the user to the settings for that particular dataset. Is itself a custom qframe"""
 
-    def __init__(self, parent, dataset, updateFunction, mainWindow, mainWidgets, settingsWidget):
+    def __init__(
+        self, parent, dataset, updateFunction, mainWindow, mainWidgets, settingsWidget
+    ):
         """Initializes widget with parent widget, A dataset Setttings class, and the process function asssociated with that settings class"""
         super(datasetFrame, self).__init__(parent)
 
@@ -27,13 +29,13 @@ class datasetFrame(QFrame):
         self.currentPath = dataset.currentPath
         self.updateFrequency = dataset.updateFrequency
         self.dataCatalogueIdList = dataset.dataCatalogueIdList
-        self.xCollapsed= 250
-        self.xExpanded = 400
-        self.yCollapsed= 115
-        self.yExpanded= 200
-        self.mainWidgets=mainWidgets
-        self.settingsWidget=settingsWidget
-        self.mainWindow=mainWindow
+        self.xCollapsed = 250
+        self.xExpanded = 500
+        self.yCollapsed = 115
+        self.yExpanded = 200
+        self.mainWidgets = mainWidgets
+        self.settingsWidget = settingsWidget
+        self.mainWindow = mainWindow
 
         # get data currency from data catalogue API if Data has a data catalogue ID
         if self.dataCatalogueIdList != "N/A":
@@ -55,7 +57,7 @@ class datasetFrame(QFrame):
 
         # functions on init
         self.initFrame()
-        try:          
+        try:
             self.turnPurple()
             self.turnRed()
         except:
@@ -69,23 +71,20 @@ class datasetFrame(QFrame):
         self.qtree.collapsed.connect(self.qtreeCollapse)
 
     def initFrame(self):
-        """Starting state for widget""" 
+        """Starting state for widget"""
 
-
-        
-        self.setGeometry(QRect(0, 0, self.xCollapsed,self.yCollapsed))
-        sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)  
+        self.setGeometry(QRect(0, 0, self.xCollapsed, self.yCollapsed))
+        sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.setSizePolicy(sizePolicy)
-        
+
         self.setFrameShape(QFrame.StyledPanel)
         self.setFrameShadow(QFrame.Raised)
-        #self.setMaximumSize( self.xCollapsed, self.yCollapsed )
-        #self.setMinimumSize( self.xCollapsed,self.yCollapsed)
-
+        # self.setMaximumSize( self.xCollapsed, self.yCollapsed )
+        # self.setMinimumSize( self.xCollapsed,self.yCollapsed)
 
         self.verticalLayout_4 = QVBoxLayout(self)
         self.verticalLayout_4.setObjectName(f"verticalLayout_{self.alias}")
-        
+
         self.qtree = QTreeWidget(self)
         font = QFont()
         font.setBold(True)
@@ -127,10 +126,8 @@ class datasetFrame(QFrame):
 
         self.layoutButtons.addWidget(self.buttonSettings)
         self.verticalLayout_4.addLayout(self.layoutButtons)
-    
 
         self.retranslateUi()
-
 
     def retranslateUi(self):
         qtreewidgetitem = self.qtree.headerItem()
@@ -225,18 +222,16 @@ class datasetFrame(QFrame):
                 "QHeaderView::section {border-radius: 5px; background: rgb(255,153,153); color:black}"
             )
             self.qtree.header().setVisible(True)
-    
+
     def navigateToSettings(self):
         from modules.ui_functions import UIFunctions
 
         self.mainWidgets.stackedWidget.setCurrentWidget(self.mainWidgets.settings)
         self.mainWidgets.scrollAreaSettings.ensureWidgetVisible(self.settingsWidget)
-        btn=self.mainWidgets.buttonDataSettings
+        btn = self.mainWidgets.buttonDataSettings
         btnName = btn.objectName()
         UIFunctions.resetStyle(self.mainWindow, btnName)
-        btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))  
-
-
+        btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))
 
 
 class logButton(QPushButton):
@@ -333,11 +328,9 @@ class DatasetSettingsWidget(QFrame):
         self.widgetParent = parent
 
         self.datasetSettings = dataset.settingsWrapper
-        self.datasetName=dataset.settingsWrapper.name
-       
+        self.datasetName = dataset.settingsWrapper.name
 
         self.initSettingsWidget()
-
 
         self.lineEditSettingsWidgetCurrentPath.setText(dataset.currentPath)
         self.lineEditSettingsWidgetArchiveFolder.setText(dataset.archiveFolder)
@@ -346,6 +339,7 @@ class DatasetSettingsWidget(QFrame):
         self.lineEditSettingsWidgetWorkspaceFolder.setText(
             dataset.arcgisWorkspaceFolder
         )
+        self.lineEditSettingsWidgetFileName.setText(dataset.fileName)
 
         if (
             dataset.settingsWrapper.downloadFolder
@@ -411,17 +405,35 @@ class DatasetSettingsWidget(QFrame):
         elif self.radioSettingsWidgetSwBc.isChecked():
             soiValue = "swbc"
 
+        archiveFolderValue = (
+            "universal"
+            if self.radioSettingsWidgetArchiveFolder.isChecked()
+            else self.lineEditSettingsWidgetArchiveFolder.text()
+        )
+
+        downloadFolderValue = (
+            "universal"
+            if self.radioSettingsWidgetDownloadFolder.isChecked()
+            else self.lineEditSettingsWidgetDownloadFolder.text()
+        )
+
+        arcgisWorkspaceFolderValue = (
+            "download"
+            if self.radioSettingsWidgetWorkspaceFolder.isChecked()
+            else self.lineEditSettingsWidgetWorkspaceFolder.text()
+        )
+
         dictionaryToSettings = {
+            "fileName": self.lineEditSettingsWidgetFileName.text(),
             "currentPath": self.lineEditSettingsWidgetCurrentPath.text(),
-            "archiveFolder": self.lineEditSettingsWidgetArchiveFolder.text(),
-            "downloadFolder": self.lineEditSettingsWidgetDownloadFolder.text(),
-            "workspaceFolder": self.lineEditSettingsWidgetWorkspaceFolder.text(),
-            "soiArea": soiValue,
+            "archiveFolder": archiveFolderValue,
+            "downloadFolder": downloadFolderValue,
+            "arcgisWorkspaceFolder": arcgisWorkspaceFolderValue,
+            "aoi": soiValue,
             "updateFrequency": int(self.lineEditSettingsWidgetUpdateFrequency.text()),
         }
 
         self.datasetSettings.settingsWriter(dictionaryToSettings)
-
 
     def radioButtonToggle(self, radioButton, lineEdit, fromSettings):
         if radioButton.isChecked():
@@ -455,7 +467,32 @@ class DatasetSettingsWidget(QFrame):
 
         self.horizontalLayout_43.addWidget(self.labelSettingsWidget, 0, Qt.AlignLeft)
 
-        self.verticalLayout_23.addWidget(self.labelSettingsWidget, 0 , Qt.AlignLeft)
+        self.verticalLayout_23.addWidget(self.labelSettingsWidget, 0, Qt.AlignLeft)
+
+        self.frameFileName = QFrame(self)
+        self.frameFileName.setObjectName("frameFileName")
+        self.frameFileName.setFrameShape(QFrame.StyledPanel)
+        self.frameFileName.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_20 = QHBoxLayout(self.frameFileName)
+        self.horizontalLayout_20.setObjectName("horizontalLayout_20")
+        self.labelFileName = QLabel(self.frameFileName)
+        self.labelFileName.setObjectName("labelFileName")
+        self.labelFileName.setMaximumSize(QSize(110, 16777215))
+        self.labelFileName.setStyleSheet('font: 700 10pt "Segoe UI Semibold"')
+
+        self.horizontalLayout_20.addWidget(self.labelFileName)
+
+        self.lineEditSettingsWidgetFileName = QLineEdit(self.frameFileName)
+        self.lineEditSettingsWidgetFileName.setObjectName(
+            "lineEditSettingsWidgetFileName"
+        )
+        self.lineEditSettingsWidgetFileName.setMinimumSize(QSize(200, 25))
+        self.lineEditSettingsWidgetFileName.setMaximumSize(QSize(200, 16777215))
+
+        self.horizontalLayout_20.addWidget(
+            self.lineEditSettingsWidgetFileName, 0, Qt.AlignLeft
+        )
+        self.verticalLayout_23.addWidget(self.frameFileName, 0, Qt.AlignLeft)
 
         self.frame_3 = QFrame(self)
         self.frame_3.setObjectName("frame_3")
@@ -736,6 +773,9 @@ class DatasetSettingsWidget(QFrame):
         )
         self.labelSettingsWidget.setText(
             QCoreApplication.translate("Form", f"{self.datasetName}", None)
+        )
+        self.labelFileName.setText(
+            QCoreApplication.translate("Form", "File Name:  ", None)
         )
         self.label_3.setText(
             QCoreApplication.translate("Form", "Current Path:  ", None)

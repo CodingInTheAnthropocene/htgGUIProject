@@ -7,7 +7,7 @@ from shutil import rmtree, unpack_archive
 
 
 def arcpyGetPath(x):
-    return arcpy.Describe(x).path
+    return arcpy.Describe(x).catalogPath
 
 
 def getCurrency(idList):
@@ -23,9 +23,12 @@ def getFileCreatedDate(filePath):
     return datetime.fromtimestamp(path.getctime(filePath)).date()
 
 
-def fieldsToDelete(featureClass, keepFields):
+def fieldsToDelete(featureClass, keepFields, isShapefile):
     originalFields = [i.name for i in arcpy.ListFields(featureClass)]
-    deleteFields = [i for i in originalFields if i not in keepFields]
+    deleteFields = [i for i in originalFields if i not in keepFields.extend(("FID", "OBJECTID", "Shape"))]
+
+    if isShapefile== True:
+        deleteFields = [i[:10] for i in deleteFields]
 
     return deleteFields
 

@@ -1,11 +1,18 @@
 from modules import bbox_SOIs
 from json import dump, load
+from shutil import copy
+from datetime import datetime, timedelta
+from os import path
 
 from modules.universalFunctions import *
 from modules.initiationDictionary import initiationDictionary
 
+# create a settings backup
+settingsFile = "modules\\settings.json"
 
-with open("modules\\settings.json") as settingsFile:
+copy(settingsFile, "modules\\settingsBackup.json")
+
+with open(settingsFile) as settingsFile:
     configurationDictionary = load(settingsFile)
 
 
