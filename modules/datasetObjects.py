@@ -107,7 +107,7 @@ class Dataset:
             else:
                 raise ValueError("Incorrect file type")
 
-            self.archivesStatus = True
+            self.archiveStatus = True
 
         except:
             "Archiving Error"
@@ -211,7 +211,7 @@ class Dataset:
                 rawFilePaths.append(
                     arcpy.Describe(
                         arcpy.ListFeatureClasses()[0]
-                    ).catalogPatharcpy.ListFeatureClasses()
+                    ).catalogPath
                 )
 
             for i in files:
