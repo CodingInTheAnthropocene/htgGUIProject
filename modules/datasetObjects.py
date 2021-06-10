@@ -46,18 +46,14 @@ class Dataset:
 
             if currentPathType == "ShapeFile":
                 folderPath, shapefileNameWithExtension = path.split(self.currentPath)
-                shapefileNameWithoutExtension = path.splitext(
-                    shapefileNameWithExtension
-                )[0]
 
-                # get date modified timestamp from tenures.shp
+                # get date Created timestamp from tenures.shp
                 tenuresModifiedTime = getFileCreatedDate(self.currentPath)
 
                 # make a new directory in the name of the Shapefile with time added in archive folder
-                newDirectoryPath = f"{self.archiveFolder}\\{shapefileNameWithoutExtension}{tenuresModifiedTime}"
+                newDirectoryPath = f"{self.archiveFolder}\\{shapefileNameWithExtension}{tenuresModifiedTime}"
+                
                 mkdir(newDirectoryPath)
-
-                # TODO: couuld we use arcpy to really simplify this section??
 
                 # iterate through current .shp directory, pull out files with the name of the shapefile, add the time to thoes file names, move the file to previously created directory
                 count = 1
@@ -66,7 +62,7 @@ class Dataset:
                     numberofFiles = len(files)
                     for fileNameWExtension in files:
                         filename, extension = path.splitext(fileNameWExtension)
-                        if filename == shapefileNameWithoutExtension:
+                        if filename  in  shapefileNameWithExtension:
                             rename(
                                 path.join(folderPath, fileNameWExtension),
                                 path.join(
@@ -112,7 +108,8 @@ class Dataset:
             self.archiveStatus = True
 
         except:
-            print("Archiving error Check file path")
+            print_exc()
+            print("Archiving error, check file path")
             self.archiveStatus = False
 
     def catalogueWarehouseDownload(self):
@@ -194,9 +191,9 @@ class Dataset:
 
         # retrieve info from URL
 
-        print(time.time())
+        
         urlretrieve(downloadURL, f"{folderPath}.zip")
-        print(time.time())
+        
 
         # unzipp the file and remove original zipped file
         unpack_archive(f"{folderPath}.zip", folderPath)
@@ -334,7 +331,6 @@ class Dataset:
                 jsonIn = load(logFile)
 
             with open(logPath, "w") as logFile:
-
                 # if there is no entry for today
                 if todayString not in jsonIn["dates"].keys():
                     jsonIn["dates"] = logDictionary["dates"][todayString]
@@ -352,26 +348,45 @@ class Dataset:
         self.settingsWrapper.settingsWriter(dictToSettings)
 
     def catalogueUpdateProcess(self):
-        print(f"{self.alias}: Starting update process!")
-        self.archiving()
 
-        print(f"{self.alias}: Starting catalogue download")
-        self.catalogueWarehouseDownload()
-
-        print(f"{self.alias}: Starting geoprocessing")
-        self.geoprocessing()
-        self.writeToSettings()
-
-        print(f"{self.alias}: Logging…")
- 
+        schemaLockStatus=arcpy.TestSchemaLock(self.currentPath)
+        
         try:
-            self.writeDownloadInfo()
-            self.writeTextAndMetadata()
-            self.writeLog()
+            spatialObjectStatus=  True if arcpy.Describe(self.currentPath).dataType in ("ShapeFile", "FeatureClass") else False
         except:
-            print("Logging error")
-            print_exc()
+            spatialObjectStatus= False
 
 
-        print(f"{self.alias}: Finished update process!")
 
+        if schemaLockStatus== True or spatialObjectStatus ==  False:
+            print(f"{self.alias}: Starting update process!")
+            self.archiving()
+
+            tic = time.perf_counter()
+            print(f"{self.alias}: Starting catalogue download")
+            self.catalogueWarehouseDownload()
+            toc = time.perf_counter()
+            print(f"{self.alias} download time: {toc - tic:0.4f} seconds")
+
+            print(f"{self.alias}: Starting geoprocessing")
+            tic = time.perf_counter()
+            self.geoprocessing()
+            toc = time.perf_counter()
+            print(f"{self.alias} geoprocessing time: {toc - tic:0.4f} seconds")
+            
+
+            print(f"{self.alias}: Logging…")
+
+            try:
+                self.writeToSettings()
+                self.writeDownloadInfo()
+                self.writeTextAndMetadata()
+                self.writeLog()
+            except:
+                print("Logging error")
+                print_exc()
+
+            print(f"{self.alias}: Finished update process!")
+
+        else:
+            print("Can't get exclusive schema lock")

@@ -32,11 +32,21 @@ tenuresRaw=r"C:\Users\laure\Desktop\test\TA_CROWN_TENURES_SVW\TA_CRT_SVW_polygon
 
 pathsList=['C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\ForestryRecreation.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\NonDNCRecreation.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\Park.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\PARKS.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\Recreation.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\Water_Access.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\CLAB_NATIONAL_PARKS\\CLAB_NATPK_polygon.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\FTEN_RECREATION_POLY_SVW\\FTN_REC_PL_polygon.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\TA_PARK_ECORES_PA_SVW\\TA_PEP_SVW_polygon.shp']
 
-test=Dataset("forestHarvestingAuthority")
+# test=Dataset("forestHarvestingAuthority")
 
-test.archivedFile="test"
-test.archiveStatus=True
-test.name="test"
-test.processedFile="test"
-test.catalogueDownloadInfo="test"
-test.writeLog()
+# test.archivedFile="test"
+# test.archiveStatus=True
+# test.name="test"
+# test.processedFile="test"
+# test.catalogueDownloadInfo="test"
+# test.writeLog()
+
+# tic = time.perf_counter()
+# alcAlrPolygonsGeoprocessing(alcAlrRaw, Dataset("alcAlrPolygons"))
+# toc = time.perf_counter()
+# print(f"geoprocessing: {toc - tic:0.4f} seconds")
+        
+#Dataset("digitalRoadAtlas").archiving()
+
+environmentalRemediationSitesGeoprocessing(environmentalRemediationSiteRaw, Dataset("environmentalRemediationSites"))
+
