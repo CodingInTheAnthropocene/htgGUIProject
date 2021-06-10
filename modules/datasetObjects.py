@@ -356,23 +356,24 @@ class Dataset:
         except:
             spatialObjectStatus= False
 
-
-
         if schemaLockStatus== True or spatialObjectStatus ==  False:
             print(f"{self.alias}: Starting update process!")
+            print(f"{self.alias}: Archiving…")
+
+
             self.archiving()
 
             tic = time.perf_counter()
-            print(f"{self.alias}: Starting catalogue download")
+            print(f"{self.alias}: Starting download")
             self.catalogueWarehouseDownload()
             toc = time.perf_counter()
-            print(f"{self.alias} download time: {toc - tic:0.4f} seconds")
+            print(f"{self.alias}: Download time - {toc - tic:0.4f} seconds")
 
             print(f"{self.alias}: Starting geoprocessing")
             tic = time.perf_counter()
             self.geoprocessing()
             toc = time.perf_counter()
-            print(f"{self.alias} geoprocessing time: {toc - tic:0.4f} seconds")
+            print(f"{self.alias}: Geoprocessing time - {toc - tic:0.4f} seconds")
             
 
             print(f"{self.alias}: Logging…")

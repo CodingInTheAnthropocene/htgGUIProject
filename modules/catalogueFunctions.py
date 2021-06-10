@@ -1,3 +1,4 @@
+from arcpy.management import MultipartToSinglepart
 from modules.settingsWrapper import *
 from modules.universalFunctions import *
 import arcpy
@@ -152,7 +153,6 @@ def crownTenuresGeoprocessing(rawPath, dataset):
         join_attributes="NO_FID",
     )
 
-
     # create new lands feature Class with removed fields. This is a workaround as disabling fields in arcpy is apparently very cumbersome.
     htgLandsCopy = arcpy.CopyFeatures_management(
         UniversalPathsWrapper.htgLandsPath, "htglandsCopy"
@@ -166,7 +166,7 @@ def crownTenuresGeoprocessing(rawPath, dataset):
 
     print(f"{dataset.alias}: Starting 'identity'" )
 
-    # Identity tenures/soi intersect with land parcels data, This performs a workaround with the union tool and then subsequently deleting records That aren't wanted.
+    # Identity tenures/soi with land parcels data. This performs a workaround with the union tool and then subsequently deleting records That aren't wanted.
     crownTenuresProcessedPath = arcpy.Union_analysis(
         [tenuresSOIIntersect, htgLandsCopy],
         dataset.fileName,
@@ -183,6 +183,8 @@ def crownTenuresGeoprocessing(rawPath, dataset):
     
     # add and calculate HA field to tenures/soi/lands intersect
     arcpy.AddField_management(crownTenuresProcessedPath, "HA", "FLOAT")
+
+    print(f"{dataset.alias}: Calculating geometry" )
 
     arcpy.CalculateGeometryAttributes_management(
         crownTenuresProcessedPath, [["HA", "AREA"]], area_unit="HECTARES"
@@ -221,7 +223,7 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
     # delete fields from working copies
     print(f"{dataset.alias}: Deleting fields from working copies")
     
-    fieldsToDelete = [ "HVA_SKEY", "FFID", "CP_ID", "FEAT_CLASS", "HVA_ID", "HVA_MGMTID", "HVA_MGMTCD", "HRV_TP_CD", "HRV_TP_DSC", "HVA_ST_CD", "ISSUE_DATE", "EXTEND_DT", "CURR_EX_DT", "QTA_TP_CD", "CR_LND_CD", "SAL_TP_CD", "CASC_SP_CD", "CATAST_IND", "CR_GRT_IND", "CRUISE_IND", "DECID_IND", "RETIRE_DT", "FEAT_AREA", "FEAT_PERIM", "ADM_DST_CD", "GEO_DST_CD", "GEO_DST_NM", "TM_PRIME", "MRK_MD_CD", "MRK_MD_DSC", "MRK_IN_CD", "MRK_IN_DSC", "OTH_TM_IND", "CL_LOC_CD", "FILE_TP_CD", "FILE_ST_CD", "PFU_MGMTID", "SB_FND_IND", "BCTS_ORGCD", "BCTS_ORGNM", "MAP_LABEL", "AREA_SQM", "FEAT_LEN", "OBJECTID", ]
+    fieldsToDelete = [ "HVA_SKEY", "FFID", "CP_ID", "FEAT_CLASS", "HVA_ID", "HVA_MGMTID", "HVA_MGMTCD", "HRV_TP_CD", "HRV_TP_DSC", "HVA_ST_CD", "ISSUE_DATE", "CURR_EX_DT", "QTA_TP_CD", "CR_LND_CD", "SAL_TP_CD", "CASC_SP_CD", "CATAST_IND", "CR_GRT_IND", "CRUISE_IND", "DECID_IND", "RETIRE_DT", "FEAT_AREA", "FEAT_PERIM", "ADM_DST_CD", "GEO_DST_CD", "GEO_DST_NM", "TM_PRIME", "MRK_MD_CD", "MRK_MD_DSC", "MRK_IN_CD", "MRK_IN_DSC", "OTH_TM_IND", "CL_LOC_CD", "FILE_TP_CD", "FILE_ST_CD", "PFU_MGMTID", "SB_FND_IND", "BCTS_ORGCD", "BCTS_ORGNM", "MAP_LABEL", "AREA_SQM", "FEAT_LEN", "OBJECTID", ]
 
     arcpy.DeleteField_management(forestHarvestingAuthorityCopy, fieldsToDelete)
 
@@ -252,7 +254,7 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
     print(f"{dataset.alias}: Calculating fields")
 
     cursor = arcpy.da.UpdateCursor(
-        forestHarvestingAuthorityCopy, ["EXPIRY_DT", "EXTEND_DT"]
+        forestHarvestingAuthorityCopy, ["ExpiryDate", "EXTEND_DT"]
     )
 
     for row in cursor:
@@ -280,6 +282,7 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
     )
 
     # Cleanup
+    arcpy.DeleteField_management(forestHarvestingAuthorityProcessedPath, ["EXTEND_DT", "Shape_Leng", "Shape_Area"])
     arcpy.management.Delete(htgLandsCopy)
     arcpy.management.Delete(tempGdbPath)
 
@@ -438,6 +441,7 @@ def harvestedAreasGeoprocessing(rawPath, dataset):
 
     # create HTG lands copy and delete fields from it
     fieldsToDeletehtgLands = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_S", "ATTRIBUTE_", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCE", "LTSA_PLAN", "LEGAL_FREE", "LAND_DISTR", "LAND_ACT_P", "PARCEL_DES", "OWNER_CLAS", "SOURCE_PRO", "landval_20", "valperHa_2", "result_val", "Ha", "comments", "new_owners", "PMBC", "ICIS", "ICF", "landval_sr", "prop_class", "needs_conf", "confirm_qu", "selected", "label", "location", "specific_l", "H_", "use_on_pro", "potential_", "interests", "available", "avail_issu", "owner", "EN", "guide_outf", "trapline", "ess_respon", "tourism_ca", "access", "zoning", "zone_code", "TENURES", "PIN_DISTLE", "PIN_SUBDLA", "municipali", "arch_sites", "Title_num", "Title_owne", "Title_Info", "essential", "RoW", "OtherComme", "appraisal2", "apprais2HB", "apprais2re", "apprais2BC", "apprais2Ha", "TEMP_PolyI", "TimbeTable", "ownership_", "Shape_Leng", "Shape_Area", ]
+
     htgLandsCopy = arcpy.CopyFeatures_management(
         UniversalPathsWrapper.htgLandsPath, "htglandsCopy"
     )
@@ -541,6 +545,7 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
 
     #delete fields from working copies
     print(f"{dataset.alias}: Deleting fields from working copies")
+
     fieldsToDelete = [ "FTYPE", "HWYEXITNUM", "HWYRTENUM", "SEGLNGTH2D", "SEGLNGTH3D", "RDALIAS1ID", "RDALIAS3", "RDALIAS3ID", "RDALIAS4", "RDALIAS4ID", "RDNAMEID", "FNODE", "TNODE", "SPPLR", "SPPLR_DTL", "CPTRCHN", "FCODE", "OBJECTID", ]
 
     arcpy.DeleteField_management(roadAtlasCopy, fieldsToDelete)
@@ -560,11 +565,16 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
 
     del cursor
 
-    # NOTE, can we just create multi_part features here instead of disolving then exploding? Do we still want those other fields Because if we dissolve without them aren't they gone??I'm not sure this is really doing what's wanted. Do we want this spatially joined to administrative areas Or municipalities or something then dissolved?? https://catalogue.data.gov.bc.ca/dataset/regional-districts-legally-defined-administrative-areas-of-bc.
+    bcAdminMunicipal = r"dependencies\bcAdministrativeAreas_Municipalities.shp"
+    
+    roadAtlasBcMuni= arcpy.Intersect_analysis([roadAtlasCopy, bcAdminMunicipal], "temp", "NO_FID")
 
+    # NOTE, can we just Not create multi_part features here instead of disolving then exploding? Do we still want those other fields Because if we dissolve without them aren't they gone??I'm not sure this is really doing what's wanted. Do we want this spatially joined to administrative areas Or municipalities or something then dissolved?? https://catalogue.data.gov.bc.ca/dataset/regional-districts-legally-defined-administrative-areas-of-bc.
+
+    print(f"{dataset.alias}: Starting Dissolve") 
     roadAtlasDisolve = arcpy.Dissolve_management(
-        roadAtlasCopy, "tempRoadDisolve.shp", ["RDNAME", "road_type"], multi_part=False
-    )
+        roadAtlasBcMuni, "tempRoadDisolve.shp", ["RDNAME", "road_type", "DistrMuni"],
+    )    
 
     # intersect with SOI
     print(f"{dataset.alias}: Starting intersect") 
@@ -574,6 +584,8 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
         "NO_FID",
     )
 
+    #Cleanup
+    arcpy.Delete_management(bcAdminMunicipal)    
     arcpy.Delete_management(roadAtlasDisolve)
     arcpy.Delete_management(roadAtlasCopy)
 
@@ -584,8 +596,7 @@ def alcAlrPolygonsGeoprocessing(rawPath, dataset):
 
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
-
-        
+    
     htgLandsGeodatabase = arcpy.Describe(UniversalPathsWrapper.htgLandsPath).path
 
     # create working copies

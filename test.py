@@ -24,7 +24,7 @@ from traceback import print_exc
 environmentalRemediationSiteRaw = r"C:\Users\laure\Desktop\test\data\RMDTN_STS_point.shp"
 alcAlrRaw = r"C:\Users\laure\Desktop\test\data\TSLRPLS_polygon.shp"
 
-digitalRoadRaw = r"C:\Users\laure\Desktop\test\data\DRA_MPAR_line.shp"
+digitalRoadRaw = r"C:\Users\laure\Desktop\test\rawdigitalRoads\DRA_DGTL_ROAD_ATLAS_MPAR_SP\DRA_MPAR_line.shp"
 
 parcelsRaw = r"C:\Users\laure\Desktop\test\PMBC_PARCEL_FABRIC_POLY_SVW.gdb\WHSE_CADASTRE_PMBC_PARCEL_FABRIC_POLY_SVW"
 tenuresRaw=r"C:\Users\laure\Desktop\test\TA_CROWN_TENURES_SVW\TA_CRT_SVW_polygon.shp"
@@ -48,5 +48,8 @@ pathsList=['C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\Forestr
         
 #Dataset("digitalRoadAtlas").archiving()
 
-environmentalRemediationSitesGeoprocessing(environmentalRemediationSiteRaw, Dataset("environmentalRemediationSites"))
+# environmentalRemediationSitesGeoprocessing(environmentalRemediationSiteRaw, Dataset("environmentalRemediationSites"))
 
+# Dataset("forestManagedLicense")
+
+digitalRoadAtlasGeoprocessing(digitalRoadRaw, Dataset("digitalRoadAtlas"))

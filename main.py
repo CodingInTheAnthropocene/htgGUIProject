@@ -129,8 +129,7 @@ class MainWindow(QMainWindow):
         )
 
         flowLayoutCatalogue= FlowLayout(widgets.frameCatalogueDatasets)
-       
-        
+
 
         for i in datasetList:
             newDatasetObject= Dataset(i)
@@ -151,6 +150,7 @@ class MainWindow(QMainWindow):
             [i for i in initiationDictionary["datasets"]["hybridDatasets"]], key=lambda x: initiationDictionary["datasets"]["hybridDatasets"][x]["name"]
         )
 
+
         flowLayoutHybridDatasets= FlowLayout(widgets.frameOtherDatasets)
         widgets.frameCatalogueDatasets.setLayout(flowLayoutHybridDatasets)
 
@@ -163,9 +163,6 @@ class MainWindow(QMainWindow):
             self.datasetSettingsList.append(newDatasetSettingsWidget)
 
             newDatasetFrame = datasetFrame(widgets.frameOtherDatasets, newDatasetObject, newDatasetObject.catalogueUpdateProcess, self, widgets, newDatasetSettingsWidget)
-
-
-
 
             flowLayoutHybridDatasets.addWidget(newDatasetFrame)
             widgets.verticalLayout.addWidget(newDatasetSettingsWidget)
