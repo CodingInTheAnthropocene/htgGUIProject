@@ -34,8 +34,11 @@ def fieldsToDelete(featureClass, keepFields, isShapefile):
 
 
 def shapefileFieldRename(shapefile, currentFieldName, newFieldName):
+    for field in arcpy.ListFields(shapefile):
+        if field.name == currentFieldName:
+            fieldType = field.type
 
-    arcpy.AddField_management(shapefile, newFieldName)
+    arcpy.AddField_management(shapefile, newFieldName, fieldType)
     cursor = arcpy.da.UpdateCursor(shapefile, [currentFieldName, newFieldName])
 
     for row in cursor:

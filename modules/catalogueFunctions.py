@@ -294,27 +294,27 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
-    # get name of Raw shape file
-    rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
-
-    # create temporary GDB and copy raw shape file to it
-    arcpy.CreateFileGDB_management(dataset.downloadFolder, "temp.gdb")
-    tempGdbPath = f"{dataset.downloadFolder}\\temp.gdb"
-
-    arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
-
-    print("Raw Shapefile copied to temp Geodatabase")
-
-    forestManagedLicenceCopy = f"{tempGdbPath}\\{rawName}"
-
+    # create working copies
+    htgLandsCopy = arcpy.CopyFeatures_management(
+        UniversalPathsWrapper.htgLandsPath, "htglandsCopy"
+    )
+    
     # delete fields
-    fieldsToDelete = [ "MPBLCKD", "MLTPCD", "ML_COMMENT", "RTRMNTDT", "MNDMNTD", "MAP_LABEL", "FEAT_AREA", "FTRPRMTR", "FTRCLSSSK", "FLSTTSCD", "DMNDSTRCTC", "AREA_SQM", "FEAT_LEN", "OBJECTID", ]
+    print(f"{dataset.alias}: Deleting fields")
 
-    arcpy.DeleteField_management(forestManagedLicenceCopy, fieldsToDelete)
+    fieldsToDelete = [ "MPBLCKD", "MLTPCD", "RTRMNTDT", "MNDMNTD", "MAP_LABEL", "FEAT_AREA", "FTRPRMTR", "FTRCLSSSK", "FLSTTSCD", "DMNDSTRCTC", "AREA_SQM", "FEAT_LEN", "OBJECTID", ]
 
-    print("Fields Deleted")
+    arcpy.DeleteField_management(rawPath, fieldsToDelete)
 
-    # rename fields
+    fieldsToDeletehtgLands = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_S", "ATTRIBUTE_", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCE", "LTSA_PLAN", "LEGAL_FREE", "LAND_DISTR", "LAND_ACT_P", "PARCEL_DES", "OWNER_CLAS", "SOURCE_PRO", "landval_20", "valperHa_2", "result_val", "Ha", "comments", "new_owners", "PMBC", "ICIS", "ICF", "landval_sr", "prop_class", "needs_conf", "confirm_qu", "selected", "selected_b", "label", "location", "specific_l", "H_", "use_on_pro", "potential_", "interests", "available", "avail_issu", "owner", "EN", "guide_outf", "trapline", "ess_respon", "tourism_ca", "access", "zoning", "zone_code", "TENURES", "PIN_DISTLE", "PIN_SUBDLA", "municipali", "arch_sites", "Title_num", "Title_owne", "Title_Info", "essential", "RoW", "OtherComme", "appraisal2", "apprais2HB", "apprais2re", "apprais2BC", "apprais2Ha", "TEMP_PolyI", "TimbeTable", "ownership_", "Shape_Leng", "Shape_Area", ]
+    
+    arcpy.DeleteField_management(htgLandsCopy, fieldsToDeletehtgLands) 
+       
+    # add, rename and calculate fields
+    print(f"{dataset.alias}: Renaming Fields, calculating field values")
+
+    arcpy.AddField_management(rawPath, "ClientGrp", "text")
+
     forestManagedLicenceRenameDict = {
         "CLNTNM": "Client",
         "FRSTFLD": "PermitID",
@@ -324,14 +324,9 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
     }
 
     for i in forestManagedLicenceRenameDict:
-        arcpy.AlterField_management(
-            forestManagedLicenceCopy, i, forestManagedLicenceRenameDict[i]
-        )
+        shapefileFieldRename(rawPath, i, forestManagedLicenceRenameDict[i])
 
-    arcpy.AddField_management(forestManagedLicenceCopy, "ClientGrp", "TEXT")
-
-    # Update EXPIRY_DT
-    cursor = arcpy.da.UpdateCursor(forestManagedLicenceCopy, ["Client", "ClientGrp"])
+    cursor = arcpy.da.UpdateCursor(rawPath, ["Client", "ClientGrp"])
 
     for row in cursor:
         if row[0] in (
@@ -349,21 +344,12 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
 
     del cursor
 
-    print("EXPIRY_DT updated")
-
-    # create HTG lands copy and delete fields from it
-    fieldsToDeletehtgLands = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_S", "ATTRIBUTE_", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCE", "LTSA_PLAN", "LEGAL_FREE", "LAND_DISTR", "LAND_ACT_P", "PARCEL_DES", "OWNER_CLAS", "SOURCE_PRO", "landval_20", "valperHa_2", "result_val", "Ha", "comments", "new_owners", "PMBC", "ICIS", "ICF", "landval_sr", "prop_class", "needs_conf", "confirm_qu", "selected", "selected_b", "label", "location", "specific_l", "H_", "use_on_pro", "potential_", "interests", "available", "avail_issu", "owner", "EN", "guide_outf", "trapline", "ess_respon", "tourism_ca", "access", "zoning", "zone_code", "TENURES", "PIN_DISTLE", "PIN_SUBDLA", "municipali", "arch_sites", "Title_num", "Title_owne", "Title_Info", "essential", "RoW", "OtherComme", "appraisal2", "apprais2HB", "apprais2re", "apprais2BC", "apprais2Ha", "TEMP_PolyI", "TimbeTable", "ownership_", "Shape_Leng", "Shape_Area", ]
-
-    htgLandsCopy = arcpy.CopyFeatures_management(
-        UniversalPathsWrapper.htgLandsPath, "htglandsCopy"
-    )
-    arcpy.DeleteField_management(htgLandsCopy, fieldsToDeletehtgLands)
-
-    print("Fields from HTG copy deleted")
+    # intersect with Lands
+    print(f"{dataset.alias}: Starting intersect")     
 
     # intersect HTG lands and forest managed licenses
     forestManagedLicenceProcessedPath = arcpy.Intersect_analysis(
-        [forestManagedLicenceCopy, htgLandsCopy],
+        [rawPath, htgLandsCopy],
         dataset.fileName,
         join_attributes="NO_FID",
     )
@@ -378,7 +364,6 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
 
     # remove working files
     arcpy.management.Delete(htgLandsCopy)
-    arcpy.management.Delete(tempGdbPath)
 
     return forestManagedLicenceProcessedPath
 
@@ -387,49 +372,43 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
 # Harvested areas of BC (Consolidated Cut Blocks)
 ####################################################################################################################
 
-
 def harvestedAreasGeoprocessing(rawPath, dataset):
 
     # environment settings
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
-    # get name of Raw shape file
-    rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
-
-    # create temporary GDB and copy raw shape file to it
-    arcpy.CreateFileGDB_management(dataset.downloadFolder, "temp.gdb")
-    tempGdbPath = f"{dataset.downloadFolder}\\temp.gdb"
-
-    arcpy.FeatureClassToGeodatabase_conversion(rawPath, tempGdbPath)
-
-    print("Raw Shapefile copied to temp Geodatabase")
-
-    harvestedAreasCopy = f"{tempGdbPath}\\{rawName}"
+    #Creaate working copy
+    htgLandsCopy = arcpy.CopyFeatures_management(
+    UniversalPathsWrapper.htgLandsPath, "htglandsCopy"
+    )
 
     # delete fields
+    print(f"{dataset.alias}: Deleting fields")
     fieldsToDelete = ["OPENINGID", "AREA_SQM", "FTLENGTHM", "SHAPE_1", "OBJECTID"]
 
-    arcpy.DeleteField_management(harvestedAreasCopy, fieldsToDelete)
+    arcpy.DeleteField_management(rawPath, fieldsToDelete)
+
+    fieldsToDeletehtgLands = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_S", "ATTRIBUTE_", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCE", "LTSA_PLAN", "LEGAL_FREE", "LAND_DISTR", "LAND_ACT_P", "PARCEL_DES", "OWNER_CLAS", "SOURCE_PRO", "landval_20", "valperHa_2", "result_val", "Ha", "comments", "new_owners", "PMBC", "ICIS", "ICF", "landval_sr", "prop_class", "needs_conf", "confirm_qu", "selected", "label", "location", "specific_l", "H_", "use_on_pro", "potential_", "interests", "available", "avail_issu", "owner", "EN", "guide_outf", "trapline", "ess_respon", "tourism_ca", "access", "zoning", "zone_code", "TENURES", "PIN_DISTLE", "PIN_SUBDLA", "municipali", "arch_sites", "Title_num", "Title_owne", "Title_Info", "essential", "RoW", "OtherComme", "appraisal2", "apprais2HB", "apprais2re", "apprais2BC", "apprais2Ha", "TEMP_PolyI", "TimbeTable", "ownership_", "Shape_Leng", "Shape_Area", ]
+
+    arcpy.DeleteField_management(htgLandsCopy, fieldsToDeletehtgLands)
 
     # Field rename
+    print(f"{dataset.alias}: Renaming Fields, calculating field values")
+
     harvestedAreasRenameDict = {
-        "CUTBLOCKID": "CUTBLOCKID",
-        "HARVESTYR": "HARVESTYR",
         "DSTRBSTDT": "startdate",
         "DSTRBEDDT": "enddate",
-        "DATASOURCE": "DATASOURCE",
         "AREAHA": "HA",
     }
 
     for i in harvestedAreasRenameDict:
-        arcpy.AlterField_management(harvestedAreasCopy, i, harvestedAreasRenameDict[i])
+        shapefileFieldRename(rawPath, i, harvestedAreasRenameDict[i])
 
-    print("Fields Deleted")
 
-    cursor = arcpy.da.UpdateCursor(harvestedAreasCopy, ["startdate", "enddate"])
-
-    # change date format in stardate, enddate
+    # calculate fields
+    cursor = arcpy.da.UpdateCursor(rawPath, ["startdate", "enddate"])
+    
     for row in cursor:
         if row[0] != " ":
             row[0] = f"{row[0][0:4]}_{row[0][4:6]}"
@@ -439,19 +418,12 @@ def harvestedAreasGeoprocessing(rawPath, dataset):
 
     del cursor
 
-    # create HTG lands copy and delete fields from it
-    fieldsToDeletehtgLands = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_S", "ATTRIBUTE_", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCE", "LTSA_PLAN", "LEGAL_FREE", "LAND_DISTR", "LAND_ACT_P", "PARCEL_DES", "OWNER_CLAS", "SOURCE_PRO", "landval_20", "valperHa_2", "result_val", "Ha", "comments", "new_owners", "PMBC", "ICIS", "ICF", "landval_sr", "prop_class", "needs_conf", "confirm_qu", "selected", "label", "location", "specific_l", "H_", "use_on_pro", "potential_", "interests", "available", "avail_issu", "owner", "EN", "guide_outf", "trapline", "ess_respon", "tourism_ca", "access", "zoning", "zone_code", "TENURES", "PIN_DISTLE", "PIN_SUBDLA", "municipali", "arch_sites", "Title_num", "Title_owne", "Title_Info", "essential", "RoW", "OtherComme", "appraisal2", "apprais2HB", "apprais2re", "apprais2BC", "apprais2Ha", "TEMP_PolyI", "TimbeTable", "ownership_", "Shape_Leng", "Shape_Area", ]
 
-    htgLandsCopy = arcpy.CopyFeatures_management(
-        UniversalPathsWrapper.htgLandsPath, "htglandsCopy"
-    )
-    arcpy.DeleteField_management(htgLandsCopy, fieldsToDeletehtgLands)
+    # Inteersect with lands
+    print(f"{dataset.alias}: Starting intersect")     
 
-    print("Fields from HTG copy deleted")
-
-    # intersect HTG landS and harvested areas
     harvestedAreasProcessedPath = arcpy.Intersect_analysis(
-        [harvestedAreasCopy, htgLandsCopy],
+        [rawPath, htgLandsCopy],
         dataset.fileName,
         join_attributes="NO_FID",
     )
@@ -464,7 +436,6 @@ def harvestedAreasGeoprocessing(rawPath, dataset):
 
     # remove working files
     arcpy.management.Delete(htgLandsCopy)
-    arcpy.management.Delete(tempGdbPath)
     
     return harvestedAreasProcessedPath
 
@@ -531,28 +502,21 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
         ("pedestrian", "trail"): "path",
         "proposed": "proposed",
     }
-
   
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
-
  
-
-    # NOTE, maybe best to work with original data for this one... Copying takes a long time
-    # create working copy
-    print(f"{dataset.alias}: Creating working copies")   
-    roadAtlasCopy = arcpy.CopyFeatures_management(rawPath, "tempRoads")
 
     #delete fields from working copies
     print(f"{dataset.alias}: Deleting fields from working copies")
 
     fieldsToDelete = [ "FTYPE", "HWYEXITNUM", "HWYRTENUM", "SEGLNGTH2D", "SEGLNGTH3D", "RDALIAS1ID", "RDALIAS3", "RDALIAS3ID", "RDALIAS4", "RDALIAS4ID", "RDNAMEID", "FNODE", "TNODE", "SPPLR", "SPPLR_DTL", "CPTRCHN", "FCODE", "OBJECTID", ]
 
-    arcpy.DeleteField_management(roadAtlasCopy, fieldsToDelete)
+    arcpy.DeleteField_management(rawPath, fieldsToDelete)
 
-    arcpy.AddField_management(roadAtlasCopy, "road_type", "TEXT", field_length=30)
+    arcpy.AddField_management(rawPath, "road_type", "TEXT", field_length=30)
 
-    cursor = arcpy.da.UpdateCursor(roadAtlasCopy, ["ROAD_CLASS", "road_type"])
+    cursor = arcpy.da.UpdateCursor(rawPath, ["ROAD_CLASS", "road_type"])
 
     # calculate field Values
     print(f"{dataset.alias}: Calculating field values")
@@ -565,15 +529,13 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
 
     del cursor
 
-    bcAdminMunicipal = r"dependencies\bcAdministrativeAreas_Municipalities.shp"
-    
-    roadAtlasBcMuni= arcpy.Intersect_analysis([roadAtlasCopy, bcAdminMunicipal], "temp", "NO_FID")
 
     # NOTE, can we just Not create multi_part features here instead of disolving then exploding? Do we still want those other fields Because if we dissolve without them aren't they gone??I'm not sure this is really doing what's wanted. Do we want this spatially joined to administrative areas Or municipalities or something then dissolved?? https://catalogue.data.gov.bc.ca/dataset/regional-districts-legally-defined-administrative-areas-of-bc.
 
     print(f"{dataset.alias}: Starting Dissolve") 
     roadAtlasDisolve = arcpy.Dissolve_management(
-        roadAtlasBcMuni, "tempRoadDisolve.shp", ["RDNAME", "road_type", "DistrMuni"],
+        rawPath, "tempRoadDisolve.shp", ["RDNAME", "road_type"], [["RDALIAS1", "FIRST"], 
+        ["RDALIAS2", "FIRST"], ["RDNAME", "FIRST"], ["RDSURFACE", "FIRST"], ["ROAD_CLASS", "FIRST"], ["NUMLANES","FIRST"], ["CPTRDATE","FIRST"], ["FEAT_LEN", "SUM"]], "SINGLE_PART"
     )    
 
     # intersect with SOI
@@ -584,10 +546,9 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
         "NO_FID",
     )
 
-    #Cleanup
-    arcpy.Delete_management(bcAdminMunicipal)    
+    #Cleanup   
     arcpy.Delete_management(roadAtlasDisolve)
-    arcpy.Delete_management(roadAtlasCopy)
+    #arcpy.Delete_management(rawPath)
 
     return roadAtlasIntersect
 

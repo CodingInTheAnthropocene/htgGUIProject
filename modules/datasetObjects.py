@@ -182,6 +182,8 @@ class Dataset:
                     downloadURL = link
                     stopLoop = True
                     break
+        
+        print(f"{self.alias}: Found! Starting download...")
 
         # create folder for  raw data,remove it first if it already exists
         folderPath = f"{self.downloadFolder}\\raw{self.fileName}"
@@ -194,6 +196,7 @@ class Dataset:
         
         urlretrieve(downloadURL, f"{folderPath}.zip")
         
+    
 
         # unzipp the file and remove original zipped file
         unpack_archive(f"{folderPath}.zip", folderPath)
@@ -360,21 +363,19 @@ class Dataset:
             print(f"{self.alias}: Starting update process!")
             print(f"{self.alias}: Archiving…")
 
-
             self.archiving()
 
             tic = time.perf_counter()
             print(f"{self.alias}: Starting download")
             self.catalogueWarehouseDownload()
             toc = time.perf_counter()
-            print(f"{self.alias}: Download time - {toc - tic:0.4f} seconds")
+            print(f"{self.alias}: Total acquisition time - {toc - tic:0.4f} seconds")
 
             print(f"{self.alias}: Starting geoprocessing")
             tic = time.perf_counter()
             self.geoprocessing()
             toc = time.perf_counter()
-            print(f"{self.alias}: Geoprocessing time - {toc - tic:0.4f} seconds")
-            
+            print(f"{self.alias}: Geoprocessing time - {toc - tic:0.4f} seconds")           
 
             print(f"{self.alias}: Logging…")
 

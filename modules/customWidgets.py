@@ -270,56 +270,59 @@ class logButton(QPushButton):
 
     def updateTextEdit(self):
         """Updates target QTextedit widget with information from log and displays it in a fancy colour coordinated way """
+        try:
+            # Read JSON Log into Python dictionary
+            with open(self.logFile, "r") as log:
+                logDictionary = load(log)["dates"]
+            # clear textedit widget
+            self.textEdit.clear()
 
-        # Read JSON Log into Python dictionary
-        with open(self.logFile, "r") as log:
-            logDictionary = load(log)["dates"]
-        # clear textedit widget
-        self.textEdit.clear()
-
-        # display and colour date information  in TextEdit widget
-        for dateEntry in logDictionary:
-            self.textEdit.setTextColor(QColor.fromRgb(207, 249, 147))
-            font = QFont()
-            font.setFamily("Segoe UI")
-            font.setPointSize(12)
-            font.setBold(True)
-            self.textEdit.setCurrentFont(font)
-
-            self.textEdit.append(f"{dateEntry}")
-            dateEntry = logDictionary[dateEntry]["times"]
-
-            # display and colour time information
-            for timeEntry in dateEntry:
-                self.textEdit.setTextColor(QColor.fromRgb(189, 147, 249))
+            # display and colour date information  in TextEdit widget
+            for dateEntry in logDictionary:
+                self.textEdit.setTextColor(QColor.fromRgb(207, 249, 147))
                 font = QFont()
                 font.setFamily("Segoe UI")
-                font.setPointSize(10)
+                font.setPointSize(12)
                 font.setBold(True)
                 self.textEdit.setCurrentFont(font)
 
-                self.textEdit.append(f" {timeEntry}")
-                timeEntry = dateEntry[timeEntry]
+                self.textEdit.append(f"{dateEntry}")
+                dateEntry = logDictionary[dateEntry]["times"]
 
-                # display and colour dataset attributes
-                for datasetAttribute in timeEntry:
-                    self.textEdit.setTextColor(QColor.fromRgb(221, 221, 221))
+                # display and colour time information
+                for timeEntry in dateEntry:
+                    self.textEdit.setTextColor(QColor.fromRgb(189, 147, 249))
                     font = QFont()
                     font.setFamily("Segoe UI")
-                    font.setPointSize(9)
+                    font.setPointSize(10)
                     font.setBold(True)
                     self.textEdit.setCurrentFont(font)
 
-                    # display Dataset attribute key/value pair Splitting camel case on capital letters
-                    formattedDatasetAttribute = sub(
-                        r"(\w)([A-Z])", r"\1 \2", datasetAttribute
-                    ).title()
-                    self.textEdit.append(
-                        f"   {formattedDatasetAttribute}: {timeEntry[datasetAttribute]}"
-                    )
+                    self.textEdit.append(f" {timeEntry}")
+                    timeEntry = dateEntry[timeEntry]
 
-                # Space between update events
-                self.textEdit.append("\n")
+                    # display and colour dataset attributes
+                    for datasetAttribute in timeEntry:
+                        self.textEdit.setTextColor(QColor.fromRgb(221, 221, 221))
+                        font = QFont()
+                        font.setFamily("Segoe UI")
+                        font.setPointSize(9)
+                        font.setBold(True)
+                        self.textEdit.setCurrentFont(font)
+
+                        # display Dataset attribute key/value pair Splitting camel case on capital letters
+                        formattedDatasetAttribute = sub(
+                            r"(\w)([A-Z])", r"\1 \2", datasetAttribute
+                        ).title()
+                        self.textEdit.append(
+                            f"   {formattedDatasetAttribute}: {timeEntry[datasetAttribute]}"
+                        )
+
+                    # Space between update events
+                    self.textEdit.append("\n")
+        except:
+            print("Log Display Error")
+            print_exc
 
 
 class DatasetSettingsWidget(QFrame):
