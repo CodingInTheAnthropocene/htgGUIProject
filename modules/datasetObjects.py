@@ -223,14 +223,14 @@ class Dataset:
                     rawHtmlPaths.append(f"{dirname}\\{i}")
 
         # download and unzip any Auxiliary shape files, add their paths to list
-        try:
-            if self.urlList > 0:
-                print(f"{self.alias}: Downloading auxiliary datasets")
+        if len(self.urlList) > 0:
+            print(f"{self.alias}: Downloading auxiliary datasets")
             for url in self.urlList:
                 rawFilePaths.extend(
                     shapeFileDownloadUnzip(url, folderPath, self.fileName)
                 )
-        except:
+
+        else:
             print(f"{self.alias}: This dataset has no auxiliary URLs")
 
         if len(rawFilePaths) > 1:
@@ -267,7 +267,7 @@ class Dataset:
             originalHtml = path.split(self.rawHtmlPaths)[1]
 
         auxiliaryDownloadInfo = (
-            f"Auxiliary Downloads from : {self.urlList}"
+            self.urlList
             if len(self.urlList) > 0
             else None
         )
@@ -336,7 +336,7 @@ class Dataset:
             with open(logPath, "w") as logFile:
                 # if there is no entry for today
                 if todayString not in jsonIn["dates"].keys():
-                    jsonIn["dates"] = logDictionary["dates"][todayString]
+                    jsonIn["dates"][todayString]= logDictionary["dates"][todayString]
                 # if today's entry already exists
                 else:
                     jsonIn["dates"][todayString]["times"][time] = logDictionary["dates"][

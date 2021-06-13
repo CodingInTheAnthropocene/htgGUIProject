@@ -32,14 +32,14 @@ tenuresRaw=r"C:\Users\laure\Desktop\test\TA_CROWN_TENURES_SVW\TA_CRT_SVW_polygon
 
 pathsList=['C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\ForestryRecreation.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\NonDNCRecreation.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\Park.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\PARKS.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\Recreation.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\Water_Access.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\CLAB_NATIONAL_PARKS\\CLAB_NATPK_polygon.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\FTEN_RECREATION_POLY_SVW\\FTN_REC_PL_polygon.shp', 'C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\TA_PARK_ECORES_PA_SVW\\TA_PEP_SVW_polygon.shp']
 
-# test=Dataset("forestHarvestingAuthority")
+test=Dataset("forestHarvestingAuthority")
 
-# test.archivedFile="test"
-# test.archiveStatus=True
-# test.name="test"
-# test.processedFile="test"
-# test.catalogueDownloadInfo="test"
-# test.writeLog()
+test.archivedFile="test"
+test.archiveStatus=True
+test.name="test"
+test.processedFile="test"
+test.catalogueDownloadInfo="test"
+test.writeLog()
 
 # tic = time.perf_counter()
 # alcAlrPolygonsGeoprocessing(alcAlrRaw, Dataset("alcAlrPolygons"))
@@ -60,11 +60,11 @@ parcelsRaw = "C:\\Users\\laure\\Desktop\\test\\rawPMBC\\PMBC_PARCEL_FABRIC_POLY_
 
 # print(toc - tic)
 
-fieldList=[ "ATTRIBUTE_", "EN", "GEOMETRY_S", "H_", "Ha", "ICF", "ICF_AREA", "ICIS", "JUROL", "LAND_ACT_P", "LAND_DISTR", "LEGAL_FREE", "LOCALAREA", "LTSA_BLOCK", "LTSA_LOT", "LTSA_PARCE", "LTSA_PLAN", "OWNER_CLAS", "OtherComme", "PARCEL_DES", "PID", "PIN", "PIN_DISTLE", "PIN_SUBDLA", "PMBC", "RoW", "SOURCE_PRO", "TEMP_PolyI", "TENURES", "TimbeTable", "Title_Info", "Title_num", "Title_owne", "access", "apprais2BC", "apprais2HB", "apprais2Ha", "apprais2re", "appraisal2", "arch_sites", "avail_issu", "available", "comments", "confirm_qu", "ess_respon", "essential", "guide_outf", "interests", "label", "landval_20", "landval_sr", "location", "municipali", "needs_conf", "owner", "potential_", "prop_class", "result_val", "selected", "specific_l", "tourism_ca", "trapline", "use_on_pro", "valperHa_2", "zone_code", "zoning", "Shape_Leng", "Shape_Area", "new_owners", "ownership_", ]
+# fieldList=[ "ATTRIBUTE_", "EN", "GEOMETRY_S", "H_", "Ha", "ICF", "ICF_AREA", "ICIS", "JUROL", "LAND_ACT_P", "LAND_DISTR", "LEGAL_FREE", "LOCALAREA", "LTSA_BLOCK", "LTSA_LOT", "LTSA_PARCE", "LTSA_PLAN", "OWNER_CLAS", "OtherComme", "PARCEL_DES", "PID", "PIN", "PIN_DISTLE", "PIN_SUBDLA", "PMBC", "RoW", "SOURCE_PRO", "TEMP_PolyI", "TENURES", "TimbeTable", "Title_Info", "Title_num", "Title_owne", "access", "apprais2BC", "apprais2HB", "apprais2Ha", "apprais2re", "appraisal2", "arch_sites", "avail_issu", "available", "comments", "confirm_qu", "ess_respon", "essential", "guide_outf", "interests", "label", "landval_20", "landval_sr", "location", "municipali", "needs_conf", "owner", "potential_", "prop_class", "result_val", "selected", "specific_l", "tourism_ca", "trapline", "use_on_pro", "valperHa_2", "zone_code", "zoning", "Shape_Leng", "Shape_Area", "new_owners", "ownership_", ]
 
-arcpy.env.workspace= r"C:\Users\laure\Desktop\test\test\Default.gdb"
-arcpy.env.overwriteOutput=True
+# arcpy.env.workspace= r"C:\Users\laure\Desktop\test\test\Default.gdb"
+# arcpy.env.overwriteOutput=True
 
 
-copySpecificFields( UniversalPathsWrapper.htgLandsPath, fieldList)
+# copySpecificFields( UniversalPathsWrapper.htgLandsPath, fieldList)
 

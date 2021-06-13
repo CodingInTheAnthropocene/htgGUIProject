@@ -404,6 +404,23 @@ class DatasetSettingsWidget(QFrame):
             )
         )
 
+        self.buttonSettingWidgetCurrentPath.clicked.connect(
+            lambda: self.fileDialogueFile(self.lineEditSettingsWidgetCurrentPath)
+        )
+        
+        self.buttonSettingsWidgetArchiveFolder.clicked.connect(
+            lambda: self.fileDialogueFolder(self.lineEditSettingsWidgetArchiveFolder)
+        )
+
+        self.buttonSettingsWidgetDownloadFolder.clicked.connect(
+            lambda: self.fileDialogueFolder(self.lineEditSettingsWidgetDownloadFolder)
+        )
+
+        self.buttonSettingsWidgetWorkspaceFolder.clicked.connect(
+            lambda: self.fileDialogueFolder(self.lineEditSettingsWidgetWorkspaceFolder)
+        )        
+
+
     def outputToSettings(self):
         if self.radioSettingsWidgetMarine.isChecked():
             soiValue = "marine"
@@ -452,6 +469,16 @@ class DatasetSettingsWidget(QFrame):
         else:
             lineEdit.setReadOnly(False)
 
+    def fileDialogueFile(self, lineEdit):
+        fileDialogueOutput= QFileDialog().getOpenFileName()[0]
+        lineEdit.setText(fileDialogueOutput)
+
+    def fileDialogueFolder(self, lineEdit):
+        fileDialogueOutput= QFileDialog().getExistingDirectory()
+        lineEdit.setText(fileDialogueOutput)
+
+
+    
     def initSettingsWidget(self):
 
         self.setObjectName("frameSettingsWidget")

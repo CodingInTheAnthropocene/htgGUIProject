@@ -120,54 +120,69 @@ class MainWindow(QMainWindow):
         ############################################################################################
         # Dataset Instantiation
         #############################################################################################
-        
+
         self.datasetSettingsList = []
 
         # instantiate catalogue data sets
         datasetList = sorted(
-            [i for i in initiationDictionary["datasets"]["catalogueDatasets"]], key=lambda x: initiationDictionary["datasets"]["catalogueDatasets"][x]["name"]
+            [i for i in initiationDictionary["datasets"]["catalogueDatasets"]],
+            key=lambda x: initiationDictionary["datasets"]["catalogueDatasets"][x][
+                "name"
+            ],
         )
 
-        flowLayoutCatalogue= FlowLayout(widgets.frameCatalogueDatasets)
-
+        flowLayoutCatalogue = FlowLayout(widgets.frameCatalogueDatasets)
 
         for i in datasetList:
-            newDatasetObject= Dataset(i)
+            newDatasetObject = Dataset(i)
 
             # instantiate dataset setttings Widget
-            newDatasetSettingsWidget = DatasetSettingsWidget(widgets.frameAllSettings, newDatasetObject)
+            newDatasetSettingsWidget = DatasetSettingsWidget(
+                widgets.frameAllSettings, newDatasetObject
+            )
             self.datasetSettingsList.append(newDatasetSettingsWidget)
 
-            newDatasetFrame = datasetFrame(widgets.frameCatalogueDatasets, newDatasetObject, newDatasetObject.catalogueUpdateProcess, self, widgets, newDatasetSettingsWidget)
+            newDatasetFrame = datasetFrame(
+                widgets.frameCatalogueDatasets,
+                newDatasetObject,
+                newDatasetObject.catalogueUpdateProcess,
+                self,
+                widgets,
+                newDatasetSettingsWidget,
+            )
 
-            flowLayoutCatalogue.addWidget(newDatasetFrame) 
+            flowLayoutCatalogue.addWidget(newDatasetFrame)
             widgets.verticalLayout.addWidget(newDatasetSettingsWidget)
-      
 
-        
         # instantiate hybrid datasets
         datasetList = sorted(
-            [i for i in initiationDictionary["datasets"]["hybridDatasets"]], key=lambda x: initiationDictionary["datasets"]["hybridDatasets"][x]["name"]
+            [i for i in initiationDictionary["datasets"]["hybridDatasets"]],
+            key=lambda x: initiationDictionary["datasets"]["hybridDatasets"][x]["name"],
         )
 
-
-        flowLayoutHybridDatasets= FlowLayout(widgets.frameOtherDatasets)
+        flowLayoutHybridDatasets = FlowLayout(widgets.frameOtherDatasets)
         widgets.frameCatalogueDatasets.setLayout(flowLayoutHybridDatasets)
 
-        
         for i in datasetList:
-            newDatasetObject= Dataset(i)
+            newDatasetObject = Dataset(i)
 
             # instantiate dataset settings widget
-            newDatasetSettingsWidget = DatasetSettingsWidget(widgets.frameAllSettings, newDatasetObject)
+            newDatasetSettingsWidget = DatasetSettingsWidget(
+                widgets.frameAllSettings, newDatasetObject
+            )
             self.datasetSettingsList.append(newDatasetSettingsWidget)
 
-            newDatasetFrame = datasetFrame(widgets.frameOtherDatasets, newDatasetObject, newDatasetObject.catalogueUpdateProcess, self, widgets, newDatasetSettingsWidget)
+            newDatasetFrame = datasetFrame(
+                widgets.frameOtherDatasets,
+                newDatasetObject,
+                newDatasetObject.catalogueUpdateProcess,
+                self,
+                widgets,
+                newDatasetSettingsWidget,
+            )
 
             flowLayoutHybridDatasets.addWidget(newDatasetFrame)
             widgets.verticalLayout.addWidget(newDatasetSettingsWidget)
-            
-            
 
         ############################################################################################
         # Log instantiation
@@ -185,22 +200,50 @@ class MainWindow(QMainWindow):
                     self.flowLayoutLogs.addWidget(newMonthButton)
                     newMonthButton.updateTextEdit()
         except:
-            print_exc
-        
+            print_exc()
+
         ############################################################################################
         # Settings
         ############################################################################################
 
         self.universalSettingsInitiation()
         widgets.buttonApplySettings.clicked.connect(self.updateAllSettings)
-        
+
+        widgets.buttonCorePath.clicked.connect(
+            lambda: self.fileDialogueFile(widgets.lineEditCore)
+        )
+        widgets.buttonMarinePath.clicked.connect(
+            lambda: self.fileDialogueFile(widgets.lineEditMarine)
+        )
+        widgets.buttonMarinePath.clicked.connect(
+            lambda: self.fileDialogueFile(widgets.lineEditMarine)
+        )
+        widgets.buttonSoiAll.clicked.connect(
+            lambda: self.fileDialogueFile(widgets.lineEditSoiAll)
+        )
+        widgets.buttonHtgLands.clicked.connect(
+            lambda: self.fileDialogueFile(widgets.buttonHtgLands)
+        )
+        widgets.buttonSwBcPath.clicked.connect(
+            lambda: self.fileDialogueFile(widgets.buttonSwBcPath)
+        )
+
+        widgets.buttonDownloadPath.clicked.connect(
+            lambda: self.fileDialogueFolder(widgets.lineEditDownloadFolder)
+        )
+        widgets.buttonArchiveFolderPath.clicked.connect(
+            lambda: self.fileDialogueFolder(widgets.lineEditArchiveFolder)
+        )
+        widgets.buttonLogFolderPath.clicked.connect(
+            lambda: self.fileDialogueFolder(widgets.lineEditLogFolder)
+        )
 
     # BUTTONS CLICK
     # Post here your functions for clicked buttons
     # //////////////////////////////////////////////////////////////
 
     def universalSettingsInitiation(self):
-        widgets.lineEditEmail.setText(UniversalSettingsWrapper.email)        
+        widgets.lineEditEmail.setText(UniversalSettingsWrapper.email)
         widgets.lineEditDownloadFolder.setText(UniversalSettingsWrapper.downloadFolder)
         widgets.lineEditArchiveFolder.setText(UniversalSettingsWrapper.archiveFolder)
         widgets.lineEditLogFolder.setText(UniversalSettingsWrapper.logFolder)
@@ -210,35 +253,37 @@ class MainWindow(QMainWindow):
         widgets.lineEditMarine.setText(UniversalPathsWrapper.soiMarinePath)
         widgets.lineEditWha.setText(UniversalPathsWrapper.soiWhaPath)
         widgets.lineEditSwBc.setText(UniversalPathsWrapper.aoiSwBcPath)
-    
 
     def updateAllSettings(self):
-        universalSettingsDictionary={
-        "email":widgets.lineEditEmail.text(),
-        "downloadFolder":widgets.lineEditDownloadFolder.text(),
-        "archiveFolder":widgets.lineEditArchiveFolder.text(),
-        "logFolder":widgets.lineEditLogFolder.text(),
-        
+        universalSettingsDictionary = {
+            "email": widgets.lineEditEmail.text(),
+            "downloadFolder": widgets.lineEditDownloadFolder.text(),
+            "archiveFolder": widgets.lineEditArchiveFolder.text(),
+            "logFolder": widgets.lineEditLogFolder.text(),
         }
 
-        universalPathsDictionary={
-        "htgLandsPath":widgets.lineEditHtgLands.text(),
-
-        "soiPath": widgets.lineEditSoiAll.text(),
-        "soiCorePath":widgets.lineEditCore.text(),
-        "soiMarinePath":widgets.lineEditMarine.text(),
-        "soiWhaPath":widgets.lineEditWha.text(),
-        "aoiSwBcPath":widgets.lineEditSwBc.text()
+        universalPathsDictionary = {
+            "htgLandsPath": widgets.lineEditHtgLands.text(),
+            "soiPath": widgets.lineEditSoiAll.text(),
+            "soiCorePath": widgets.lineEditCore.text(),
+            "soiMarinePath": widgets.lineEditMarine.text(),
+            "soiWhaPath": widgets.lineEditWha.text(),
+            "aoiSwBcPath": widgets.lineEditSwBc.text(),
         }
 
         UniversalPathsWrapper.settingsWriter(universalPathsDictionary)
         UniversalSettingsWrapper.settingsWriter(universalSettingsDictionary)
-        for i  in self.datasetSettingsList:
+        for i in self.datasetSettingsList:
             i.outputToSettings()
-        
 
+    def fileDialogueFolder(self, lineEdit):
+        fileDialogueOutput = QFileDialog().getExistingDirectory()
+        lineEdit.setText(fileDialogueOutput)
 
-    
+    def fileDialogueFile(self, lineEdit):
+        fileDialogueOutput = QFileDialog().getOpenFileName()[0]
+        lineEdit.setText(fileDialogueOutput)
+
     def buttonClick(self):
         # get button clicked
         btn = self.sender()

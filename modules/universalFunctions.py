@@ -62,12 +62,15 @@ def copySpecificFields(featureClass, fieldDeleteList):
 
     return copy
 
-def shapefileFieldRename(shapefile, currentFieldName, newFieldName):
+def shapefileFieldRename(shapefile, currentFieldName, newFieldName, newFieldAlias=None):
+    if newFieldAlias==None:
+        newFieldAlias=newFieldName
+
     for field in arcpy.ListFields(shapefile):
         if field.name == currentFieldName:
             fieldType = field.type
 
-    arcpy.AddField_management(shapefile, newFieldName, fieldType)
+    arcpy.AddField_management(shapefile, newFieldName, fieldType, field_alias=newFieldAlias)
     cursor = arcpy.da.UpdateCursor(shapefile, [currentFieldName, newFieldName])
 
     for row in cursor:
