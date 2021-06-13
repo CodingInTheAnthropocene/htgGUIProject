@@ -52,4 +52,19 @@ pathsList=['C:\\Users\\laure\\Desktop\\test\\rawparksRecreationDatasets\\Forestr
 
 # Dataset("forestManagedLicense")
 
-digitalRoadAtlasGeoprocessing(digitalRoadRaw, Dataset("digitalRoadAtlas"))
+parcelsRaw = "C:\\Users\\laure\\Desktop\\test\\rawPMBC\\PMBC_PARCEL_FABRIC_POLY_SVW.gdb\\WHSE_CADASTRE_PMBC_PARCEL_FABRIC_POLY_SVW"
+
+# tic = time.perf_counter()
+# parcelMapBCGeoprocessing(parcelsRaw, Dataset("parcelMapBC"))
+# toc = time.perf_counter()
+
+# print(toc - tic)
+
+fieldList=[ "ATTRIBUTE_", "EN", "GEOMETRY_S", "H_", "Ha", "ICF", "ICF_AREA", "ICIS", "JUROL", "LAND_ACT_P", "LAND_DISTR", "LEGAL_FREE", "LOCALAREA", "LTSA_BLOCK", "LTSA_LOT", "LTSA_PARCE", "LTSA_PLAN", "OWNER_CLAS", "OtherComme", "PARCEL_DES", "PID", "PIN", "PIN_DISTLE", "PIN_SUBDLA", "PMBC", "RoW", "SOURCE_PRO", "TEMP_PolyI", "TENURES", "TimbeTable", "Title_Info", "Title_num", "Title_owne", "access", "apprais2BC", "apprais2HB", "apprais2Ha", "apprais2re", "appraisal2", "arch_sites", "avail_issu", "available", "comments", "confirm_qu", "ess_respon", "essential", "guide_outf", "interests", "label", "landval_20", "landval_sr", "location", "municipali", "needs_conf", "owner", "potential_", "prop_class", "result_val", "selected", "specific_l", "tourism_ca", "trapline", "use_on_pro", "valperHa_2", "zone_code", "zoning", "Shape_Leng", "Shape_Area", "new_owners", "ownership_", ]
+
+arcpy.env.workspace= r"C:\Users\laure\Desktop\test\test\Default.gdb"
+arcpy.env.overwriteOutput=True
+
+
+copySpecificFields( UniversalPathsWrapper.htgLandsPath, fieldList)
+

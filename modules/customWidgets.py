@@ -49,8 +49,14 @@ class datasetFrame(QFrame):
 
         # get information about local Current file, display "Not Found" if unable
         try:
-            self.fileSize = f"{getsize(self.currentPath)/1000000} mb"
-            self.date = getFileCreatedDate(self.currentPath)
+            try:
+                self.fileSize = f"{getsize(self.currentPath)/1000000} mb"
+                self.date = getFileCreatedDate(self.currentPath)
+            
+            except:
+                self.date = getFileCreatedDate(arcpy.Describe(self.currentPath).path)
+                self.fileSize = "GDB, can't calculate"               
+            
         except:
             self.fileSize = "Not Found"
             self.date = "Not Found"
@@ -117,6 +123,7 @@ class datasetFrame(QFrame):
         self.buttonUpdate.setSizePolicy(sizePolicy1)
         self.buttonUpdate.setMinimumSize(QSize(0, 0))
         self.buttonUpdate.setMaximumSize(QSize(16772155, 16777215))
+
 
         self.layoutButtons.addWidget(self.buttonUpdate)
 
@@ -322,7 +329,6 @@ class logButton(QPushButton):
                     self.textEdit.append("\n")
         except:
             print("Log Display Error")
-            print_exc
 
 
 class DatasetSettingsWidget(QFrame):

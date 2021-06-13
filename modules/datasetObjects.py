@@ -94,9 +94,9 @@ class Dataset:
                     path.split(self.currentPath)[1],
                 )
 
-                self.archivedFile = f"{self.archiveFolder}\\{fileName}{getFileCreatedDate(self.currentPath)}"
+                self.archivedFile = f"{self.archiveFolder}\\{fileName}{getFileCreatedDate(arcpy.Describe(self.currentPath).path)}.gdb"
                 make_archive(
-                    f"{self.archiveFolder}\\{fileName}{getFileCreatedDate(self.currentPath)}",
+                    self.archivedFile,
                     "zip",
                     currentGDB,
                 )
