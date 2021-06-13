@@ -37,7 +37,6 @@ from modules.datasetObjects import *
 # ///////////////////////////////////////////////////////////////
 widgets = None
 
-
 class MainWindow(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -49,58 +48,12 @@ class MainWindow(QMainWindow):
         global widgets
         widgets = self.ui
 
-        # USE CUSTOM TITLE BAR | USE AS "False" FOR MAC OR LINUX
-        # ///////////////////////////////////////////////////////////////
-        Settings.ENABLE_CUSTOM_TITLE_BAR = True
-
-        # APP NAME
-        # ///////////////////////////////////////////////////////////////
-        title = "Dataset Updater"
-        description = "HTG Dataset Updater"
-        # APPLY TEXTS
-        self.setWindowTitle(title)
-        widgets.titleRightInfo.setText(description)
-
         # SET UI DEFINITIONS
         # //////////////////////////////////////////////////////////////
         UIFunctions.uiDefinitions(self)
-
-        # EXTRA LEFT BOX
-        def openCloseLeftBox():
-            UIFunctions.toggleLeftBox(self, True)
-
-        widgets.toggleLeftBox.clicked.connect(openCloseLeftBox)
-        # widgets.extraCloseColuQ2mnBtn.clicked.connect(openCloseLeftBox)
-
-        # EXTRA RIGHT BOX
-        def openCloseRightBox():
-            UIFunctions.toggleRightBox(self, True)
-
-        widgets.settingsTopBtn.clicked.connect(openCloseRightBox)
-
-        # SHOW APP
-        # ///////////////////////////////////////////////////////////////
-
         self.show()
 
-        # SET CUSTOM THEME
-        # ///////////////////////////////////////////////////////////////
-        useCustomTheme = False
-        themeFile = "themes\py_dracula_light.qss"
-
-        # SET THEME AND HACKS
-        if useCustomTheme:
-            # LOAD AND APPLY STYLE
-            UIFunctions.theme(self, themeFile, True)
-
-            # SET HACKS
-            AppFunctions.setThemeHack(self)
-
-        # widgets.gridLayout_3.addWidget(QPushButton("hellO!!"))
-
-        ###
-
-        # SET HOME PAGE AND SELECT MENUbe
+        # SET HOME PAGE AND SELECT MENU
         # ///////////////////////////////////////////////////////////////
         widgets.stackedWidget.setCurrentWidget(widgets.data)
         widgets.buttonData.setStyleSheet(
@@ -111,6 +64,7 @@ class MainWindow(QMainWindow):
         widgets.buttonData.clicked.connect(self.buttonClick)
         widgets.buttonLogs.clicked.connect(self.buttonClick)
         widgets.buttonDataSettings.clicked.connect(self.buttonClick)
+
 
         # tooltips
         widgets.buttonData.setToolTip("    Datasets")
@@ -130,6 +84,8 @@ class MainWindow(QMainWindow):
                 "name"
             ],
         )
+
+
 
         flowLayoutCatalogue = FlowLayout(widgets.frameCatalogueDatasets)
 
@@ -166,7 +122,6 @@ class MainWindow(QMainWindow):
         for i in datasetList:
             newDatasetObject = Dataset(i)
 
-            # instantiate dataset settings widget
             newDatasetSettingsWidget = DatasetSettingsWidget(
                 widgets.frameAllSettings, newDatasetObject
             )
@@ -276,6 +231,7 @@ class MainWindow(QMainWindow):
         for i in self.datasetSettingsList:
             i.outputToSettings()
 
+
     def fileDialogueFolder(self, lineEdit):
         fileDialogueOutput = QFileDialog().getExistingDirectory()
         lineEdit.setText(fileDialogueOutput)
@@ -303,12 +259,11 @@ class MainWindow(QMainWindow):
 
         # Show Data Settings
         if btnName == "buttonDataSettings":
-            widgets.stackedWidget.setCurrentWidget(widgets.settings)  # SET PAGE
-            UIFunctions.resetStyle(self, btnName)  # RESET ANOTHERS BUTTONS SELECTED
-            btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))  # SELECT MENU
+            widgets.stackedWidget.setCurrentWidget(widgets.settings)
+            UIFunctions.resetStyle(self, btnName)  
+            btn.setStyleSheet(UIFunctions.selectMenu(btn.styleSheet()))
 
-    # RESIZE EVENTS
-    # ///////////////////////////////////////////////////////////////
+
     def resizeEvent(self, event):
         # Update Size Grips
         UIFunctions.resize_grips(self)
@@ -317,9 +272,6 @@ class MainWindow(QMainWindow):
         # SET DRAG POS WINDOW
         self.dragPos = event.globalPos()
 
-    ############################################################################################
-    # Dataset Instantiation
-    #############################################################################################
 
 
 if __name__ == "__main__":
