@@ -86,7 +86,6 @@ class MainWindow(QMainWindow):
         )
 
 
-
         flowLayoutCatalogue = FlowLayout(widgets.frameCatalogueDatasets)
 
         for i in datasetList:

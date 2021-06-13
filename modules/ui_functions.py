@@ -17,15 +17,19 @@
 # MAIN FILE
 # ///////////////////////////////////////////////////////////////
 from os import name
-from PySide6.QtWidgets import QFrame, QPushButton
-from main import *
+from widgets.custom_grips.custom_grips import CustomGrip
+from PySide6.QtWidgets import QGraphicsDropShadowEffect, QPushButton
+from modules.app_settings import *
+from PySide6.QtGui import QIcon, QColor
+from PySide6.QtCore import QTimer, QEvent, Qt
+
 
 # GLOBALS
 # ///////////////////////////////////////////////////////////////
 GLOBAL_STATE = False
 GLOBAL_TITLE_BAR = True
 
-class UIFunctions(MainWindow):
+class UIFunctions:
     # MAXIMIZE/RESTORE
     # ///////////////////////////////////////////////////////////////
     def maximize_restore(self):
@@ -106,34 +110,29 @@ class UIFunctions(MainWindow):
                 QTimer.singleShot(250, lambda: UIFunctions.maximize_restore(self))
         self.ui.titleRightInfo.mouseDoubleClickEvent = dobleClickMaximizeRestore
 
-        if Settings.ENABLE_CUSTOM_TITLE_BAR:
-            #STANDARD TITLE BAR
-            self.setWindowFlags(Qt.FramelessWindowHint)
-            self.setAttribute(Qt.WA_TranslucentBackground)
+ 
+        #STANDARD TITLE BAR
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
 
-            # MOVE WINDOW / MAXIMIZE / RESTORE
-            def moveWindow(event):
-                # IF MAXIMIZED CHANGE TO NORMAL
-                if UIFunctions.returStatus(self):
-                    UIFunctions.maximize_restore(self)
-                # MOVE WINDOW
-                if event.buttons() == Qt.LeftButton:
-                    self.move(self.pos() + event.globalPos() - self.dragPos)
-                    self.dragPos = event.globalPos()
-                    event.accept()
-            self.ui.titleRightInfo.mouseMoveEvent = moveWindow
+        # MOVE WINDOW / MAXIMIZE / RESTORE
+        def moveWindow(event):
+            # IF MAXIMIZED CHANGE TO NORMAL
+            if UIFunctions.returStatus(self):
+                UIFunctions.maximize_restore(self)
+            # MOVE WINDOW
+            if event.buttons() == Qt.LeftButton:
+                self.move(self.pos() + event.globalPos() - self.dragPos)
+                self.dragPos = event.globalPos()
+                event.accept()
+        self.ui.titleRightInfo.mouseMoveEvent = moveWindow
 
-            # CUSTOM GRIPS
-            self.left_grip = CustomGrip(self, Qt.LeftEdge, True)
-            self.right_grip = CustomGrip(self, Qt.RightEdge, True)
-            self.top_grip = CustomGrip(self, Qt.TopEdge, True)
-            self.bottom_grip = CustomGrip(self, Qt.BottomEdge, True)
+        # CUSTOM GRIPS
+        self.left_grip = CustomGrip(self, Qt.LeftEdge, True)
+        self.right_grip = CustomGrip(self, Qt.RightEdge, True)
+        self.top_grip = CustomGrip(self, Qt.TopEdge, True)
+        self.bottom_grip = CustomGrip(self, Qt.BottomEdge, True)
 
-        else:
-            self.ui.appMargins.setContentsMargins(0, 0, 0, 0)
-            self.ui.minimizeAppBtn.hide()
-            self.ui.maximizeRestoreAppBtn.hide()
-            self.ui.closeAppBtn.hide()
         
 
         # DROP SHADOW
