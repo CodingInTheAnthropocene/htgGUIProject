@@ -346,49 +346,46 @@ class Dataset:
         self.settingsWrapper.settingsWriter(dictToSettings)
 
     def catalogueUpdateProcess(self):
-        def update():
-            schemaLockStatus=arcpy.TestSchemaLock(self.currentPath)
-            
+ 
+        schemaLockStatus=arcpy.TestSchemaLock(self.currentPath)
+        
+        try:
+            spatialObjectStatus=  True if arcpy.Describe(self.currentPath).dataType in ("ShapeFile", "FeatureClass") else False
+        except:
+            spatialObjectStatus= False
+
+        if schemaLockStatus== True or spatialObjectStatus ==  False:
+            print(f"{self.alias}: Starting update process!")
+            print(f"{self.alias}: Archiving…")
+
+            self.archiving()
+
+            tic = time.perf_counter()
+            print(f"{self.alias}: Starting download")
+            self.catalogueWarehouseDownload()
+            toc = time.perf_counter()
+            print(f"{self.alias}: Total acquisition time - {toc - tic:0.4f} seconds")
+
+            print(f"{self.alias}: Starting geoprocessing")
+            tic = time.perf_counter()
+            self.geoprocessing()
+            toc = time.perf_counter()
+            print(f"{self.alias}: Geoprocessing time - {toc - tic:0.4f} seconds")           
+
+            print(f"{self.alias}: Logging…")
+
             try:
-                spatialObjectStatus=  True if arcpy.Describe(self.currentPath).dataType in ("ShapeFile", "FeatureClass") else False
+                self.writeToSettings()
+                self.writeDownloadInfo()
+                self.writeTextAndMetadata()
+                self.writeLog()
             except:
-                spatialObjectStatus= False
+                print("Logging error")
+                print_exc()
 
-            if schemaLockStatus== True or spatialObjectStatus ==  False:
-                print(f"{self.alias}: Starting update process!")
-                print(f"{self.alias}: Archiving…")
+            print(f"{self.alias}: Finished update process!")
 
-                self.archiving()
+        else:
+            print("Can't get exclusive schema lock")      
 
-                tic = time.perf_counter()
-                print(f"{self.alias}: Starting download")
-                self.catalogueWarehouseDownload()
-                toc = time.perf_counter()
-                print(f"{self.alias}: Total acquisition time - {toc - tic:0.4f} seconds")
-
-                print(f"{self.alias}: Starting geoprocessing")
-                tic = time.perf_counter()
-                self.geoprocessing()
-                toc = time.perf_counter()
-                print(f"{self.alias}: Geoprocessing time - {toc - tic:0.4f} seconds")           
-
-                print(f"{self.alias}: Logging…")
-
-                try:
-                    self.writeToSettings()
-                    self.writeDownloadInfo()
-                    self.writeTextAndMetadata()
-                    self.writeLog()
-                except:
-                    print("Logging error")
-                    print_exc()
-
-                print(f"{self.alias}: Finished update process!")
-
-            else:
-                print("Can't get exclusive schema lock")      
-
-        updateProcess=Process(target= update)
-        updateProcess.start()
-        updateProcess.join()
 
