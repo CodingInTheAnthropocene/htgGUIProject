@@ -7,7 +7,6 @@ from os import path
 
 
 def crownTenuresGeoprocessing(rawPath, dataset):
-    """Takes raw crown tenures data set and runs it through standardized Geoprocessing"""
 
     fieldValueDictionary = {
         "AGRICULTURE, EXTENSIVE": "agriculture",
@@ -98,7 +97,6 @@ def crownTenuresGeoprocessing(rawPath, dataset):
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
-
     # create working copies,delete fields
     print(f"{dataset.alias}: Creaating working copies, Deleting fields")
 
@@ -146,7 +144,6 @@ def crownTenuresGeoprocessing(rawPath, dataset):
                 break
     
     cursor = arcpy.da.UpdateCursor(rawPath, ["TEN_STAGE"])
-
 
     print(f"{dataset.alias}: Starting tenures/SOI intersect")
     # intersect crown tenures with SOI.
@@ -259,15 +256,13 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
 
     return forestHarvestingAuthorityProcessedPath
 
-
 def forestManagedLicenceGeoprocessing(rawPath, dataset):
     # environment settings
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
-
     # delete fields
-    print(f"{dataset.alias}:Creating working copies, deleting fields")
+    print(f"{dataset.alias}: Creating working copies, deleting fields")
 
     deleteFields = [ "MPBLCKD", "MLTPCD", "RTRMNTDT", "MNDMNTD", "MAP_LABEL", "FEAT_AREA", "FTRPRMTR", "FTRCLSSSK", "FLSTTSCD", "DMNDSTRCTC", "AREA_SQM", "FEAT_LEN", "OBJECTID", ]
 
@@ -334,7 +329,6 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
 
     return forestManagedLicenceProcessedPath
 
-
 ####################################################################################################################
 # Harvested areas of BC (Consolidated Cut Blocks)
 ####################################################################################################################
@@ -344,8 +338,6 @@ def harvestedAreasGeoprocessing(rawPath, dataset):
     # environment settings
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
-
-
 
     # delete fields
     print(f"{dataset.alias}: Creating working copies, deleting fields")
@@ -369,7 +361,6 @@ def harvestedAreasGeoprocessing(rawPath, dataset):
     for i in harvestedAreasRenameDict:
         shapefileFieldRename(rawPath, i, harvestedAreasRenameDict[i])
 
-
     # calculate fields
     cursor = arcpy.da.UpdateCursor(rawPath, ["startdate", "enddate"])
     
@@ -381,7 +372,6 @@ def harvestedAreasGeoprocessing(rawPath, dataset):
         cursor.updateRow(row)
 
     del cursor
-
 
     # Inteersect with lands
     print(f"{dataset.alias}: Starting intersect")     
@@ -439,6 +429,7 @@ def parcelMapBCGeoprocessing(rawPath, dataset):
 
 
 def digitalRoadAtlasGeoprocessing(rawPath, dataset):
+
     fieldValueDictionary = {
         ("freeway", "highway"): "highway",
         ("arterial", "collector", "ramp"): "main",
@@ -463,7 +454,6 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
   
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
- 
 
     #delete fields from working copies
     print(f"{dataset.alias}: Deleting fields from working copies")
@@ -487,9 +477,6 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
 
     del cursor
 
-
-    # NOTE, can we just Not create multi_part features here instead of disolving then exploding? Do we still want those other fields Because if we dissolve without them aren't they gone??I'm not sure this is really doing what's wanted. Do we want this spatially joined to administrative areas Or municipalities or something then dissolved?? https://catalogue.data.gov.bc.ca/dataset/regional-districts-legally-defined-administrative-areas-of-bc.
-
     print(f"{dataset.alias}: Starting Dissolve") 
     roadAtlasDisolve = arcpy.Dissolve_management(
         rawPath, "tempRoadDisolve.shp", ["RDNAME", "road_type"], [["RDALIAS1", "FIRST"], 
@@ -509,7 +496,6 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
     #arcpy.Delete_management(rawPath)
 
     return roadAtlasIntersect
-
 
 def alcAlrPolygonsGeoprocessing(rawPath, dataset):
 
@@ -566,7 +552,6 @@ def environmentalRemediationSitesGeoprocessing(rawPath, dataset):
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
-
     #delete fields from raw
     print(f"{dataset.alias}: Creating working copies, deleting fields")
 
@@ -595,8 +580,7 @@ def environmentalRemediationSitesGeoprocessing(rawPath, dataset):
 
         cursor.updateRow(row)
 
-    del cursor   
-
+    del cursor
 
     # intersect with Lands
     print(f"{dataset.alias}: Starting intersect") 

@@ -38,7 +38,6 @@ def northCowichanRecreationGeoprocessing(rawPath, datasetClass):
     )
 
     # field calculation
-
     for row in cursor:
         row[0], row[1], row[2], row[3], row[4] = (
             "municipal",
@@ -137,9 +136,6 @@ def northCowichanForestryRecreationGeoprocessing(rawPath, datasetClass):
     print(
         f"{datasetClass.alias}: Starting north Cowichan Forestry Recreation geoprocessing"
     )
-
-    # get Name of Raw shape file
-    rawName = path.splitext(arcpy.Describe(rawPath).name)[0]
 
     # delete fields
     fieldsToDelete = [ "fme_type", "RESPONSIBI", "PUBLIC_MAP", "STATUS", "LOCATION", "PARK_ID", ]

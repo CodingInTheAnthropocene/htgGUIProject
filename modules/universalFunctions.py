@@ -80,7 +80,6 @@ def shapefileFieldRename(shapefile, currentFieldName, newFieldName, newFieldAlia
 
     arcpy.DeleteField_management(shapefile, currentFieldName)
 
-
 def shapeFileDownloadUnzip(url, downloadFolder, fileName):
     """Downloads a zipped shapefile from a specified url to a specified download folder. Unzips in download folder. Will walk through any number of directories to find shapefile. Returns z list of paths if multiple shapefiles exist, otherwise returns a path like string. Will replace any identically named folders in the download location."""
 

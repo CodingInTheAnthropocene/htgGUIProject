@@ -12,11 +12,13 @@ from re import sub
 from traceback import print_exc
 
 
+
+
 class datasetFrame(QFrame):
     """ A datasetFrame is the primary intterface for updating datasets in the updater. It consists of a QTree for presenting dataset information, An update button which starts the update process for that dataset, as well as settings button which brings the user to the settings for that particular dataset. Is itself a custom qframe"""
 
     def __init__(
-        self, parent, dataset, updateFunction, mainWindow, mainWidgets, settingsWidget
+        self, parent, dataset, mainWindow, mainWidgets, settingsWidget
     ):
         """Initializes widget with parent widget, A dataset Setttings class, and the process function asssociated with that settings class"""
         super(datasetFrame, self).__init__(parent)
@@ -36,6 +38,7 @@ class datasetFrame(QFrame):
         self.mainWidgets = mainWidgets
         self.settingsWidget = settingsWidget
         self.mainWindow = mainWindow
+        self.updateFunction = dataset.catalogueUpdateProcess
 
         # get data currency from data catalogue API if Data has a data catalogue ID
         if self.dataCatalogueIdList != "N/A":
@@ -55,7 +58,7 @@ class datasetFrame(QFrame):
             
             except:
                 self.date = getFileCreatedDate(arcpy.Describe(self.currentPath).path)
-                self.fileSize = "GDB, can't calculate"               
+                self.fileSize = "gdb (can't calculate)"               
             
         except:
             self.fileSize = "Not Found"
@@ -70,7 +73,7 @@ class datasetFrame(QFrame):
             print_exc()
 
         # Signals and slots
-        self.buttonUpdate.clicked.connect(lambda: updateFunction())
+        self.buttonUpdate.clicked.connect(self.updateFunction)
         self.buttonSettings.clicked.connect(self.navigateToSettings)
         self.buttonUpdate.clicked.connect(self.turnPurple)
         self.qtree.expanded.connect(self.qtreeExpand)
@@ -85,8 +88,6 @@ class datasetFrame(QFrame):
 
         self.setFrameShape(QFrame.StyledPanel)
         self.setFrameShadow(QFrame.Raised)
-        # self.setMaximumSize( self.xCollapsed, self.yCollapsed )
-        # self.setMinimumSize( self.xCollapsed,self.yCollapsed)
 
         self.verticalLayout_4 = QVBoxLayout(self)
         self.verticalLayout_4.setObjectName(f"verticalLayout_{self.alias}")
@@ -191,6 +192,8 @@ class datasetFrame(QFrame):
             QCoreApplication.translate("Form", "Settings", None)
         )
 
+
+    
     def qtreeExpand(self):
         self.animation = QPropertyAnimation(self, b"minimumSize")
         self.animation.setDuration(400)

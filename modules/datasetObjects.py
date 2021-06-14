@@ -1,4 +1,3 @@
-from pathlib import Path
 from modules.universalFunctions import *
 from modules.settingsWrapper import *
 from modules.catalogueFunctions import *
@@ -9,7 +8,6 @@ from requests import post, Session
 from urllib.request import urlopen, urlretrieve
 from lxml.html import fromstring
 from time import sleep
-from pandas.core.common import flatten
 import arcpy
 from os import path, mkdir, walk, rename, remove
 from datetime import datetime
@@ -17,6 +15,7 @@ from shutil import move, make_archive, rmtree, unpack_archive
 from json import load, dump
 import time
 from traceback import print_exc
+from  multiprocessing import Process
 
 
 
@@ -43,7 +42,6 @@ class Dataset:
         """ Takes the path of a shape file, and archives all files in that shapefile into the given archive folder. If path is gdb feature class, archives that whole G in DB"""
         try:
             currentPathType = arcpy.Describe(self.currentPath).dataType
-
             if currentPathType == "ShapeFile":
                 folderPath, shapefileNameWithExtension = path.split(self.currentPath)
 
@@ -53,6 +51,9 @@ class Dataset:
                 # make a new directory in the name of the Shapefile with time added in archive folder
                 newDirectoryPath = f"{self.archiveFolder}\\{shapefileNameWithExtension}{tenuresModifiedTime}"
                 
+                if exists(newDirectoryPath):
+                    rmtree(newDirectoryPath)
+
                 mkdir(newDirectoryPath)
 
                 # iterate through current .shp directory, pull out files with the name of the shapefile, add the time to thoes file names, move the file to previously created directory
@@ -163,7 +164,7 @@ class Dataset:
 
         # Check distribution.data.gov.bc.ca Every 15 seconds to see if order is available, Storre download link in variable when ready.
 
-        # NOTE: this Folloowing section is the most fragile piece of the whole software. If anything about the way the BC data catalogue operates changes, thiis function is likely to go down And break every data catalogue download. If there are problems with the download, this is the likely culprit.
+        # NOTE: this following section is the most fragile piece of the whole software. If anything about the way the BC data catalogue operates changes, this function is likely to go down and break every data catalogue download. If there are problems with the download, this is the likely culprit.
         orderNumber = response.json()["Value"]
         orderURL = f"https://apps.gov.bc.ca/pub/dwds-rasp/pickup/{orderNumber}"
 
@@ -192,21 +193,16 @@ class Dataset:
             rmtree(folderPath)
 
         # retrieve info from URL
-
-        
         urlretrieve(downloadURL, f"{folderPath}.zip")
-        
-    
 
         # unzipp the file and remove original zipped file
         unpack_archive(f"{folderPath}.zip", folderPath)
         remove(f"{folderPath}.zip")
 
-        # hunt through unzipped folder for gbd, shapefiles and HTML File paths, Store as list if there is more than one
+        # hunt through unzipped folder for gbd feature clases, shapefiles and HTML File paths. Store as list.
         rawFilePaths = []
         rawHtmlPaths = []
 
-        # NOTE: must add GDB here!!
         for dirname, _, files in walk(folderPath):
             if dirname[-4:] == ".gdb":
                 arcpy.env.workspace= dirname
@@ -322,13 +318,12 @@ class Dataset:
             }
         }
 
-        # If log doesn't exist or is empty for some reason, Create A new JSON file and populate With dictionary
+        # If log doesn't exist or is empty for some reason, create A new JSON file and populate with dictionary
         if exists(logPath) == False or getsize(logPath)==0:
             with open(logPath, "w")  as logFile:
                 dump(logDictionary, logFile)
-        
 
-        # it log already exists
+        # if log already exists
         else:
             with open(logPath, "r") as logFile:
                 jsonIn = load(logFile)
@@ -351,44 +346,49 @@ class Dataset:
         self.settingsWrapper.settingsWriter(dictToSettings)
 
     def catalogueUpdateProcess(self):
-
-        schemaLockStatus=arcpy.TestSchemaLock(self.currentPath)
-        
-        try:
-            spatialObjectStatus=  True if arcpy.Describe(self.currentPath).dataType in ("ShapeFile", "FeatureClass") else False
-        except:
-            spatialObjectStatus= False
-
-        if schemaLockStatus== True or spatialObjectStatus ==  False:
-            print(f"{self.alias}: Starting update process!")
-            print(f"{self.alias}: Archiving…")
-
-            self.archiving()
-
-            tic = time.perf_counter()
-            print(f"{self.alias}: Starting download")
-            self.catalogueWarehouseDownload()
-            toc = time.perf_counter()
-            print(f"{self.alias}: Total acquisition time - {toc - tic:0.4f} seconds")
-
-            print(f"{self.alias}: Starting geoprocessing")
-            tic = time.perf_counter()
-            self.geoprocessing()
-            toc = time.perf_counter()
-            print(f"{self.alias}: Geoprocessing time - {toc - tic:0.4f} seconds")           
-
-            print(f"{self.alias}: Logging…")
-
+        def update():
+            schemaLockStatus=arcpy.TestSchemaLock(self.currentPath)
+            
             try:
-                self.writeToSettings()
-                self.writeDownloadInfo()
-                self.writeTextAndMetadata()
-                self.writeLog()
+                spatialObjectStatus=  True if arcpy.Describe(self.currentPath).dataType in ("ShapeFile", "FeatureClass") else False
             except:
-                print("Logging error")
-                print_exc()
+                spatialObjectStatus= False
 
-            print(f"{self.alias}: Finished update process!")
+            if schemaLockStatus== True or spatialObjectStatus ==  False:
+                print(f"{self.alias}: Starting update process!")
+                print(f"{self.alias}: Archiving…")
 
-        else:
-            print("Can't get exclusive schema lock")
+                self.archiving()
+
+                tic = time.perf_counter()
+                print(f"{self.alias}: Starting download")
+                self.catalogueWarehouseDownload()
+                toc = time.perf_counter()
+                print(f"{self.alias}: Total acquisition time - {toc - tic:0.4f} seconds")
+
+                print(f"{self.alias}: Starting geoprocessing")
+                tic = time.perf_counter()
+                self.geoprocessing()
+                toc = time.perf_counter()
+                print(f"{self.alias}: Geoprocessing time - {toc - tic:0.4f} seconds")           
+
+                print(f"{self.alias}: Logging…")
+
+                try:
+                    self.writeToSettings()
+                    self.writeDownloadInfo()
+                    self.writeTextAndMetadata()
+                    self.writeLog()
+                except:
+                    print("Logging error")
+                    print_exc()
+
+                print(f"{self.alias}: Finished update process!")
+
+            else:
+                print("Can't get exclusive schema lock")      
+
+        updateProcess=Process(target= update)
+        updateProcess.start()
+        updateProcess.join()
+

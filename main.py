@@ -100,7 +100,6 @@ class MainWindow(QMainWindow):
             newDatasetFrame = datasetFrame(
                 widgets.frameCatalogueDatasets,
                 newDatasetObject,
-                newDatasetObject.catalogueUpdateProcess,
                 self,
                 widgets,
                 newDatasetSettingsWidget,
@@ -126,10 +125,10 @@ class MainWindow(QMainWindow):
             )
             self.datasetSettingsList.append(newDatasetSettingsWidget)
 
+
             newDatasetFrame = datasetFrame(
                 widgets.frameOtherDatasets,
                 newDatasetObject,
-                newDatasetObject.catalogueUpdateProcess,
                 self,
                 widgets,
                 newDatasetSettingsWidget,
@@ -143,16 +142,21 @@ class MainWindow(QMainWindow):
         ############################################################################################
         try:
             self.flowLayoutLogs = FlowLayout(widgets.scrollAreaLogsButtons)
-
+            
+            pathList = []
             for directoryName, _, files in walk(UniversalSettingsWrapper.logFolder):
                 for file in files:
-                    newMonthButton = logButton(
-                        widgets.scrollAreaLogsButtons,
-                        f"{directoryName}\\{file}",
-                        widgets.textEditLogs,
-                    )
-                    self.flowLayoutLogs.addWidget(newMonthButton)
-                    newMonthButton.updateTextEdit()
+                    pathList.append(f"{directoryName}\\{file}")
+            
+            for path in sorted(pathList, key= lambda x: getFileCreatedDate(x)):
+
+                newMonthButton = logButton(
+                    widgets.scrollAreaLogsButtons,
+                    path,
+                    widgets.textEditLogs,
+                )
+                self.flowLayoutLogs.addWidget(newMonthButton)
+                newMonthButton.updateTextEdit()
         except:
             print_exc()
 
@@ -390,7 +394,11 @@ class MainWindow(QMainWindow):
         self.bottom_grip.setGeometry(0, self.height() - 10, self.width(), 10)
 
 if __name__ == "__main__":
+
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("icon.ico"))
     window = MainWindow()
+    
     sys.exit(app.exec_())
+
+
