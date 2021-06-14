@@ -6,7 +6,6 @@ from datetime import datetime
 from shutil import rmtree, unpack_archive
 
 
-
 def arcpyGetPath(x):
     return arcpy.Describe(x).catalogPath
 
@@ -31,46 +30,46 @@ def getFileCreatedDate(filePath):
 
 def excludeFields(featureClass, excludeFields):
 
-    
-
-    returnFields = [i.name for i in arcpy.ListFields(featureClass) if i.name[0:10] not in excludeFields and i.name not in excludeFields] 
+    returnFields = [
+        i.name
+        for i in arcpy.ListFields(featureClass)
+        if i.name[0:10] not in excludeFields and i.name not in excludeFields
+    ]
 
     return returnFields
 
 
 def copySpecificFields(featureClass, fieldDeleteList):
-    
-    fieldKeep= excludeFields(featureClass, fieldDeleteList)
+
+    fieldKeep = excludeFields(featureClass, fieldDeleteList)
 
     fm = arcpy.FieldMappings()
-    
 
     for field in fieldKeep:
-        if field  in ('Shape', "OBJECTID"):
+        if field in ("Shape", "OBJECTID"):
             continue
-        fieldMap=arcpy.FieldMap()
-        fieldMap.addInputField(featureClass, field)        
+        fieldMap = arcpy.FieldMap()
+        fieldMap.addInputField(featureClass, field)
         fm.addFieldMap(fieldMap)
 
-
     copy = arcpy.FeatureClassToFeatureClass_conversion(
-        featureClass,
-        arcpy.env.workspace,
-        "tempLands",
-        field_mapping=fm,
+        featureClass, arcpy.env.workspace, "tempLands", field_mapping=fm,
     )
 
     return copy
 
+
 def shapefileFieldRename(shapefile, currentFieldName, newFieldName, newFieldAlias=None):
-    if newFieldAlias==None:
-        newFieldAlias=newFieldName
+    if newFieldAlias == None:
+        newFieldAlias = newFieldName
 
     for field in arcpy.ListFields(shapefile):
         if field.name == currentFieldName:
             fieldType = field.type
 
-    arcpy.AddField_management(shapefile, newFieldName, fieldType, field_alias=newFieldAlias)
+    arcpy.AddField_management(
+        shapefile, newFieldName, fieldType, field_alias=newFieldAlias
+    )
     cursor = arcpy.da.UpdateCursor(shapefile, [currentFieldName, newFieldName])
 
     for row in cursor:

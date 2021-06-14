@@ -1,8 +1,0 @@
-geoprocessing format:
--make working copies
--delete fieldsfrom working copies
--rename fields
--calculate fields
-- Overlay analysis
--calculate geometry
--cleanup

@@ -1,16 +1,12 @@
-from modules import bbox_SOIs
+import  dependencies.bbox_SOIs  as bbox_SOIs
 from json import dump, load
 from shutil import copy
-from datetime import datetime, timedelta
-from os import path
 
 from modules.universalFunctions import *
-from modules.initiationDictionary import initiationDictionary
+from settings.initiationDictionary import initiationDictionary
 
 # create a settings backup
-settingsFile = "modules\\settings.json"
-
-copy(settingsFile, "modules\\settingsBackup.json")
+settingsFile = "settings\\settings.json"
 
 with open(settingsFile) as settingsFile:
     configurationDictionary = load(settingsFile)
@@ -23,10 +19,10 @@ class UniversalSettingsWrapper:
     logFolder = configurationDictionary["universalSettings"]["logFolder"]
 
     def settingsWriter(attributeDictionary):
-        with open("modules\\settings.json", "r") as settingsFile:
+        with open("settings\\settings.json", "r") as settingsFile:
             configurationDictionary = load(settingsFile)
         
-        with open("modules\\settings.json", "w") as settingsFile:
+        with open("settings\\settings.json", "w") as settingsFile:
             for attribute in attributeDictionary:
 
                 configurationDictionary["universalSettings"][attribute] = attributeDictionary[attribute]
@@ -43,10 +39,10 @@ class UniversalPathsWrapper:
     aoiSwBcPath = configurationDictionary["universalPaths"]["aoiSwBcPath"]
 
     def settingsWriter(attributeDictionary):
-        with open("modules\\settings.json", "r") as settingsFile:
+        with open("settings\\settings.json", "r") as settingsFile:
             configurationDictionary = load(settingsFile)
         
-        with open("modules\\settings.json", "w") as settingsFile:
+        with open("settings\\settings.json", "w") as settingsFile:
             for attribute in attributeDictionary:
                 configurationDictionary["universalPaths"][attribute] = attributeDictionary[attribute]
             
@@ -160,10 +156,10 @@ class DatasetSettingsWrapper:
         }
 
     def settingsWriter(self, attributeDictionary):
-        with open("modules\\settings.json", "r") as settingsFile:
+        with open("settings\\settings.json", "r") as settingsFile:
             configurationDictionary = load(settingsFile)
         
-        with open("modules\\settings.json", "w") as settingsFile:
+        with open("settings\\settings.json", "w") as settingsFile:
             for attribute in attributeDictionary:
                 if self.type == "catalogue":
                     configurationDictionary["datasets"]["catalogueDatasets"][self.alias][attribute] = attributeDictionary[attribute]
