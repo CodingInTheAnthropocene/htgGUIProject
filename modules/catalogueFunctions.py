@@ -143,7 +143,7 @@ def crownTenuresGeoprocessing(rawPath, dataset):
                 cursor.updateRow(row)
                 break
     
-    cursor = arcpy.da.UpdateCursor(rawPath, ["TEN_STAGE"])
+
 
     print(f"{dataset.alias}: Starting tenures/SOI intersect")
     # intersect crown tenures with SOI.
@@ -161,7 +161,8 @@ def crownTenuresGeoprocessing(rawPath, dataset):
         dataset.fileName,
         join_attributes="NO_FID",
     )
-    
+    cursor = arcpy.da.UpdateCursor(crownTenuresProcessedPath, ["TEN_STAGE"])
+
     for row in cursor:
         if row[0] == " ":
             cursor.deleteRow()
