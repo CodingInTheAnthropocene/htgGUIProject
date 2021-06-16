@@ -1,3 +1,6 @@
+"""
+customWidgets.py - Custom QT widgets used in application
+"""
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import *
@@ -59,6 +62,7 @@ class DatasetFrame(QFrame):
                 self.hostedFileDate = getCurrency(self.dataCatalogueIdList)
             except:
                 self.hostedFileDate = "Not Found"
+                print_exc()
 
         else:
             self.hostedFileDate = "N/A"
@@ -77,6 +81,7 @@ class DatasetFrame(QFrame):
         except:
             self.fileSize = "Not Found"
             self.date = "Not Found"
+            print_exc()
 
         # functions on init
         self.initFrame()

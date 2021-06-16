@@ -1,9 +1,14 @@
-from PySide6 import QtCore, QtGui, QtWidgets
-from modules.customWidgets import *
+"""
+Module containing custom flowlayout.
+"""
+
+from PySide6 import QtCore, QtWidgets
 
 
 class FlowLayout(QtWidgets.QLayout):
-    """Non-stock layout for having Widgets slide around based on the size of their parent widget. More info here: https://doc.qt.io/qtforpython/overviews/qtwidgets-layouts-flowlayout-example.html"""
+    """
+    Non-stock layout for having Widgets slide around based on the size of their parent widget. More info here: https://doc.qt.io/qtforpython/overviews/qtwidgets-layouts-flowlayout-example.html
+    """
 
     def __init__(self, parent=None, margin=-1, hspacing=-1, vspacing=-1):
         super(FlowLayout, self).__init__(parent)

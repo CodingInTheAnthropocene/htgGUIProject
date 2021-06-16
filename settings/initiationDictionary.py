@@ -1,3 +1,7 @@
+"""
+1 of 2 configuration filles for application. The other being settings.json. This dictionary contains information which won't need to be changed in GUI settings. It can be changed, but likely other things will have to be changed as well to accommodate that. For example, if  you were to change the format from shapefile to Geodatabase, it's not a guarantee that the corresponding geoprocessing chain is set up for that.
+"""
+
 initiationDictionary = {
     "datasets": {
         "catalogueDatasets": {

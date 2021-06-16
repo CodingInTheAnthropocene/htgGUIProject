@@ -1,5 +1,5 @@
 """
-Geoprocessing chains for BC data catalogue datasets.
+catalogueFunctions.py - Geoprocessing chains for BC data catalogue datasets.
 """
 
 import arcpy

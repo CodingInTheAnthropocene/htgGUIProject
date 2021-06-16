@@ -1,12 +1,12 @@
 """
-Functions utilized at various points throughout the application not associated with a particular dataset.
+universalFunctions.py- Functions utilized at various points throughout the application not associated with a particular dataset.
 """
 import arcpy
 from requests import get
 from urllib.request import urlretrieve
-from os import path, mkdir, rmdir, walk, remove
+from os import path, mkdir, walk, remove
 from datetime import datetime
-from shutil import unpack_archive
+from shutil import rmtree, unpack_archive
 
 
 def arcpyGetPath(filePath):
@@ -161,7 +161,7 @@ def shapeFileDownloadUnzip(url, downloadFolder, fileName):
     #create download folder, preface it with "raw", remove existing folder if it exists
     folderPath = f"{downloadFolder}\\raw{fileName}"
     if path.exists(folderPath):
-        rmdir(folderPath)
+        rmtree(folderPath)
     
     mkdir(folderPath)
 

@@ -1,5 +1,5 @@
 """
-Main module for application.Includes view and functionality for main window.
+main.py - Main module for application.Includes view and functionality for main window.
 """
 from PySide6.QtWidgets import QGraphicsDropShadowEffect, QPushButton
 from PySide6.QtGui import QIcon, QColor
@@ -281,21 +281,14 @@ class MainWindow(QMainWindow):
             btn.setStyleSheet(self.selectMenu(btn.styleSheet()))
 
     def resizeEvent(self, event):
-        """
-        Update size grips
-        """       
+        # Update Size Grips
         self.resize_grips()
 
     def mousePressEvent(self, event):
-        """
-        Set position
-        """        
+        # SET DRAG POS WINDOW
         self.dragPos = event.globalPos()
     
     def maximize_restore(self):
-        """
-        Maximize and restore window
-        """
         global GLOBAL_STATE
         status = GLOBAL_STATE
         
@@ -323,7 +316,8 @@ class MainWindow(QMainWindow):
             self.top_grip.show()
             self.bottom_grip.show()
 
-    # return
+    # RETURN STATUS
+    # ///////////////////////////////////////////////////////////////
     def returStatus(self):
         return GLOBAL_STATE
 
@@ -419,7 +413,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("icon.ico"))
     window = MainWindow()
-    
     sys.exit(app.exec_())
 
 

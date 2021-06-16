@@ -1,5 +1,5 @@
 """
-Classes for handling configuration file reading and writing.
+settingsWrapper.py - Classes for handling configuration file reading and writing.
 """
 
 from json import dump, load
@@ -17,7 +17,7 @@ with open(settingsFile) as settingsFile:
 
 class UniversalSettingsWrapper:
     """
-    Onboards from and writes to universalSettings in settings.json configuration file. Static Class.
+    Reads from and writes to universalSettings in settings.json configuration file. Static Class.
     """
     # get information from settings.json    
     email = configurationDictionary["universalSettings"]["email"]
@@ -46,7 +46,7 @@ class UniversalSettingsWrapper:
 
 class UniversalPathsWrapper:
     """
-    Onboards from and writes to universalPaths in settings.json configuration file. Static class.
+    Reads from and writes to universalPaths in settings.json configuration file. Static class.
     """ 
     # get information from settings.json       
     htgLandsPath = configurationDictionary["universalPaths"]["htgLandsPath"]
@@ -83,7 +83,7 @@ class DatasetSettingsWrapper:
         """
         Constructor method
 
-        :param datasetAlias: Alias used in settings.json and initiationDictionary describe different datasets. Must match  of these datasets.
+        :param datasetAlias: Alias used in settings.json and initiationDictionary describe different datasets. Alias must match one of these datasets.
         :type datasetAlias: str
         """              
 
@@ -160,7 +160,7 @@ class DatasetSettingsWrapper:
         elif self.aoi == "wha":
             aoiChoice = bbox_SOIs.wha
         elif self.aoi == "swbc":
-            aoiChoice = bbox_SOIs.roadsMask
+            aoiChoice = bbox_SOIs.swbc
 
         # determine to request download in shapefile or geodatabase format
         if self.rawFormat == "shapefile":

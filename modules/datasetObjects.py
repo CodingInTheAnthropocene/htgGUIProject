@@ -1,10 +1,12 @@
 """
-Module for dataset object
+datasetObjects.py- Module for dataset object
 """
 
 import arcpy
+import logging
 from genericpath import exists, getsize
 from requests import post, Session
+from urllib.parse import urlparse
 from urllib.request import urlopen, urlretrieve
 from lxml.html import fromstring
 from time import sleep
@@ -14,6 +16,7 @@ from shutil import move, make_archive, rmtree, unpack_archive
 from json import load, dump
 import time
 from traceback import print_exc
+from io import StringIO
 
 from modules.universalFunctions import *
 from modules.settingsWrapper import *
@@ -49,6 +52,9 @@ class Dataset:
 
         self.alias = datasetAlias
         self.geoprocessingFunction = eval(self.settingsWrapper.geoprocessingFunction)
+
+
+
 
     def archiving(self):
         """
@@ -129,7 +135,13 @@ class Dataset:
         except:
             print_exc()
             print("Archiving error, check file path")
+            self.logger.error("Archiving error")
+
+
             self.archiveStatus = False
+        
+        finally:
+            self.logger.info("archiving()")
 
     def dataAcquisition(self):
         """
@@ -208,23 +220,23 @@ class Dataset:
         print(f"{self.alias}: Found! Starting download...")
 
         # create folder for  raw data, remove it first if it already exists
-        folderPath = f"{self.downloadFolder}\\raw{self.fileName}"
+        self.rawFolderPath = f"{self.downloadFolder}\\raw{self.fileName}"
 
-        if path.exists(folderPath) == True:
-            rmtree(folderPath)
+        if path.exists(self.rawFolderPath) == True:
+            rmtree(self.rawFolderPath)
 
         # retrieve info from URL
-        urlretrieve(downloadURL, f"{folderPath}.zip")
+        urlretrieve(downloadURL, f"{self.rawFolderPath}.zip")
 
         # unzipp the file and remove original zipped file
-        unpack_archive(f"{folderPath}.zip", folderPath)
-        remove(f"{folderPath}.zip")
+        unpack_archive(f"{self.rawFolderPath}.zip", self.rawFolderPath)
+        remove(f"{self.rawFolderPath}.zip")
 
         # hunt through unzipped folder for gbd feature clases, shapefiles and HTML File paths. Store as list.
         rawFilePaths = []
         rawHtmlPaths = []
 
-        for dirname, _, files in walk(folderPath):
+        for dirname, _, files in walk(self.rawFolderPath):
             if dirname[-4:] == ".gdb":
                 arcpy.env.workspace= dirname
                 rawFilePaths.append(
@@ -244,7 +256,7 @@ class Dataset:
             print(f"{self.alias}: Downloading auxiliary datasets")
             for url in self.urlList:
                 rawFilePaths.extend(
-                    shapeFileDownloadUnzip(url, folderPath, self.fileName)
+                    shapeFileDownloadUnzip(url, self.rawFolderPath, urlparse(url).netloc)
                 )
 
         else:
@@ -260,12 +272,19 @@ class Dataset:
 
         print(f"{self.alias}: Done downloading!")
 
+        self.logger.info("dataAcquisition()")
+
     def geoprocessing(self):
         """
         Run geoprocessing chain associated with dataset
         """        
         self.resultObject = self.geoprocessingFunction(self.rawFilePaths, self)
         self.processedFile = arcpyGetPath(self.resultObject)
+
+        #remove raw data
+        rmtree(self.rawFolderPath)
+        
+        self.logger.info(f"{self.geoprocessingFunction.__name__}({self.rawFilePaths})")
 
     def createDownloadInfo(self):
         """
@@ -294,6 +313,7 @@ class Dataset:
 
         self.catalogueDownloadInfo = f"\n     Date Downloaded: {datetime.today().strftime('%Y-%m-%d')} from BC's data catalogue\n     URL: {self.jsonPayload['featureItems'][0]['layerMetadataUrl']}\n     Original Catalogue download name(s): {originalName}\n     See {originalHtml} for licence information and metadata for catalogue downloads\n     For more information about downloading data, email data@gov.bc.ca.\n     To report downloading errors email NRSApplications@gov.bc.ca. \n     Auxiliary download links: {auxiliaryDownloadInfo}"
 
+
     def writeTextAndMetadata(self):
         """
         Writes download information to processed file metadata
@@ -312,7 +332,7 @@ class Dataset:
     def writeLog(self):
         """
         Builds JSON logs. Create a new log every month.
-        """        
+        """  
 
         logFolder = f"{UniversalSettingsWrapper.logFolder}"
 
@@ -324,7 +344,7 @@ class Dataset:
         archivedFile = (
             "Archiving Error" if self.archiveStatus == False else self.archivedFile
         )
-        updateStack = "placeholder"
+        errors_updateStack = self.logCaptureString.getvalue()
         today = datetime.today()
         logPath = f'{logFolder}\\{today.strftime("%B-%Y")}.json'
         todayString = today.strftime("%Y-%m-%d")
@@ -336,11 +356,11 @@ class Dataset:
                 todayString: {
                     "times": {
                         time: {
-                            "dataset": self.name,
-                            "updateStack": updateStack,
-                            "archivedFile": archivedFile,
-                            "currentPath": self.processedFile,
-                            "catalogueDownloadInfo": self.catalogueDownloadInfo,
+                            "dataset": f"{self.name}\n",
+                            "errors/updateStack": f"\n{errors_updateStack}\n",
+                            "archivedFile": f"{archivedFile}\n",
+                            "currentPath": f"{self.processedFile}\n",
+                            "catalogueDownloadInfo": f"{self.catalogueDownloadInfo}\n",
                         }
                     }
                 }
@@ -369,6 +389,8 @@ class Dataset:
 
                 # write JSON to file
                 dump(jsonIn, logFile)
+        
+
 
     def writeToSettings(self):
         """
@@ -380,7 +402,7 @@ class Dataset:
     def catalogueUpdateProcess(self):
         """
         The  most important darn function in the whole kit and caboodle. The entire update process for a dataset. Called from the update button on the dataset frame widget.
-        """        
+        """ 
 
         # test to see if current file is open in ArcGIS
         schemaLockStatus=arcpy.TestSchemaLock(self.currentPath)
@@ -392,39 +414,62 @@ class Dataset:
             print_exc()
 
         # if not, let er' rip
-        if schemaLockStatus== True or spatialObjectStatus ==  False:
-            print(f"{self.alias}: Starting update process!")
-            
-            print(f"{self.alias}: Archiving…")
+        try:
+            if schemaLockStatus== True or spatialObjectStatus ==  False:
+                
+                #insantiate logger
+                self.logger = logging.getLogger('basic_logger')
+                self.logger.setLevel(logging.DEBUG)
+                self.logCaptureString = StringIO()
+                self.ch = logging.StreamHandler(self.logCaptureString)
+                self.ch.setLevel(logging.DEBUG)
+                formatter = logging.Formatter('%(levelname)s - %(message)s')
+                self.ch.setFormatter(formatter)
+                self.logger.addHandler(self.ch)
 
-            self.archiving()
+                self.logger.info("catalogueUpdateProcess()")
 
-            tic = time.perf_counter()
-            print(f"{self.alias}: Starting data acquisition")
-            self.dataAcquisition()
-            toc = time.perf_counter()
-            print(f"{self.alias}: Total acquisition time - {toc - tic:0.4f} seconds")
+                print(f"{self.alias}: Starting update process!")
+                
+                # archive
+                print(f"{self.alias}: Archiving…")
+                self.archiving()
 
-            print(f"{self.alias}: Starting geoprocessing")
-            tic = time.perf_counter()
-            self.geoprocessing()
-            toc = time.perf_counter()
-            print(f"{self.alias}: Geoprocessing time - {toc - tic:0.4f} seconds")           
+                # acquire data
+                tic = time.perf_counter()
+                print(f"{self.alias}: Starting data acquisition")
+                self.dataAcquisition()
+                toc = time.perf_counter()
+                print(f"{self.alias}: Total acquisition time - {toc - tic:0.4f} seconds")
 
-            print(f"{self.alias}: Logging…")
+                # geoprocessing chain
+                print(f"{self.alias}: Starting geoprocessing")
+                tic = time.perf_counter()
+                self.geoprocessing()
+                toc = time.perf_counter()
+                print(f"{self.alias}: Geoprocessing time - {toc - tic:0.4f} seconds")           
 
-            try:
-                self.writeToSettings()
-                self.createDownloadInfo()
-                self.writeTextAndMetadata()
-                self.writeLog()
-            except:
-                print("Logging error")
-                print_exc()
+                print(f"{self.alias}: Logging…")
 
-            print(f"{self.alias}: Finished update process!")
+                #write logs and metadata
+                try:
+                    self.writeToSettings()
+                    self.createDownloadInfo()
+                    self.writeTextAndMetadata()
+                    self.writeLog()
+                except:
+                    print("Logging error")
+                    print_exc()
 
-        else:
-            print("Can't get exclusive schema lock")      
+                print(f"{self.alias}: Finished update process!")
+
+                # close logger
+                self.logCaptureString.close()
+
+            else:
+                raise ValueError("Can't get exclusive schema lock")
+        
+        except:
+            print_exc()
 
 
