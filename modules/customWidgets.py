@@ -1,27 +1,40 @@
-from modules.settingsWrapper import *
-from datetime import timedelta, date
-from genericpath import getsize
-from modules.universalFunctions import getFileCreatedDate, getCurrency
-from modules.catalogueFunctions import *
-from os.path import split, splitext
-from json import load
 from PySide6.QtWidgets import *
 from PySide6.QtGui import *
 from PySide6.QtCore import *
+from datetime import timedelta, date
+from genericpath import getsize
+from os.path import split, splitext
+from json import load
 from re import sub
 from traceback import print_exc
 
+from modules.settingsWrapper import *
+from modules.universalFunctions import getFileCreatedDate, getCurrency
 
 
-
-class datasetFrame(QFrame):
-    """ A datasetFrame is the primary intterface for updating datasets in the updater. It consists of a QTree for presenting dataset information, An update button which starts the update process for that dataset, as well as settings button which brings the user to the settings for that particular dataset. Is itself a custom qframe"""
+class DatasetFrame(QFrame):
+    """ 
+    A datasetFrame is the primary interface for updating datasets in the updater. It consists of a QTree for presenting dataset information, an QPushbutton which starts the update process for that dataset, as well as QPushbutton which brings the user to the settings for that particular dataset. A custom QFrame.
+    """
 
     def __init__(
         self, parent, dataset, mainWindow, mainWidgets, settingsWidget
     ):
-        """Initializes widget with parent widget, A dataset Setttings class, and the process function asssociated with that settings class"""
-        super(datasetFrame, self).__init__(parent)
+        """
+        Constructor method.
+
+        :param parent: Parent widget
+        :type parent: QWidet
+        :param dataset: Dataset object
+        :type dataset: Dataset
+        :param mainWindow: Main window into which the Dataset Frame will be instantiated
+        :type mainWindow: MainWindow
+        :param mainWidgets: Widgets displayed in main window
+        :type mainWidgets: Ui_MainWindow
+        :param settingsWidget: DatasetSettingsWidget associated with dataset
+        :type settingsWidget: DatasetSettingsWidget
+        """    
+        super(DatasetFrame, self).__init__(parent)
 
         # Attributes
         self.alias = dataset.alias
@@ -49,14 +62,15 @@ class datasetFrame(QFrame):
 
         else:
             self.hostedFileDate = "N/A"
+            
 
-        # get information about local Current file, display "Not Found" if unable
+        # get information about local current file, display "Not Found" if not found
         try:
-            try:
+            if arcpy.Describe(self.currentPath).dataType== "ShapeFile":
                 self.fileSize = f"{getsize(self.currentPath)/1000000} mb"
                 self.date = getFileCreatedDate(self.currentPath)
             
-            except:
+            else:
                 self.date = getFileCreatedDate(arcpy.Describe(self.currentPath).path)
                 self.fileSize = "gdb (can't calculate)"               
             
@@ -66,10 +80,12 @@ class datasetFrame(QFrame):
 
         # functions on init
         self.initFrame()
+        
         try:
             self.turnPurple()
             self.turnRed()
         except:
+            print("Notification error")
             print_exc()
 
         # Signals and slots
@@ -80,8 +96,9 @@ class datasetFrame(QFrame):
         self.qtree.collapsed.connect(self.qtreeCollapse)
 
     def initFrame(self):
-        """Starting state for widget"""
-
+        """
+        Widget starting state
+        """        
         self.setGeometry(QRect(0, 0, self.xCollapsed, self.yCollapsed))
         sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.setSizePolicy(sizePolicy)
@@ -193,17 +210,21 @@ class datasetFrame(QFrame):
         )
 
 
-    
     def qtreeExpand(self):
+        """
+        Expands widget when info QTree is expanded
+        """        
         self.animation = QPropertyAnimation(self, b"minimumSize")
         self.animation.setDuration(400)
         self.animation.setStartValue(QSize(self.xCollapsed, self.yCollapsed))
         self.animation.setEndValue(QSize(self.xExpanded, self.yExpanded))
         self.animation.setEasingCurve(QEasingCurve.InOutQuart)
-
         self.animation.start()
 
     def qtreeCollapse(self):
+        """
+        Collapses widget when info QTree is collapsed
+        """       
         self.animationCollapse = QPropertyAnimation(self, b"minimumSize")
         self.animationCollapse.setDuration(400)
         self.animationCollapse.setStartValue(QSize(self.xExpanded, self.yExpanded))
@@ -213,8 +234,9 @@ class datasetFrame(QFrame):
         self.animationCollapse.start()
 
     def turnPurple(self):
-        """Turns QTree header purple when dataset is out of date"""
-        # NOTE, could turn various colours depending on how out-of-date
+        """
+        Turns QTree header purple when dataset is out of date based on update frequency  in Settings.
+        """
         if (
             isinstance(self.date, date) == True
             and isinstance(self.hostedFileDate, date) == True
@@ -226,7 +248,9 @@ class datasetFrame(QFrame):
                 self.qtree.header().setVisible(True)
 
     def turnRed(self):
-        """Turns qTree headder red if there is a problem accessing the local File or BC data catalogue API Information About the data where applicable"""
+        """
+        Turns QTree header red if there is a problem accessing the local file or info from BC data catalogue
+        """
         if "Not Found" in (self.date, self.hostedFileDate):
             self.qtree.setStyleSheet(
                 "QHeaderView::section {border-radius: 5px; background: rgb(255,153,153); color:black}"
@@ -234,7 +258,9 @@ class datasetFrame(QFrame):
             self.qtree.header().setVisible(True)
 
     def navigateToSettings(self):
-
+        """
+        Navigates to corresponding DatasetSettingsWidget
+        """        
         self.mainWidgets.stackedWidget.setCurrentWidget(self.mainWidgets.settings)
         self.mainWidgets.scrollAreaSettings.ensureWidgetVisible(self.settingsWidget)
         btn = self.mainWidgets.buttonDataSettings
@@ -243,12 +269,23 @@ class datasetFrame(QFrame):
         btn.setStyleSheet(self.mainWindow.selectMenu(btn.styleSheet()))
 
 
-class logButton(QPushButton):
-    """Buttons for switching the view of log information. A custom qpushbutton."""
-
+class LogButton(QPushButton):
+    """
+    Buttons for switching the view of log information. A custom QPushbutton.
+    """
     def __init__(self, parent, logFile, textEdit):
-        """Instantiated with the parent widget , the log file assoociated with the button, and  the QTextedit widget where the information will be displayed"""
-        super(logButton, self).__init__(parent)
+        """
+        Constructor method
+
+        :param parent: Parent Widget
+        :type parent: QWidget
+        :param logFile: JSON log file pat
+        :type logFile: str
+        :param textEdit: Log QTextEdit
+        :type textEdit: QTextEdit
+        """        
+
+        super(LogButton, self).__init__(parent)
         self.logFile = logFile
         self.textEdit = textEdit
 
@@ -259,7 +296,9 @@ class logButton(QPushButton):
         self.clicked.connect(self.updateTextEdit)
 
     def initButton(self):
-        """ Sttarting state for widget """
+        """ 
+        Widget starting state.
+        """
         fileName = splitext(split(self.logFile)[1])[0]
         self.setObjectName(f"button{fileName}")
         self.setGeometry(QRect(130, 120, 150, 30))
@@ -278,7 +317,9 @@ class logButton(QPushButton):
         self.setIcon(icon)
 
     def updateTextEdit(self):
-        """Updates target QTextedit widget with information from log and displays it in a fancy colour coordinated way """
+        """
+        Updates target QTextedit widget with information from log and displays it in a fancy colour coordinated way.
+        """
         try:
             # Read JSON Log into Python dictionary
             with open(self.logFile, "r") as log:
@@ -330,19 +371,32 @@ class logButton(QPushButton):
                     # Space between update events
                     self.textEdit.append("\n")
         except:
-            print("Log Display Error")
-
+            print("Log display error")
 
 class DatasetSettingsWidget(QFrame):
+    """
+    Widget for controlling Dataset settings.
+    """    
     def __init__(self, parent, dataset):
-        super(DatasetSettingsWidget, self).__init__(parent)
-        self.widgetParent = parent
+        """
+        Constructor method
 
+        :param parent: Parent widget
+        :type parent: QWidget
+        :param dataset: Associated Dataset
+        :type dataset: Dataset
+        """        
+        super(DatasetSettingsWidget, self).__init__(parent)
+
+        # attributes
+        self.widgetParent = parent
         self.datasetSettings = dataset.settingsWrapper
         self.datasetName = dataset.settingsWrapper.name
 
+        # show widget
         self.initSettingsWidget()
 
+        # set text for lineEdits
         self.lineEditSettingsWidgetCurrentPath.setText(dataset.currentPath)
         self.lineEditSettingsWidgetArchiveFolder.setText(dataset.archiveFolder)
         self.lineEditSettingsWidgetUpdateFrequency.setText(str(dataset.updateFrequency))
@@ -352,6 +406,7 @@ class DatasetSettingsWidget(QFrame):
         )
         self.lineEditSettingsWidgetFileName.setText(dataset.fileName)
 
+        # Set lineEdit radio buttons
         if (
             dataset.settingsWrapper.downloadFolder
             == UniversalSettingsWrapper.downloadFolder
@@ -373,6 +428,7 @@ class DatasetSettingsWidget(QFrame):
             self.radioSettingsWidgetWorkspaceFolder.setChecked(True)
             self.lineEditSettingsWidgetWorkspaceFolder.setReadOnly(True)
 
+        # set AOI radio buttons
         if dataset.settingsWrapper.aoi == "marine":
             self.radioSettingsWidgetMarine.setChecked(True)
         elif dataset.settingsWrapper.aoi == "core":
@@ -382,6 +438,8 @@ class DatasetSettingsWidget(QFrame):
         elif dataset.settingsWrapper.aoi == "swbc":
             self.radioSettingsWidgetSwBc.setChecked(True)
 
+        # signals and slots
+        # radio button/lineEdit functionality
         self.radioSettingsWidgetDownloadFolder.toggled.connect(
             lambda: self.radioButtonToggle(
                 self.radioSettingsWidgetDownloadFolder,
@@ -406,6 +464,7 @@ class DatasetSettingsWidget(QFrame):
             )
         )
 
+        # file dialogue buttons
         self.buttonSettingWidgetCurrentPath.clicked.connect(
             lambda: self.fileDialogueFile(self.lineEditSettingsWidgetCurrentPath)
         )
@@ -424,6 +483,9 @@ class DatasetSettingsWidget(QFrame):
 
 
     def outputToSettings(self):
+        """
+        Output widget state to settings.json. This method is called from a button on the main page.
+        """        
         if self.radioSettingsWidgetMarine.isChecked():
             soiValue = "marine"
         elif self.radioSettingsWidgetCore.isChecked():
@@ -464,6 +526,17 @@ class DatasetSettingsWidget(QFrame):
         self.datasetSettings.settingsWriter(dictionaryToSettings)
 
     def radioButtonToggle(self, radioButton, lineEdit, fromSettings):
+        """
+        Changes corresponding lineEdit properties
+
+        :param radioButton: Radio button
+        :type radioButton: QRadioButton
+        :param lineEdit: Line Edit
+        :type lineEdit: QLineEdit
+        :param fromSettings: Information in settings.json
+        :type fromSettings: str
+        """        
+        # set lineEdit to read only if radio button checked
         if radioButton.isChecked():
             lineEdit.setText(fromSettings)
             lineEdit.setReadOnly(True)
@@ -472,17 +545,23 @@ class DatasetSettingsWidget(QFrame):
             lineEdit.setReadOnly(False)
 
     def fileDialogueFile(self, lineEdit):
+        """
+        Open file dialogue for files
+        """        
         fileDialogueOutput= QFileDialog().getOpenFileName()[0]
         lineEdit.setText(fileDialogueOutput)
 
     def fileDialogueFolder(self, lineEdit):
+        """
+        Open file dialogue for folders
+        """        
         fileDialogueOutput= QFileDialog().getExistingDirectory()
         lineEdit.setText(fileDialogueOutput)
-
-
     
     def initSettingsWidget(self):
-
+        """
+        Widget starting state
+        """ 
         self.setObjectName("frameSettingsWidget")
         self.setGeometry(QRect(110, 70, 630, 395))
         self.setFrameShape(QFrame.StyledPanel)
@@ -802,8 +881,6 @@ class DatasetSettingsWidget(QFrame):
 
         self.retranslateUi()
 
-    # setupUi
-
     def retranslateUi(self):
 
         self.labelSettingsWidget.setToolTip(
@@ -872,6 +949,9 @@ class DatasetSettingsWidget(QFrame):
         )
 
 class CustomGrip(QWidget):
+    """
+    Custom grips for window. Template class.
+    """    
     def __init__(self, parent, position, disable_color = False):
 
         # SETUP UI
@@ -985,6 +1065,9 @@ class CustomGrip(QWidget):
             self.wi.rightgrip.setGeometry(0, 0, 10, self.height() - 20)
 
 class Widgets(object):
+    """
+    Class used in custom grips. Static class. Template class.
+    """    
     def top(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")

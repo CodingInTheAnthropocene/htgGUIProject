@@ -1,27 +1,39 @@
-from modules.universalFunctions import *
-from modules.settingsWrapper import *
-from modules.catalogueFunctions import *
-from modules.parksFunctions import *
+"""
+Module for dataset object
+"""
 
+import arcpy
 from genericpath import exists, getsize
 from requests import post, Session
 from urllib.request import urlopen, urlretrieve
 from lxml.html import fromstring
 from time import sleep
-import arcpy
 from os import path, mkdir, walk, rename, remove
 from datetime import datetime
 from shutil import move, make_archive, rmtree, unpack_archive
 from json import load, dump
 import time
 from traceback import print_exc
-from  multiprocessing import Process
 
+from modules.universalFunctions import *
+from modules.settingsWrapper import *
+from modules.catalogueFunctions import *
+from modules.parksFunctions import *
 
 
 class Dataset:
+    """
+    Primary object for handling datasets. 
+    """    
     def __init__(self, datasetAlias):
+        """
+        Constructor method.
 
+        :param datasetAlias: Dataset alias. Must match what is in configuration files.
+        :type datasetAlias: str
+        """        
+
+        # Instantiate settings wrapper and assign attributes
         self.settingsWrapper = DatasetSettingsWrapper(datasetAlias)
 
         self.name = self.settingsWrapper.name
@@ -39,17 +51,23 @@ class Dataset:
         self.geoprocessingFunction = eval(self.settingsWrapper.geoprocessingFunction)
 
     def archiving(self):
-        """ Takes the path of a shape file, and archives all files in that shapefile into the given archive folder. If path is gdb feature class, archives that whole G in DB"""
+        """
+        Archives shapefile or Geodatabase feature class.
+
+        :raises ValueError: If object is not shapefile or Geodatabase feature class
+        """
         try:
             currentPathType = arcpy.Describe(self.currentPath).dataType
+            
+            # if shapefile
             if currentPathType == "ShapeFile":
                 folderPath, shapefileNameWithExtension = path.split(self.currentPath)
 
-                # get date Created timestamp from tenures.shp
-                tenuresModifiedTime = getFileCreatedDate(self.currentPath)
+                # get date created timestamp
+                createdTime = getFileCreatedDate(self.currentPath)
 
                 # make a new directory in the name of the Shapefile with time added in archive folder
-                newDirectoryPath = f"{self.archiveFolder}\\{shapefileNameWithExtension}{tenuresModifiedTime}"
+                newDirectoryPath = f"{self.archiveFolder}\\{shapefileNameWithExtension}{createdTime}"
                 
                 if exists(newDirectoryPath):
                     rmtree(newDirectoryPath)
@@ -68,12 +86,12 @@ class Dataset:
                                 path.join(folderPath, fileNameWExtension),
                                 path.join(
                                     folderPath,
-                                    f"{filename}{tenuresModifiedTime}{extension}",
+                                    f"{filename}{createdTime}{extension}",
                                 ),
                             )
                             move(
-                                f"{folderPath}\\{filename}{tenuresModifiedTime}{extension}",
-                                f"{newDirectoryPath}\\{filename}{tenuresModifiedTime}{extension}",
+                                f"{folderPath}\\{filename}{createdTime}{extension}",
+                                f"{newDirectoryPath}\\{filename}{createdTime}{extension}",
                             )
                         count += 1
 
@@ -88,7 +106,7 @@ class Dataset:
 
                 self.archivedFile = f"{newDirectoryPath}"
 
-            # NOTE, this needs to be refined
+            # if gbd
             elif currentPathType == "FeatureClass":
                 currentGDB, fileName = (
                     path.split(self.currentPath)[0],
@@ -113,8 +131,10 @@ class Dataset:
             print("Archiving error, check file path")
             self.archiveStatus = False
 
-    def catalogueWarehouseDownload(self):
-        """requests link to download raw download from data catalogue warehouse, and downloads and unzips file from that link"""
+    def dataAcquisition(self):
+        """
+        Acquires all data associated with dataset from BC data catalogue and any other sources. Stores raw file paths in variable.
+        """        
 
         with Session() as s:
             # self.settingsWrapper session with BC data catalogue, save important cookies in variable
@@ -162,14 +182,15 @@ class Dataset:
                 json=self.jsonPayload,
             )
 
-        # Check distribution.data.gov.bc.ca Every 15 seconds to see if order is available, Storre download link in variable when ready.
 
         # NOTE: this following section is the most fragile piece of the whole software. If anything about the way the BC data catalogue operates changes, this function is likely to go down and break every data catalogue download. If there are problems with the download, this is the likely culprit.
+        
+        # get order number when responses ready, build template URL with it
         orderNumber = response.json()["Value"]
         orderURL = f"https://apps.gov.bc.ca/pub/dwds-rasp/pickup/{orderNumber}"
 
+        # check order url every 15 seconds for the appropriate download link, break the loop when that link no longer includes "fme_temp.zip". This signifies that the temporary link has been replaced.
         stopLoop = False
-
         while stopLoop == False:
             sleep(15)
             print(f"{self.alias}: Checking...")
@@ -186,7 +207,7 @@ class Dataset:
         
         print(f"{self.alias}: Found! Starting download...")
 
-        # create folder for  raw data,remove it first if it already exists
+        # create folder for  raw data, remove it first if it already exists
         folderPath = f"{self.downloadFolder}\\raw{self.fileName}"
 
         if path.exists(folderPath) == True:
@@ -218,7 +239,7 @@ class Dataset:
                 if i[-5:] == ".html":
                     rawHtmlPaths.append(f"{dirname}\\{i}")
 
-        # download and unzip any Auxiliary shape files, add their paths to list
+        # download and unzip any auxiliary shape files, add their paths to list
         if len(self.urlList) > 0:
             print(f"{self.alias}: Downloading auxiliary datasets")
             for url in self.urlList:
@@ -229,6 +250,7 @@ class Dataset:
         else:
             print(f"{self.alias}: This dataset has no auxiliary URLs")
 
+        # unpack list if it's only one item
         if len(rawFilePaths) > 1:
             self.rawFilePaths = list(dict.fromkeys(rawFilePaths))
         else:
@@ -239,14 +261,16 @@ class Dataset:
         print(f"{self.alias}: Done downloading!")
 
     def geoprocessing(self):
+        """
+        Run geoprocessing chain associated with dataset
+        """        
         self.resultObject = self.geoprocessingFunction(self.rawFilePaths, self)
         self.processedFile = arcpyGetPath(self.resultObject)
 
-    def writeToSettings(self):
-        self.settingsWrapper.settingsWriter("currentPath", self.processedFile)
-
-    def writeDownloadInfo(self):
-        """creates download info for metadata, text file, and log"""
+    def createDownloadInfo(self):
+        """
+        Create download info text 
+        """        
 
         # gets List of original filenames If more than one data source, otherwise gets original filename
         if isinstance(self.rawFilePaths, list):
@@ -271,7 +295,9 @@ class Dataset:
         self.catalogueDownloadInfo = f"\n     Date Downloaded: {datetime.today().strftime('%Y-%m-%d')} from BC's data catalogue\n     URL: {self.jsonPayload['featureItems'][0]['layerMetadataUrl']}\n     Original Catalogue download name(s): {originalName}\n     See {originalHtml} for licence information and metadata for catalogue downloads\n     For more information about downloading data, email data@gov.bc.ca.\n     To report downloading errors email NRSApplications@gov.bc.ca. \n     Auxiliary download links: {auxiliaryDownloadInfo}"
 
     def writeTextAndMetadata(self):
-        """writes download information from BC Data catalogue to File metadata"""
+        """
+        Writes download information to processed file metadata
+        """
 
         if arcpy.Describe(self.processedFile).dataType == "ShapeFile":
             with open(
@@ -284,6 +310,9 @@ class Dataset:
         newMetadata.save()
 
     def writeLog(self):
+        """
+        Builds JSON logs. Create a new log every month.
+        """        
 
         logFolder = f"{UniversalSettingsWrapper.logFolder}"
 
@@ -342,27 +371,37 @@ class Dataset:
                 dump(jsonIn, logFile)
 
     def writeToSettings(self):
+        """
+        Write processed file path to settings.json
+        """  
         dictToSettings = {"currentPath": self.processedFile}
         self.settingsWrapper.settingsWriter(dictToSettings)
 
     def catalogueUpdateProcess(self):
- 
+        """
+        The  most important darn function in the whole kit and caboodle. The entire update process for a dataset. Called from the update button on the dataset frame widget.
+        """        
+
+        # test to see if current file is open in ArcGIS
         schemaLockStatus=arcpy.TestSchemaLock(self.currentPath)
         
         try:
             spatialObjectStatus=  True if arcpy.Describe(self.currentPath).dataType in ("ShapeFile", "FeatureClass") else False
         except:
             spatialObjectStatus= False
+            print_exc()
 
+        # if not, let er' rip
         if schemaLockStatus== True or spatialObjectStatus ==  False:
             print(f"{self.alias}: Starting update process!")
+            
             print(f"{self.alias}: Archiving…")
 
             self.archiving()
 
             tic = time.perf_counter()
-            print(f"{self.alias}: Starting download")
-            self.catalogueWarehouseDownload()
+            print(f"{self.alias}: Starting data acquisition")
+            self.dataAcquisition()
             toc = time.perf_counter()
             print(f"{self.alias}: Total acquisition time - {toc - tic:0.4f} seconds")
 
@@ -376,7 +415,7 @@ class Dataset:
 
             try:
                 self.writeToSettings()
-                self.writeDownloadInfo()
+                self.createDownloadInfo()
                 self.writeTextAndMetadata()
                 self.writeLog()
             except:

@@ -1,36 +1,20 @@
-# ///////////////////////////////////////////////////////////////
-#
-# BY: WANDERSON M.PIMENTA
-# PROJECT MADE WITH: Qt Designer and PySide6
-# V: 1.0.0
-#
-# This project can be used freely for all uses, as long as they maintain the
-# respective credits only in the Python scripts, any information in the visual
-# interface (GUI) can be modified without any implication.
-#
-# There are limitations on Qt licenses if you want to use your products
-# commercially, I recommend reading them on the official website:
-# https://doc.qt.io/qtforpython/licenses.html
-#
-# ///////////////////////////////////////////////////////////////
-
+"""
+Main module for application.Includes view and functionality for main window.
+"""
 from PySide6.QtWidgets import QGraphicsDropShadowEffect, QPushButton
 from PySide6.QtGui import QIcon, QColor
 from PySide6.QtCore import QTimer, QEvent, Qt
 import sys
+
+
 from ui_main import *
-
-# IMPORT / GUI AND MODULES AND WIDGETS
-# ///////////////////////////////////////////////////////////////
-
 from modules.customWidgets import *
 from dependencies.flowLayout import FlowLayout
 from modules.settingsWrapper import *
 from settings.initiationDictionary import initiationDictionary
 from modules.datasetObjects import *
 
-# SET AS GLOBAL WIDGETS
-# ///////////////////////////////////////////////////////////////
+#Global variables
 widgets = None
 GLOBAL_STATE = False
 GLOBAL_TITLE_BAR = True
@@ -40,37 +24,43 @@ stylesheet="""
     """
 
 class MainWindow(QMainWindow):
+    """
+    Main window for application.
+    """
     def __init__(self):
+        """
+        Constructor method for main window.
+        """        
         QMainWindow.__init__(self)
-        # SET AS GLOBAL WIDGETS
-        # ///////////////////////////////////////////////////////////////
+
+        # Set widgets as global 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         global widgets
         widgets = self.ui
 
-        # SET UI DEFINITIONS
-        # //////////////////////////////////////////////////////////////
+        # Set ui definitions  
         self.uiDefinitions()
+
+        # show main window
         self.show()
 
-        # SET HOME PAGE AND SELECT MENU
-        # ///////////////////////////////////////////////////////////////
+        # Set home page and select menu/
         widgets.stackedWidget.setCurrentWidget(widgets.data)
         widgets.buttonData.setStyleSheet(
             self.selectMenu(widgets.buttonData.styleSheet())
         )
 
-        # Main left menu
+        # Signals and slots left menu
         widgets.buttonData.clicked.connect(self.buttonClick)
         widgets.buttonLogs.clicked.connect(self.buttonClick)
         widgets.buttonDataSettings.clicked.connect(self.buttonClick)
-
 
         # tooltips
         widgets.buttonData.setToolTip("    Datasets")
         widgets.buttonLogs.setToolTip("    Logs")
         widgets.buttonDataSettings.setToolTip("    Data Settings")
+
 
         ############################################################################################
         # Dataset Instantiation
@@ -78,7 +68,7 @@ class MainWindow(QMainWindow):
 
         self.datasetSettingsList = []
 
-        # instantiate catalogue data sets
+        # instantiate catalogue datasets from initiation dictionary
         datasetList = sorted(
             [i for i in initiationDictionary["datasets"]["catalogueDatasets"]],
             key=lambda x: initiationDictionary["datasets"]["catalogueDatasets"][x][
@@ -86,18 +76,19 @@ class MainWindow(QMainWindow):
             ],
         )
 
+        # instantiate custom layout
         flowLayoutCatalogue = FlowLayout(widgets.frameCatalogueDatasets)
 
+        # for each catalogue dataset instantiate a DatasetSettingsWidget, and DatasetFrame, add them to respective layouts
         for i in datasetList:
             newDatasetObject = Dataset(i)
 
-            # instantiate dataset setttings Widget
             newDatasetSettingsWidget = DatasetSettingsWidget(
                 widgets.frameAllSettings, newDatasetObject
             )
             self.datasetSettingsList.append(newDatasetSettingsWidget)
 
-            newDatasetFrame = datasetFrame(
+            newDatasetFrame = DatasetFrame(
                 widgets.frameCatalogueDatasets,
                 newDatasetObject,
                 self,
@@ -108,7 +99,8 @@ class MainWindow(QMainWindow):
             flowLayoutCatalogue.addWidget(newDatasetFrame)
             widgets.verticalLayout.addWidget(newDatasetSettingsWidget)
 
-        # instantiate hybrid datasets
+        # for each hybrid dataset, instantiate a DatasetSettingsWidget, and DatasetFrame, add them to respective layouts
+ 
         datasetList = sorted(
             [i for i in initiationDictionary["datasets"]["hybridDatasets"]],
             key=lambda x: initiationDictionary["datasets"]["hybridDatasets"][x]["name"],
@@ -126,7 +118,7 @@ class MainWindow(QMainWindow):
             self.datasetSettingsList.append(newDatasetSettingsWidget)
 
 
-            newDatasetFrame = datasetFrame(
+            newDatasetFrame = DatasetFrame(
                 widgets.frameOtherDatasets,
                 newDatasetObject,
                 self,
@@ -141,8 +133,10 @@ class MainWindow(QMainWindow):
         # Log instantiation
         ############################################################################################
         try:
+            # custom layout for buttons
             self.flowLayoutLogs = FlowLayout(widgets.scrollAreaLogsButtons)
             
+            # for all files in log folder, create a LogButton in order of the log created date
             pathList = []
             for directoryName, _, files in walk(UniversalSettingsWrapper.logFolder):
                 for file in files:
@@ -150,7 +144,7 @@ class MainWindow(QMainWindow):
             
             for path in sorted(pathList, key= lambda x: getFileCreatedDate(x)):
 
-                newMonthButton = logButton(
+                newMonthButton = LogButton(
                     widgets.scrollAreaLogsButtons,
                     path,
                     widgets.textEditLogs,
@@ -163,10 +157,14 @@ class MainWindow(QMainWindow):
         ############################################################################################
         # Settings
         ############################################################################################
-
+        
+        # Initiate universal settings
         self.universalSettingsInitiation()
+
+        # signals and slots for settings update button
         widgets.buttonApplySettings.clicked.connect(self.updateAllSettings)
 
+        # display text from settings.json
         widgets.buttonCorePath.clicked.connect(
             lambda: self.fileDialogueFile(widgets.lineEditCore)
         )
@@ -196,11 +194,10 @@ class MainWindow(QMainWindow):
             lambda: self.fileDialogueFolder(widgets.lineEditLogFolder)
         )
 
-    # BUTTONS CLICK
-    # Post here your functions for clicked buttons
-    # //////////////////////////////////////////////////////////////
-
     def universalSettingsInitiation(self):
+        """
+        Starting state for settings widget
+        """        
         widgets.lineEditEmail.setText(UniversalSettingsWrapper.email)
         widgets.lineEditDownloadFolder.setText(UniversalSettingsWrapper.downloadFolder)
         widgets.lineEditArchiveFolder.setText(UniversalSettingsWrapper.archiveFolder)
@@ -213,6 +210,11 @@ class MainWindow(QMainWindow):
         widgets.lineEditSwBc.setText(UniversalPathsWrapper.aoiSwBcPath)
 
     def updateAllSettings(self):
+        """
+        Write state of all settings to settings.json
+        """        
+        
+        # get text from universal settings and store in  dictionary
         universalSettingsDictionary = {
             "email": widgets.lineEditEmail.text(),
             "downloadFolder": widgets.lineEditDownloadFolder.text(),
@@ -220,6 +222,7 @@ class MainWindow(QMainWindow):
             "logFolder": widgets.lineEditLogFolder.text(),
         }
 
+        # get text from universal path's and store in dictionary
         universalPathsDictionary = {
             "htgLandsPath": widgets.lineEditHtgLands.text(),
             "soiPath": widgets.lineEditSoiAll.text(),
@@ -229,20 +232,32 @@ class MainWindow(QMainWindow):
             "aoiSwBcPath": widgets.lineEditSwBc.text(),
         }
 
+        #write universal to settings.json
         UniversalPathsWrapper.settingsWriter(universalPathsDictionary)
         UniversalSettingsWrapper.settingsWriter(universalSettingsDictionary)
+        
+        #write dataset settings to settings.json
         for i in self.datasetSettingsList:
             i.outputToSettings()
 
     def fileDialogueFolder(self, lineEdit):
+        """
+        Open file dialogue for files
+        """
         fileDialogueOutput = QFileDialog().getExistingDirectory()
         lineEdit.setText(fileDialogueOutput)
 
     def fileDialogueFile(self, lineEdit):
+        """
+        Open file dialogue for files
+        """
         fileDialogueOutput = QFileDialog().getOpenFileName()[0]
         lineEdit.setText(fileDialogueOutput)
 
     def buttonClick(self):
+        """
+        Actions for left menu
+        """
         # get button clicked
         btn = self.sender()
         btnName = btn.objectName()
@@ -266,14 +281,21 @@ class MainWindow(QMainWindow):
             btn.setStyleSheet(self.selectMenu(btn.styleSheet()))
 
     def resizeEvent(self, event):
-        # Update Size Grips
+        """
+        Update size grips
+        """       
         self.resize_grips()
 
     def mousePressEvent(self, event):
-        # SET DRAG POS WINDOW
+        """
+        Set position
+        """        
         self.dragPos = event.globalPos()
     
     def maximize_restore(self):
+        """
+        Maximize and restore window
+        """
         global GLOBAL_STATE
         status = GLOBAL_STATE
         
@@ -301,8 +323,7 @@ class MainWindow(QMainWindow):
             self.top_grip.show()
             self.bottom_grip.show()
 
-    # RETURN STATUS
-    # ///////////////////////////////////////////////////////////////
+    # return
     def returStatus(self):
         return GLOBAL_STATE
 

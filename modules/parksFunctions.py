@@ -1,13 +1,27 @@
+"""
+Geoprocessing chains for the Parks and Recreation dataset.
+"""
+
 import arcpy
 from os import path
 from modules.settingsWrapper import *
 
-def northCowichanRecreationGeoprocessing(rawPath, datasetClass):
+def northCowichanRecreationGeoprocessing(rawPath, dataset):
+    """
+    North Cowichan Recreation geoprocessing.
 
-    arcpy.env.workspace = datasetClass.arcgisWorkspaceFolder
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Parks and Recreation dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """     
+
+    arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
-    print(f"{datasetClass.alias}: Starting North Cowichan Recreation Geoprocessing")
+    print(f"{dataset.alias}: Starting North Cowichan Recreation Geoprocessing")
 
     # delete fields
     fieldsToDelete = [ "fme_type", "RESPONSIBI", "PUBLIC_MAP", "STATUS", "LOCATION", "PARK_ID", ]
@@ -60,13 +74,23 @@ def northCowichanRecreationGeoprocessing(rawPath, datasetClass):
 
     return rawPath
 
-def northCowichanNonDNCRecreationGeoprocessing(rawPath, datasetClass):
+def northCowichanNonDNCRecreationGeoprocessing(rawPath, dataset):
+    """
+    North Cowichan Non-DNC Recreation geoprocessing.
 
-    arcpy.env.workspace = datasetClass.downloadFolder
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Parks and Recreation dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """    
+
+    arcpy.env.workspace = dataset.downloadFolder
     arcpy.env.overwriteOutput = True
     
     print(
-        f"{datasetClass.alias}: Starting north Cowichan non-DNC Recreation geoprocessing"
+        f"{dataset.alias}: Starting north Cowichan non-DNC Recreation geoprocessing"
     )
 
     # delete fields
@@ -128,13 +152,23 @@ def northCowichanNonDNCRecreationGeoprocessing(rawPath, datasetClass):
     return rawPath
 
 
-def northCowichanForestryRecreationGeoprocessing(rawPath, datasetClass):
+def northCowichanForestryRecreationGeoprocessing(rawPath, dataset):
+    """
+    North Cowichan Forestry geoprocessing.
 
-    arcpy.env.workspace = datasetClass.downloadFolder
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Parks and Recreation dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """    
+
+    arcpy.env.workspace = dataset.downloadFolder
     arcpy.env.overwriteOutput = True
     
     print(
-        f"{datasetClass.alias}: Starting north Cowichan Forestry Recreation geoprocessing"
+        f"{dataset.alias}: Starting north Cowichan Forestry Recreation geoprocessing"
     )
 
     # delete fields
@@ -192,12 +226,22 @@ def northCowichanForestryRecreationGeoprocessing(rawPath, datasetClass):
     return rawPath
 
 
-def parksEcologicalProtectedGeoprocessing(rawPath, datasetClass):
+def parksEcologicalProtectedGeoprocessing(rawPath, dataset):
+    """
+    BC Parks, Ecological Reserves, and Protected Areas geoprocessing.
 
-    arcpy.env.workspace = datasetClass.downloadFolder
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Parks and Recreation dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """    
+
+    arcpy.env.workspace = dataset.downloadFolder
     arcpy.env.overwriteOutput = True
     print(
-        f"{datasetClass.alias}: Starting BC Parks, Ecological, Rserve Areas Geoprocessing"
+        f"{dataset.alias}: Starting BC Parks, Ecological, Rserve Areas Geoprocessing"
     )
 
     # delete fields
@@ -256,11 +300,21 @@ def parksEcologicalProtectedGeoprocessing(rawPath, datasetClass):
     return rawPath
 
 
-def nationalParksGeoprocessing(rawPath, datasetClass):
+def nationalParksGeoprocessing(rawPath, dataset):
+    """
+    National Parks of Canada within British Columbia geoprocessing.
 
-    arcpy.env.workspace = datasetClass.downloadFolder
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Parks and Recreation dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """    
+
+    arcpy.env.workspace = dataset.downloadFolder
     arcpy.env.overwriteOutput = True
-    print(f"{datasetClass.alias}: Starting National Parks Geoprocessing")
+    print(f"{dataset.alias}: Starting National Parks Geoprocessing")
 
     # delete fields
     fieldsToDelete = [ "NTL_PRK_ID", "CLAB_ID", "FRENCH_NM", "LOCAL_NM", "AREA_SQM", "FEAT_LEN", "OBJECTID", ]
@@ -311,16 +365,24 @@ def nationalParksGeoprocessing(rawPath, datasetClass):
     # cleanup
     arcpy.DeleteField_management(rawPath, ["Shape_Leng", "Shape_Area"])
 
-
-
     return rawPath
 
-def recreationPolygonsGeoprocessing(rawPath, datasetClass):
+def recreationPolygonsGeoprocessing(rawPath, dataset):
+    """
+    Recreation Polygons geoprocessing.
 
-    arcpy.env.workspace = datasetClass.downloadFolder
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Parks and Recreation dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """    
+
+    arcpy.env.workspace = dataset.downloadFolder
     arcpy.env.overwriteOutput = True
 
-    print(f"{datasetClass.alias}: starting Recreation polygons Geoprocessing")
+    print(f"{dataset.alias}: starting Recreation polygons Geoprocessing")
 
     # delete fields
     fieldsToDelete = [ "RMF_SKEY", "FFID", "SECTION_ID", "REC_MF_CD", "RETIRE_DT", "AMEND_ID", "MAP_LABEL", "REC_FT_CD", "RES_FT_IND", "ARCH_IND", "SITE_LOC", "PROJ_DATE", "REC_VW_IND", "RECDIST_CD", "DEF_CAMPS", "LIFE_ST_CD", "FILE_ST_CD", "GEO_DST_CD", "GEO_DST_NM", "FEAT_CLASS", "FEAT_AREA", "FEAT_PERIM", "AREA_SQM", "FEAT_LEN", "OBJECTID", ]
@@ -371,12 +433,23 @@ def recreationPolygonsGeoprocessing(rawPath, datasetClass):
     return rawPath
 
 
-def nanaimoCityParksGeoprocessing(rawPath, datasetClass):
+def nanaimoCityParksGeoprocessing(rawPath, dataset):
+    """
+    Nanaimo city parks geoprocessing.
 
-    arcpy.env.workspace = datasetClass.downloadFolder
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Parks and Recreation dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """    
+
+
+    arcpy.env.workspace = dataset.downloadFolder
     arcpy.env.overwriteOutput = True
 
-    print(f"{datasetClass.alias}: Starting nanaimo parks geoprocessing")
+    print(f"{dataset.alias}: Starting nanaimo parks geoprocessing")
 
     # delete fields
     fieldsToDelete = ["PARKID", "PARKADDRES", "GLOBALID", "AREA"]
@@ -430,12 +503,23 @@ def nanaimoCityParksGeoprocessing(rawPath, datasetClass):
     return rawPath
 
 
-def cvrdParksGeoprocessing(rawPath, datasetClass):
+def cvrdParksGeoprocessing(rawPath, dataset):
+    """
+    CVRD parks geoprocessing.
 
-    arcpy.env.workspace = datasetClass.downloadFolder
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Parks and Recreation dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """    
+
+
+    arcpy.env.workspace = dataset.downloadFolder
     arcpy.env.overwriteOutput = True
 
-    print(f"{datasetClass.alias}: Starting cvrd parks Geoprocessing")
+    print(f"{dataset.alias}: Starting cvrd parks Geoprocessing")
 
     # delete fields
     fieldsToDelete = ["Status", "Shape_Leng"]
@@ -481,40 +565,60 @@ def cvrdParksGeoprocessing(rawPath, datasetClass):
         rawPath, [["HA", "AREA"]], area_unit="HECTARES"
     )
 
-    # Cleaanup
+    # cleanup
     arcpy.DeleteField_management(rawPath, ["Shape_Leng", "Shape_Area"])
 
     return rawPath
 
+def parksRecreationDatasetsGeoprocessing(rawFilePaths, dataset):
+    """
+    Gathers processed file results into a list.
 
-def parksRecreationDatasetsGeoprocessing(rawFilePaths, datasetClass):
+    :param rawFilePaths: Paths to all raw files associated with the Parks and Recreation dataset
+    :type rawFilePaths: list
+    :param dataset: Parks and Recreation Dataset Object
+    :type dataset: Dataset
+    :return: merged dataset results
+    :rtype: result
+    """    
+
     def parksGeoprocessingChain():
+        """
+        Implements geoprocessing chains and creates a generator object with their results.
+
+        :yield: processed file paths
+        :rtype: generator
+        """        
+        #NOTE: This Implementation hinges on the names of the Downloaded shape files. If those names change, this will have to also. Also, it's bit lucky in that there is no duplicate names. If there ever were there have to be some code written to separate them out.
         for filePath in rawFilePaths:
             fileName = path.split(filePath)[1]
 
             if "CLAB_NATPK_polygon.shp" == fileName:
-                yield nationalParksGeoprocessing(filePath, datasetClass)
+                yield nationalParksGeoprocessing(filePath, dataset)
             elif "FTN_REC_PL_polygon.shp" == fileName:
-                yield recreationPolygonsGeoprocessing(filePath, datasetClass)
+                yield recreationPolygonsGeoprocessing(filePath, dataset)
             elif "TA_PEP_SVW_polygon.shp" == fileName:
-                yield parksEcologicalProtectedGeoprocessing(filePath, datasetClass)
+                yield parksEcologicalProtectedGeoprocessing(filePath, dataset)
             elif "PARKS.shp" == fileName:
-                yield nanaimoCityParksGeoprocessing(filePath, datasetClass)
+                yield nanaimoCityParksGeoprocessing(filePath, dataset)
             elif "ForestryRecreation.shp" == fileName:
                 yield northCowichanForestryRecreationGeoprocessing(
-                    filePath, datasetClass
+                    filePath, dataset
                 )
             elif "NonDNCRecreation.shp" == fileName:
-                yield northCowichanNonDNCRecreationGeoprocessing(filePath, datasetClass)
+                yield northCowichanNonDNCRecreationGeoprocessing(filePath, dataset)
             elif "Recreation.shp" == fileName:
-                yield northCowichanRecreationGeoprocessing(filePath, datasetClass)
+                yield northCowichanRecreationGeoprocessing(filePath, dataset)
             elif "Park.shp" == fileName:
-                yield cvrdParksGeoprocessing(filePath, datasetClass)
+                yield cvrdParksGeoprocessing(filePath, dataset)
 
+    # generate list from generator
     processedFilePaths = [i for i in parksGeoprocessingChain()]
 
-    recreationMerged = arcpy.Merge_management(processedFilePaths, datasetClass.fileName)
+    # stick them all together
+    recreationMerged = arcpy.Merge_management(processedFilePaths, dataset.fileName)
 
+    #cleanup
     for i in processedFilePaths:
         arcpy.Delete_management(i)
 

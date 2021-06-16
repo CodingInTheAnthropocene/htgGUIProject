@@ -1,13 +1,25 @@
-from arcpy.management import MultipartToSinglepart
+"""
+Geoprocessing chains for BC data catalogue datasets.
+"""
+
+import arcpy
+
 from modules.settingsWrapper import *
 from modules.universalFunctions import *
-import arcpy
-from os import path
-
-
 
 def crownTenuresGeoprocessing(rawPath, dataset):
+    """
+    Tantalis Crown Tenures geoprocessing
 
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Input dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """    
+
+    # dictionary for calculating fields
     fieldValueDictionary = {
         "AGRICULTURE, EXTENSIVE": "agriculture",
         "AGRICULTURE, INTENSIVE": "agriculture",
@@ -142,11 +154,10 @@ def crownTenuresGeoprocessing(rawPath, dataset):
                 row[2] = fieldValueDictionary[first2]
                 cursor.updateRow(row)
                 break
-    
 
 
     print(f"{dataset.alias}: Starting tenures/SOI intersect")
-    # intersect crown tenures with SOI.
+    # intersect crown tenures with SOI
     tenuresSOIIntersect = arcpy.Intersect_analysis(
         [rawPath, UniversalPathsWrapper.soiPath],
         "temptenureSOIIntersect",
@@ -184,6 +195,16 @@ def crownTenuresGeoprocessing(rawPath, dataset):
     return crownTenuresProcessedPath
 
 def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
+    """
+    Forest Tenure Harvesting Authority Polygons geoprocessing.
+
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Input dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """   
 
     # env variables
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
@@ -258,6 +279,17 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
     return forestHarvestingAuthorityProcessedPath
 
 def forestManagedLicenceGeoprocessing(rawPath, dataset):
+    """
+    Forest Tenure Managed Licence geoprocessing.
+
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Input dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """  
+
     # environment settings
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
@@ -269,6 +301,7 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
 
     arcpy.DeleteField_management(rawPath, deleteFields)
 
+    # create lands copy
     landsDeleteFields = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_S", "ATTRIBUTE_", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCE", "LTSA_PLAN", "LEGAL_FREE", "LAND_DISTR", "LAND_ACT_P", "PARCEL_DES", "OWNER_CLAS", "SOURCE_PRO", "landval_20", "valperHa_2", "result_val", "Ha", "comments", "new_owners", "PMBC", "ICIS", "ICF", "landval_sr", "prop_class", "needs_conf", "confirm_qu", "selected", "selected_b", "label", "location", "specific_l", "H_", "use_on_pro", "potential_", "interests", "available", "avail_issu", "owner", "EN", "guide_outf", "trapline", "ess_respon", "tourism_ca", "access", "zoning", "zone_code", "TENURES", "PIN_DISTLE", "PIN_SUBDLA", "municipali", "arch_sites", "Title_num", "Title_owne", "Title_Info", "essential", "RoW", "OtherComme", "appraisal2", "apprais2HB", "apprais2re", "apprais2BC", "apprais2Ha", "TEMP_PolyI", "TimbeTable", "ownership_", "Shape_Leng", "Shape_Area", ]
     
     landsCopy=copySpecificFields(UniversalPathsWrapper.htgLandsPath, landsDeleteFields)
@@ -335,6 +368,16 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
 ####################################################################################################################
 
 def harvestedAreasGeoprocessing(rawPath, dataset):
+    """
+    Harvested Areas of BC geoprocessing.
+
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Input dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """  
 
     # environment settings
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
@@ -391,11 +434,20 @@ def harvestedAreasGeoprocessing(rawPath, dataset):
 
     # remove working files
     arcpy.management.Delete(landsCopy)
-    
     return harvestedAreasProcessedPath
 
 
 def parcelMapBCGeoprocessing(rawPath, dataset):
+    """
+    ParcelMap BC Parcel Fabric geoprocessing.
+
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Input dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """ 
 
     arcpy.env.overwriteOutput = True
 
@@ -428,9 +480,19 @@ def parcelMapBCGeoprocessing(rawPath, dataset):
 
     return parcelMapProcessedPath
 
-
 def digitalRoadAtlasGeoprocessing(rawPath, dataset):
+    """
+    Digital Road Atlas geoprocessing.
 
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Input dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """ 
+
+    # dictionary for calculating fields
     fieldValueDictionary = {
         ("freeway", "highway"): "highway",
         ("arterial", "collector", "ramp"): "main",
@@ -499,6 +561,16 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
     return roadAtlasIntersect
 
 def alcAlrPolygonsGeoprocessing(rawPath, dataset):
+    """
+    ALC ALR Polygons geoprocessing.
+
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Input dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """ 
 
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
@@ -549,6 +621,17 @@ def alcAlrPolygonsGeoprocessing(rawPath, dataset):
     return alcAlrProcessed
 
 def environmentalRemediationSitesGeoprocessing(rawPath, dataset):
+    """
+    Environmental Remediation Sites geoprocessing.
+
+    :param rawPath: Raw feature class path
+    :type rawPath: str
+    :param dataset: Input dataset
+    :type dataset: Dataset
+    :return: Processed file
+    :rtype: result
+    """ 
+
 
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
