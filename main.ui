@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1071</width>
+    <width>1143</width>
     <height>961</height>
    </rect>
   </property>
@@ -934,7 +934,7 @@ font-weight: bold;
                </layout>
               </widget>
              </item>
-             <item alignment="Qt::AlignBottom">
+             <item alignment="Qt::AlignHCenter|Qt::AlignBottom">
               <widget class="QFrame" name="bottomMenu">
                <property name="frameShape">
                 <enum>QFrame::NoFrame</enum>
@@ -942,23 +942,48 @@ font-weight: bold;
                <property name="frameShadow">
                 <enum>QFrame::Raised</enum>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout_9">
-                <property name="spacing">
-                 <number>0</number>
+               <widget class="QPushButton" name="buttonRefresh">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>9</y>
+                  <width>42</width>
+                  <height>45</height>
+                 </rect>
                 </property>
-                <property name="leftMargin">
-                 <number>0</number>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <property name="topMargin">
-                 <number>0</number>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>45</height>
+                 </size>
                 </property>
-                <property name="rightMargin">
-                 <number>0</number>
+                <property name="font">
+                 <font>
+                  <family>Segoe UI</family>
+                  <pointsize>10</pointsize>
+                  <italic>false</italic>
+                  <bold>false</bold>
+                 </font>
                 </property>
-                <property name="bottomMargin">
-                 <number>0</number>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
                 </property>
-               </layout>
+                <property name="layoutDirection">
+                 <enum>Qt::LeftToRight</enum>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-image: url(:/icons/images/icons/cil-reload.png);</string>
+                </property>
+                <property name="text">
+                 <string>New</string>
+                </property>
+               </widget>
               </widget>
              </item>
             </layout>
@@ -1593,8 +1618,8 @@ font-weight: bold;
                            <rect>
                             <x>0</x>
                             <y>0</y>
-                            <width>929</width>
-                            <height>757</height>
+                            <width>206</width>
+                            <height>86</height>
                            </rect>
                           </property>
                           <layout class="QVBoxLayout" name="verticalLayout_22">
@@ -1744,8 +1769,8 @@ font-weight: bold;
                            <rect>
                             <x>0</x>
                             <y>0</y>
-                            <width>929</width>
-                            <height>126</height>
+                            <width>68</width>
+                            <height>16</height>
                            </rect>
                           </property>
                          </widget>
@@ -1810,7 +1835,7 @@ font-weight: bold;
                            <rect>
                             <x>0</x>
                             <y>0</y>
-                            <width>947</width>
+                            <width>1019</width>
                             <height>729</height>
                            </rect>
                           </property>

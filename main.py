@@ -55,6 +55,7 @@ class MainWindow(QMainWindow):
         widgets.buttonData.clicked.connect(self.buttonClick)
         widgets.buttonLogs.clicked.connect(self.buttonClick)
         widgets.buttonDataSettings.clicked.connect(self.buttonClick)
+        widgets.buttonRefresh.clicked.connnect(self.widgetReset)
 
         # tooltips
         widgets.buttonData.setToolTip("    Datasets")
@@ -77,7 +78,7 @@ class MainWindow(QMainWindow):
         )
 
         # instantiate custom layout
-        flowLayoutCatalogue = FlowLayout(widgets.frameCatalogueDatasets)
+        self.flowLayoutCatalogue = FlowLayout(widgets.frameCatalogueDatasets)
 
         # for each catalogue dataset instantiate a DatasetSettingsWidget, and DatasetFrame, add them to respective layouts
         for i in datasetList:
@@ -96,7 +97,7 @@ class MainWindow(QMainWindow):
                 newDatasetSettingsWidget,
             )
 
-            flowLayoutCatalogue.addWidget(newDatasetFrame)
+            self.flowLayoutCatalogue.addWidget(newDatasetFrame)
             widgets.verticalLayout.addWidget(newDatasetSettingsWidget)
 
         # for each hybrid dataset, instantiate a DatasetSettingsWidget, and DatasetFrame, add them to respective layouts
@@ -106,8 +107,8 @@ class MainWindow(QMainWindow):
             key=lambda x: initiationDictionary["datasets"]["hybridDatasets"][x]["name"],
         )
 
-        flowLayoutHybridDatasets = FlowLayout(widgets.frameOtherDatasets)
-        widgets.frameCatalogueDatasets.setLayout(flowLayoutHybridDatasets)
+        self.flowLayoutHybridDatasets = FlowLayout(widgets.frameOtherDatasets)
+        widgets.frameCatalogueDatasets.setLayout(self.flowLayoutHybridDatasets)
 
         for i in datasetList:
             newDatasetObject = Dataset(i)
@@ -126,7 +127,7 @@ class MainWindow(QMainWindow):
                 newDatasetSettingsWidget,
             )
 
-            flowLayoutHybridDatasets.addWidget(newDatasetFrame)
+            self.flowLayoutHybridDatasets.addWidget(newDatasetFrame)
             widgets.verticalLayout.addWidget(newDatasetSettingsWidget)
 
         ############################################################################################
@@ -194,6 +195,16 @@ class MainWindow(QMainWindow):
             lambda: self.fileDialogueFolder(widgets.lineEditLogFolder)
         )
 
+    def widgetReset(self):
+        for i in self.flowLayoutCatalogue.children():
+            self.flowLayoutCatalogue.removeWidget(i)
+            self.flowLayoutCatalogue.addWidget(i)
+        
+        for i in self.flowLayoutHybridDatasets.children():
+            self.flowLayoutHybridDatasets.removeWidget(i)
+            self.flowLayoutHybridDatasets.addWidget(i)
+
+    
     def universalSettingsInitiation(self):
         """
         Starting state for settings widget

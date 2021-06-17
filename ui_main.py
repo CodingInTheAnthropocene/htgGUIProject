@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainmeHCup.ui'
+## Form generated from reading UI file 'mainPsNzOE.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.0.3
 ##
@@ -19,7 +19,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1071, 961)
+        MainWindow.resize(1143, 961)
         MainWindow.setMinimumSize(QSize(250, 250))
         self.styleSheet = QWidget(MainWindow)
         self.styleSheet.setObjectName(u"styleSheet")
@@ -720,12 +720,18 @@ class Ui_MainWindow(object):
         self.bottomMenu.setObjectName(u"bottomMenu")
         self.bottomMenu.setFrameShape(QFrame.NoFrame)
         self.bottomMenu.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_9 = QVBoxLayout(self.bottomMenu)
-        self.verticalLayout_9.setSpacing(0)
-        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
-        self.verticalLayout_9.setContentsMargins(0, 0, 0, 0)
+        self.buttonRefresh = QPushButton(self.bottomMenu)
+        self.buttonRefresh.setObjectName(u"buttonRefresh")
+        self.buttonRefresh.setGeometry(QRect(0, 9, 42, 45))
+        sizePolicy.setHeightForWidth(self.buttonRefresh.sizePolicy().hasHeightForWidth())
+        self.buttonRefresh.setSizePolicy(sizePolicy)
+        self.buttonRefresh.setMinimumSize(QSize(0, 45))
+        self.buttonRefresh.setFont(font)
+        self.buttonRefresh.setCursor(QCursor(Qt.PointingHandCursor))
+        self.buttonRefresh.setLayoutDirection(Qt.LeftToRight)
+        self.buttonRefresh.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-reload.png);")
 
-        self.verticalMenuLayout.addWidget(self.bottomMenu, 0, Qt.AlignBottom)
+        self.verticalMenuLayout.addWidget(self.bottomMenu, 0, Qt.AlignHCenter|Qt.AlignBottom)
 
 
         self.verticalLayout_3.addWidget(self.leftMenuFrame)
@@ -978,7 +984,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 929, 757))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 206, 86))
         self.verticalLayout_22 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_22.setObjectName(u"verticalLayout_22")
         self.verticalLayout_22.setContentsMargins(0, 0, 0, 0)
@@ -1063,7 +1069,7 @@ class Ui_MainWindow(object):
         self.scrollAreaLogsButtons.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 929, 126))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 68, 16))
         self.scrollAreaLogsButtons.setWidget(self.scrollAreaWidgetContents)
 
         self.verticalLayout_15.addWidget(self.scrollAreaLogsButtons)
@@ -1102,7 +1108,7 @@ class Ui_MainWindow(object):
         self.scrollAreaSettings.setWidgetResizable(True)
         self.scrollAreaWidgetContents_6 = QWidget()
         self.scrollAreaWidgetContents_6.setObjectName(u"scrollAreaWidgetContents_6")
-        self.scrollAreaWidgetContents_6.setGeometry(QRect(0, 0, 947, 729))
+        self.scrollAreaWidgetContents_6.setGeometry(QRect(0, 0, 1019, 729))
         self.verticalLayout_17 = QVBoxLayout(self.scrollAreaWidgetContents_6)
         self.verticalLayout_17.setSpacing(0)
         self.verticalLayout_17.setObjectName(u"verticalLayout_17")
@@ -1543,6 +1549,7 @@ class Ui_MainWindow(object):
         self.buttonData.setText(QCoreApplication.translate("MainWindow", u"Home", None))
         self.buttonLogs.setText(QCoreApplication.translate("MainWindow", u"Widgets", None))
         self.buttonDataSettings.setText(QCoreApplication.translate("MainWindow", u"New", None))
+        self.buttonRefresh.setText(QCoreApplication.translate("MainWindow", u"New", None))
         self.titleRightInfo.setText(QCoreApplication.translate("MainWindow", u"HTG Dataset Updater", None))
 #if QT_CONFIG(tooltip)
         self.minimizeAppBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Minimize", None))
