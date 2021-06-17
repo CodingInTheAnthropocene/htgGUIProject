@@ -10,6 +10,7 @@ from os.path import split, splitext
 from json import load
 from re import sub
 from traceback import print_exc
+from time import sleep
 
 from modules.settingsWrapper import *
 from modules.universalFunctions import getFileCreatedDate, getCurrency
@@ -94,7 +95,10 @@ class DatasetFrame(QFrame):
             print_exc()
 
         # Signals and slots
-        self.buttonUpdate.clicked.connect(self.updateFunction)
+        self.buttonUpdate.clicked.connect(lambda :self.buttonUpdate.setText("Updating…"))
+        self.buttonUpdate.clicked.connect(self.update)
+
+
         self.buttonSettings.clicked.connect(self.navigateToSettings)
         self.buttonUpdate.clicked.connect(self.turnPurple)
         self.qtree.expanded.connect(self.qtreeExpand)
@@ -146,6 +150,7 @@ class DatasetFrame(QFrame):
         self.buttonUpdate.setSizePolicy(sizePolicy1)
         self.buttonUpdate.setMinimumSize(QSize(0, 0))
         self.buttonUpdate.setMaximumSize(QSize(16772155, 16777215))
+   
 
 
         self.layoutButtons.addWidget(self.buttonUpdate)
@@ -214,7 +219,13 @@ class DatasetFrame(QFrame):
             QCoreApplication.translate("Form", "Settings", None)
         )
 
+    def update(self):
 
+        self.updateFunction()
+
+        self.buttonUpdate.setStyleSheet("border-color:rgb(147, 189, 249)")
+        self.buttonUpdate.setText("Done!")
+    
     def qtreeExpand(self):
         """
         Expands widget when info QTree is expanded

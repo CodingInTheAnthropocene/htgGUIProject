@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainPsNzOE.ui'
+## Form generated from reading UI file 'mainSHXJWv.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.0.3
 ##
@@ -720,9 +720,12 @@ class Ui_MainWindow(object):
         self.bottomMenu.setObjectName(u"bottomMenu")
         self.bottomMenu.setFrameShape(QFrame.NoFrame)
         self.bottomMenu.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_5 = QVBoxLayout(self.bottomMenu)
+        self.verticalLayout_5.setSpacing(0)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
         self.buttonRefresh = QPushButton(self.bottomMenu)
         self.buttonRefresh.setObjectName(u"buttonRefresh")
-        self.buttonRefresh.setGeometry(QRect(0, 9, 42, 45))
         sizePolicy.setHeightForWidth(self.buttonRefresh.sizePolicy().hasHeightForWidth())
         self.buttonRefresh.setSizePolicy(sizePolicy)
         self.buttonRefresh.setMinimumSize(QSize(0, 45))
@@ -730,6 +733,9 @@ class Ui_MainWindow(object):
         self.buttonRefresh.setCursor(QCursor(Qt.PointingHandCursor))
         self.buttonRefresh.setLayoutDirection(Qt.LeftToRight)
         self.buttonRefresh.setStyleSheet(u"background-image: url(:/icons/images/icons/cil-reload.png);")
+
+        self.verticalLayout_5.addWidget(self.buttonRefresh)
+
 
         self.verticalMenuLayout.addWidget(self.bottomMenu, 0, Qt.AlignHCenter|Qt.AlignBottom)
 

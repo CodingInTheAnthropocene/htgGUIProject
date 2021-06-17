@@ -357,7 +357,7 @@ class Dataset:
                     "times": {
                         time: {
                             "dataset": f"{self.name}\n",
-                            "errors/updateStack": f"\n{errors_updateStack}\n",
+                            "errors/updateStack": f"\n{errors_updateStack}",
                             "archivedFile": f"{archivedFile}\n",
                             "currentPath": f"{self.processedFile}\n",
                             "catalogueDownloadInfo": f"{self.catalogueDownloadInfo}\n",
@@ -423,7 +423,7 @@ class Dataset:
                 self.logCaptureString = StringIO()
                 self.ch = logging.StreamHandler(self.logCaptureString)
                 self.ch.setLevel(logging.DEBUG)
-                formatter = logging.Formatter('%(levelname)s - %(message)s')
+                formatter = logging.Formatter('    %(levelname)s - %(message)s')
                 self.ch.setFormatter(formatter)
                 self.logger.addHandler(self.ch)
 
@@ -462,9 +462,6 @@ class Dataset:
                     print_exc()
 
                 print(f"{self.alias}: Finished update process!")
-
-                # close logger
-                self.logCaptureString.close()
 
             else:
                 raise ValueError("Can't get exclusive schema lock")
