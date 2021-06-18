@@ -17,6 +17,8 @@ from json import load, dump
 import time
 from traceback import print_exc
 from io import StringIO
+from pathos.pools import ProcessPool
+
 
 from modules.universalFunctions import *
 from modules.settingsWrapper import *
@@ -52,9 +54,6 @@ class Dataset:
 
         self.alias = datasetAlias
         self.geoprocessingFunction = eval(self.settingsWrapper.geoprocessingFunction)
-
-
-
 
     def archiving(self):
         """
@@ -400,21 +399,22 @@ class Dataset:
         self.settingsWrapper.settingsWriter(dictToSettings)
 
     def catalogueUpdateProcess(self):
-        """
-        The  most important darn function in the whole kit and caboodle. The entire update process for a dataset. Called from the update button on the dataset frame widget.
-        """ 
+        def update(self):
+            """
+            The  most important darn function in the whole kit and caboodle. The entire update process for a dataset. Called from the update button on the dataset frame widget.
+            """ 
 
-        # test to see if current file is open in ArcGIS
-        schemaLockStatus=arcpy.TestSchemaLock(self.currentPath)
-        
-        try:
-            spatialObjectStatus=  True if arcpy.Describe(self.currentPath).dataType in ("ShapeFile", "FeatureClass") else False
-        except:
-            spatialObjectStatus= False
-            print_exc()
+            # test to see if current file is open in ArcGIS
+            schemaLockStatus=arcpy.TestSchemaLock(self.currentPath)
+            
+            try:
+                spatialObjectStatus=  True if arcpy.Describe(self.currentPath).dataType in ("ShapeFile", "FeatureClass") else False
+            except:
+                spatialObjectStatus= False
+                print_exc()
 
-        # if not, let er' rip
-        try:
+            # if not, let er' rip
+
             if schemaLockStatus== True or spatialObjectStatus ==  False:
                 
                 #insantiate logger
@@ -465,8 +465,10 @@ class Dataset:
 
             else:
                 raise ValueError("Can't get exclusive schema lock")
-        
-        except:
-            print_exc()
+
+        update(self)
+        # self.p=ProcessPool()
+        # self.p.map(update, [self])
+
 
 

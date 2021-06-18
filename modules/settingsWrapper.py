@@ -4,12 +4,12 @@ settingsWrapper.py - Classes for handling configuration file reading and writing
 
 from json import dump, load
 import dependencies.bbox_SOIs as bbox_SOIs
-from settings.initiationDictionary import initiationDictionary
+from configuration.initiationDictionary import initiationDictionary
 from modules.universalFunctions import *
 
 
 # load settings file
-settingsFile = "settings\\settings.json"
+settingsFile = "configuration\\settings.json"
 
 with open(settingsFile) as settingsFile:
     configurationDictionary = load(settingsFile)
@@ -33,11 +33,11 @@ class UniversalSettingsWrapper:
         """
 
         # open settings.json for reading and load as Python dictionary
-        with open("settings\\settings.json", "r") as settingsFile:
+        with open("configuration\\settings.json", "r") as settingsFile:
             configurationDictionary = load(settingsFile)
         
         # open settings.json for writing and dump attributes from attributeDictionary
-        with open("settings\\settings.json", "w") as settingsFile:
+        with open("configuration\\settings.json", "w") as settingsFile:
             for attribute in attributeDictionary:
                 configurationDictionary["universalSettings"][attribute] = attributeDictionary[attribute]
             
@@ -64,11 +64,11 @@ class UniversalPathsWrapper:
         """
 
         # open settings.json for reading and load as Python dictionary    
-        with open("settings\\settings.json", "r") as settingsFile:
+        with open("configuration\\settings.json", "r") as settingsFile:
             configurationDictionary = load(settingsFile)
         
         # open settings.json for writing and dump attributes from attributeDictionary
-        with open("settings\\settings.json", "w") as settingsFile:
+        with open("configuration\\settings.json", "w") as settingsFile:
             for attribute in attributeDictionary:
                 configurationDictionary["universalPaths"][attribute] = attributeDictionary[attribute]
             
@@ -197,10 +197,10 @@ class DatasetSettingsWrapper:
         :param attributeDictionary: Values to populate in settings file. Keys must match those of datasets in settings.json.
         :type attributeDictionary: dictionary
         """       
-        with open("settings\\settings.json", "r") as settingsFile:
+        with open("configuration\\settings.json", "r") as settingsFile:
             configurationDictionary = load(settingsFile)
         
-        with open("settings\\settings.json", "w") as settingsFile:
+        with open("configuration\\settings.json", "w") as settingsFile:
             for attribute in attributeDictionary:
                 if self.type == "catalogue":
                     configurationDictionary["datasets"]["catalogueDatasets"][self.alias][attribute] = attributeDictionary[attribute]

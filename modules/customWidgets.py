@@ -11,6 +11,7 @@ from json import load
 from re import sub
 from traceback import print_exc
 from time import sleep
+from pathos.pools import ProcessPool
 
 from modules.settingsWrapper import *
 from modules.universalFunctions import getFileCreatedDate, getCurrency
@@ -41,6 +42,7 @@ class DatasetFrame(QFrame):
         super(DatasetFrame, self).__init__(parent)
 
         # Attributes
+        self.dataset=dataset
         self.alias = dataset.alias
         self.name = dataset.name
         self.downloadFolder = dataset.downloadFolder
@@ -95,14 +97,15 @@ class DatasetFrame(QFrame):
             print_exc()
 
         # Signals and slots
-        self.buttonUpdate.clicked.connect(lambda :self.buttonUpdate.setText("Updating…"))
-        self.buttonUpdate.clicked.connect(self.update)
-
+        self.buttonUpdate.clicked.connect(self.updateFunction)
 
         self.buttonSettings.clicked.connect(self.navigateToSettings)
         self.buttonUpdate.clicked.connect(self.turnPurple)
         self.qtree.expanded.connect(self.qtreeExpand)
         self.qtree.collapsed.connect(self.qtreeCollapse)
+
+    # def update(self):
+    #     self.mainWindow.p.map(self.updateFunction, [self.dataset])
 
     def initFrame(self):
         """
@@ -219,12 +222,12 @@ class DatasetFrame(QFrame):
             QCoreApplication.translate("Form", "Settings", None)
         )
 
-    def update(self):
+    # def update(self):
 
-        self.updateFunction()
+    #     self.updateFunction()
 
-        self.buttonUpdate.setStyleSheet("border-color:rgb(147, 189, 249)")
-        self.buttonUpdate.setText("Done!")
+    #     self.buttonUpdate.setStyleSheet("border-color:rgb(147, 189, 249)")
+    #     self.buttonUpdate.setText("Done!")
     
     def qtreeExpand(self):
         """

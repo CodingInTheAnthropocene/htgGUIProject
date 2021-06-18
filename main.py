@@ -5,19 +5,20 @@ from PySide6.QtWidgets import QGraphicsDropShadowEffect, QPushButton
 from PySide6.QtGui import QIcon, QColor
 from PySide6.QtCore import QTimer, QEvent, Qt
 import sys
-
+from pathos.pools import ProcessPool
 
 from ui_main import *
 from modules.customWidgets import *
 from dependencies.flowLayout import FlowLayout
 from modules.settingsWrapper import *
-from settings.initiationDictionary import initiationDictionary
+from configuration.initiationDictionary import initiationDictionary
 from modules.datasetObjects import *
 
 #Global variables
 widgets = None
 GLOBAL_STATE = False
 GLOBAL_TITLE_BAR = True
+
 stylesheet="""
     border-left: 22px solid qlineargradient(spread:pad, x1:0.034, y1:0, x2:0.216, y2:0, stop:0.499 rgba(255, 121, 198, 255), stop:0.5 rgba(85, 170, 255, 0));
     background-color: rgb(40, 44, 52);
@@ -32,7 +33,8 @@ class MainWindow(QMainWindow):
         Constructor method for main window.
         """        
         QMainWindow.__init__(self)
-
+        #self.p= p
+        
         # Set widgets as global 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -98,7 +100,7 @@ class MainWindow(QMainWindow):
 
         # for each catalogue dataset instantiate a DatasetSettingsWidget, and DatasetFrame, add them to respective layouts
         for i in self.catalogueDatasetList:
-            newDatasetObject = Dataset(i)
+            newDatasetObject = Dataset(i,)
             self.datasetList.append(newDatasetObject)
 
             newDatasetSettingsWidget = DatasetSettingsWidget(
@@ -168,13 +170,6 @@ class MainWindow(QMainWindow):
         for i  in self.datasetList:
             del i
         
-        # self.flowLayoutCatalogue.setParent(None)
-        # self.flowLayoutHybridDatasets.setParent(None)
-        # widgets.frameOtherDatasets.setLayout(None)
-        # widgets.frameCatalogueDatasets.setLayout(None)
-
-        # self.flowLayoutCatalogue.deleteLater()
-        # self.flowLayoutHybridDatasets.deleteLater()
 
         self.datasetInstantiation()
 
@@ -448,7 +443,7 @@ class MainWindow(QMainWindow):
         self.bottom_grip.setGeometry(0, self.height() - 10, self.width(), 10)
 
 if __name__ == "__main__":
-
+    #p=ProcessPool()
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("icon.ico"))
     window = MainWindow()
