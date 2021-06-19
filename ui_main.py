@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainSHXJWv.ui'
+## Form generated from reading UI file 'mainAPazXP.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.0.3
 ##
@@ -1075,7 +1075,7 @@ class Ui_MainWindow(object):
         self.scrollAreaLogsButtons.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 68, 16))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 50, 16))
         self.scrollAreaLogsButtons.setWidget(self.scrollAreaWidgetContents)
 
         self.verticalLayout_15.addWidget(self.scrollAreaLogsButtons)
@@ -1148,29 +1148,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_18.addWidget(self.frame_36, 0, Qt.AlignTop)
 
-        self.frame_17 = QFrame(self.frameUniversalSettings)
-        self.frame_17.setObjectName(u"frame_17")
-        self.frame_17.setFrameShape(QFrame.StyledPanel)
-        self.frame_17.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_20 = QHBoxLayout(self.frame_17)
-        self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
-        self.label_17 = QLabel(self.frame_17)
-        self.label_17.setObjectName(u"label_17")
-        self.label_17.setMaximumSize(QSize(110, 16777215))
-        self.label_17.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
-
-        self.horizontalLayout_20.addWidget(self.label_17)
-
-        self.lineEditEmail = QLineEdit(self.frame_17)
-        self.lineEditEmail.setObjectName(u"lineEditEmail")
-        self.lineEditEmail.setMinimumSize(QSize(200, 25))
-        self.lineEditEmail.setMaximumSize(QSize(200, 16777215))
-
-        self.horizontalLayout_20.addWidget(self.lineEditEmail)
-
-
-        self.verticalLayout_18.addWidget(self.frame_17, 0, Qt.AlignLeft)
-
         self.frame_18 = QFrame(self.frameUniversalSettings)
         self.frame_18.setObjectName(u"frame_18")
         self.frame_18.setFrameShape(QFrame.StyledPanel)
@@ -1180,7 +1157,7 @@ class Ui_MainWindow(object):
         self.label_18 = QLabel(self.frame_18)
         self.label_18.setObjectName(u"label_18")
         self.label_18.setMinimumSize(QSize(110, 0))
-        self.label_18.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+        self.label_18.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\" ; color: rgb(147,189,249)")
 
         self.horizontalLayout_21.addWidget(self.label_18)
 
@@ -1216,7 +1193,7 @@ class Ui_MainWindow(object):
         self.label_19 = QLabel(self.frame_19)
         self.label_19.setObjectName(u"label_19")
         self.label_19.setMinimumSize(QSize(110, 0))
-        self.label_19.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+        self.label_19.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\";color: rgb(147,189,249)")
 
         self.horizontalLayout_22.addWidget(self.label_19)
 
@@ -1250,7 +1227,7 @@ class Ui_MainWindow(object):
         self.label_24 = QLabel(self.frame_24)
         self.label_24.setObjectName(u"label_24")
         self.label_24.setMinimumSize(QSize(110, 0))
-        self.label_24.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+        self.label_24.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\";color: rgb(147,189,249)")
 
         self.horizontalLayout_27.addWidget(self.label_24)
 
@@ -1284,7 +1261,7 @@ class Ui_MainWindow(object):
         self.label_36 = QLabel(self.frame_40)
         self.label_36.setObjectName(u"label_36")
         self.label_36.setMinimumSize(QSize(110, 0))
-        self.label_36.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+        self.label_36.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\";color: rgb(147,189,249)")
 
         self.horizontalLayout_43.addWidget(self.label_36)
 
@@ -1318,7 +1295,7 @@ class Ui_MainWindow(object):
         self.label_37 = QLabel(self.frame_41)
         self.label_37.setObjectName(u"label_37")
         self.label_37.setMinimumSize(QSize(110, 0))
-        self.label_37.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+        self.label_37.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\";color: rgb(147,189,249)")
 
         self.horizontalLayout_44.addWidget(self.label_37)
 
@@ -1479,6 +1456,30 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_18.addWidget(self.frame_39)
 
+        self.frame_17 = QFrame(self.frameUniversalSettings)
+        self.frame_17.setObjectName(u"frame_17")
+        self.frame_17.setFrameShape(QFrame.StyledPanel)
+        self.frame_17.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_20 = QHBoxLayout(self.frame_17)
+        self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
+        self.label_17 = QLabel(self.frame_17)
+        self.label_17.setObjectName(u"label_17")
+        self.label_17.setMinimumSize(QSize(110, 0))
+        self.label_17.setMaximumSize(QSize(110, 16777215))
+        self.label_17.setStyleSheet(u"font: 700 10pt \"Segoe UI Semibold\"")
+
+        self.horizontalLayout_20.addWidget(self.label_17)
+
+        self.lineEditEmail = QLineEdit(self.frame_17)
+        self.lineEditEmail.setObjectName(u"lineEditEmail")
+        self.lineEditEmail.setMinimumSize(QSize(200, 25))
+        self.lineEditEmail.setMaximumSize(QSize(200, 16777215))
+
+        self.horizontalLayout_20.addWidget(self.lineEditEmail)
+
+
+        self.verticalLayout_18.addWidget(self.frame_17, 0, Qt.AlignLeft)
+
         self.frame_2 = QFrame(self.frameUniversalSettings)
         self.frame_2.setObjectName(u"frame_2")
         self.frame_2.setMinimumSize(QSize(0, 10))
@@ -1581,16 +1582,15 @@ class Ui_MainWindow(object):
         self.pushButton.setToolTip(QCoreApplication.translate("MainWindow", u"Click to hide", None))
 #endif // QT_CONFIG(tooltip)
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Universal Settings", None))
-        self.label_17.setText(QCoreApplication.translate("MainWindow", u"E-mail:", None))
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"Download Folder:", None))
         self.buttonDownloadPath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"Archive Folder: ", None))
         self.buttonArchiveFolderPath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
-        self.label_24.setText(QCoreApplication.translate("MainWindow", u"Log Folder", None))
+        self.label_24.setText(QCoreApplication.translate("MainWindow", u"Log Folder:", None))
         self.buttonLogFolderPath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
-        self.label_36.setText(QCoreApplication.translate("MainWindow", u"HTG Lands", None))
+        self.label_36.setText(QCoreApplication.translate("MainWindow", u"HTG Lands:", None))
         self.buttonHtgLands.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
-        self.label_37.setText(QCoreApplication.translate("MainWindow", u"HTG SOIs All", None))
+        self.label_37.setText(QCoreApplication.translate("MainWindow", u"HTG SOIs All:", None))
         self.buttonSoiAll.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
         self.label_32.setText(QCoreApplication.translate("MainWindow", u"Core:", None))
         self.buttonCorePath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
@@ -1598,8 +1598,9 @@ class Ui_MainWindow(object):
         self.buttonMarinePath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
         self.label_34.setText(QCoreApplication.translate("MainWindow", u"WHA:", None))
         self.buttonWhaPath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
-        self.label_35.setText(QCoreApplication.translate("MainWindow", u"SW BC (Roads Mask):", None))
+        self.label_35.setText(QCoreApplication.translate("MainWindow", u"SW BC (Roads):", None))
         self.buttonSwBcPath.setText(QCoreApplication.translate("MainWindow", u"Select Path", None))
+        self.label_17.setText(QCoreApplication.translate("MainWindow", u"E-mail:", None))
         self.buttonApplySettings.setText(QCoreApplication.translate("MainWindow", u"Apply Settings", None))
     # retranslateUi
 

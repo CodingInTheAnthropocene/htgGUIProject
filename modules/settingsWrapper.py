@@ -26,14 +26,14 @@ class UniversalSettingsWrapper:
         self.downloadFolder = configurationDictionary["universalSettings"]["downloadFolder"]
         self.archiveFolder = configurationDictionary["universalSettings"]["archiveFolder"]
         self.logFolder = configurationDictionary["universalSettings"]["logFolder"]
-        self.htgLandsPath = configurationDictionary["universalPaths"]["htgLandsPath"]
-        self.soiPath = configurationDictionary["universalPaths"]["soiPath"]
-        self.soiCorePath = configurationDictionary["universalPaths"]["soiCorePath"]
-        self.soiMarinePath = configurationDictionary["universalPaths"]["soiMarinePath"]
-        self.soiWhaPath = configurationDictionary["universalPaths"]["soiWhaPath"]
-        self.aoiSwBcPath = configurationDictionary["universalPaths"]["aoiSwBcPath"]
+        self.htgLandsPath = configurationDictionary["universalSettings"]["htgLandsPath"]
+        self.soiPath = configurationDictionary["universalSettings"]["soiPath"]
+        self.soiCorePath = configurationDictionary["universalSettings"]["soiCorePath"]
+        self.soiMarinePath = configurationDictionary["universalSettings"]["soiMarinePath"]
+        self.soiWhaPath = configurationDictionary["universalSettings"]["soiWhaPath"]
+        self.aoiSwBcPath = configurationDictionary["universalSettings"]["aoiSwBcPath"]
 
-    def settingsWriter(attributeDictionary):
+    def settingsWriter(self, attributeDictionary):
         """Writes values in a dictionary back to universalSettings in settings.json"
         
         :param attributeDictionary: Values to populate in settings file. Keys must match those in universalSettings in settings.json.

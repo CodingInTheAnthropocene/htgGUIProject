@@ -6,12 +6,13 @@ from PySide6.QtGui import *
 from PySide6.QtCore import *
 from datetime import timedelta, date
 from genericpath import getsize
-from os.path import split, splitext
+from os.path import split, splitext, normpath
 from json import load
 from re import sub
 from traceback import print_exc
 from time import sleep
 from pathos.pools import ProcessPool
+
 
 from modules.settingsWrapper import *
 from modules.universalFunctions import getFileCreatedDate, getCurrency
@@ -396,7 +397,7 @@ class DatasetSettingsWidget(QFrame):
     """
     Widget for controlling Dataset settings.
     """    
-    def __init__(self, parent, dataset):
+    def __init__(self, parent, dataset, mainWindow):
         """
         Constructor method
 
@@ -404,6 +405,8 @@ class DatasetSettingsWidget(QFrame):
         :type parent: QWidget
         :param dataset: Associated Dataset
         :type dataset: Dataset
+        :param dataset: Main window
+        :type dataset: MainWindow
         """        
         super(DatasetSettingsWidget, self).__init__(parent)
         #settingsWrapper
@@ -465,7 +468,9 @@ class DatasetSettingsWidget(QFrame):
             lambda: self.radioButtonToggle(
                 self.radioSettingsWidgetDownloadFolder,
                 self.lineEditSettingsWidgetDownloadFolder,
-                dataset.datasetSettingsWrapper.downloadFolder,
+                mainWindow.ui.lineEditDownloadFolder,
+
+                
             )
         )
 
@@ -473,7 +478,8 @@ class DatasetSettingsWidget(QFrame):
             lambda: self.radioButtonToggle(
                 self.radioSettingsWidgetArchiveFolder,
                 self.lineEditSettingsWidgetArchiveFolder,
-                dataset.datasetSettingsWrapper.archiveFolder,
+                mainWindow.ui.lineEditArchiveFolder,
+                
             )
         )
 
@@ -481,7 +487,8 @@ class DatasetSettingsWidget(QFrame):
             lambda: self.radioButtonToggle(
                 self.radioSettingsWidgetWorkspaceFolder,
                 self.lineEditSettingsWidgetWorkspaceFolder,
-                dataset.datasetSettingsWrapper.arcgisWorkspaceFolder,
+                self.lineEditSettingsWidgetDownloadFolder,
+                
             )
         )
 
@@ -546,11 +553,11 @@ class DatasetSettingsWidget(QFrame):
 
         self.datasetSettings.settingsWriter(dictionaryToSettings)
 
-    def radioButtonToggle(self, radioButton, lineEdit, fromSettings):
+    def radioButtonToggle(self, radioButton, lineEdit, inheritedLineEdit):
         """
         Changes corresponding lineEdit properties
 
-        :param radioButton: Radio button
+        :param radioButton: Radio button,
         :type radioButton: QRadioButton
         :param lineEdit: Line Edit
         :type lineEdit: QLineEdit
@@ -559,7 +566,7 @@ class DatasetSettingsWidget(QFrame):
         """        
         # set lineEdit to read only if radio button checked
         if radioButton.isChecked():
-            lineEdit.setText(fromSettings)
+            lineEdit.setText(inheritedLineEdit.text())
             lineEdit.setReadOnly(True)
 
         else:
@@ -569,14 +576,14 @@ class DatasetSettingsWidget(QFrame):
         """
         Open file dialogue for files
         """        
-        fileDialogueOutput= QFileDialog().getOpenFileName()[0]
+        fileDialogueOutput= normpath(QFileDialog().getOpenFileName()[0])
         lineEdit.setText(fileDialogueOutput)
 
     def fileDialogueFolder(self, lineEdit):
         """
         Open file dialogue for folders
         """        
-        fileDialogueOutput= QFileDialog().getExistingDirectory()
+        fileDialogueOutput= normpath(QFileDialog().getExistingDirectory())
         lineEdit.setText(fileDialogueOutput)
     
     def initSettingsWidget(self):

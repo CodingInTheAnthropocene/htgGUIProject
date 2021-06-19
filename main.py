@@ -68,6 +68,7 @@ class MainWindow(QMainWindow):
         # Instantiate custom layouts
         self.flowLayoutCatalogue = FlowLayout(widgets.frameCatalogueDatasets)
         self.flowLayoutHybridDatasets = FlowLayout(widgets.frameOtherDatasets)
+        self.flowLayoutLogs = FlowLayout(widgets.scrollAreaLogsButtons)
 
         # instantiate data sets and their corresponding custom widgets     
         self.datasetInstantiation()
@@ -91,7 +92,6 @@ class MainWindow(QMainWindow):
         self.datasetFrameList = []
         self.datasetSettingsList = []
 
-
         # instantiate catalogue datasets from initiation dictionary
         self.catalogueDatasetList = sorted(
             [i for i in initiationDictionary["datasets"]["catalogueDatasets"]],
@@ -106,7 +106,7 @@ class MainWindow(QMainWindow):
             self.datasetList.append(newDatasetObject)
 
             newDatasetSettingsWidget = DatasetSettingsWidget(
-                widgets.frameAllSettings, newDatasetObject
+                widgets.frameAllSettings, newDatasetObject, self
             )
             self.datasetSettingsList.append(newDatasetSettingsWidget)
 
@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
             self.datasetList.append(newDatasetObject)
 
             newDatasetSettingsWidget = DatasetSettingsWidget(
-                widgets.frameAllSettings, newDatasetObject
+                widgets.frameAllSettings, newDatasetObject, self
             )
             self.datasetSettingsList.append(newDatasetSettingsWidget)
 
@@ -161,18 +161,18 @@ class MainWindow(QMainWindow):
 
         for i  in self.datasetSettingsList:
             i.deleteLater()
+
         for i  in self.datasetFrameList:
             try: 
                 self.flowLayoutCatalogue.removeWidget(i)
             except:
                 self.flowLayoutHybridDatasets.removeWidget(i)
-
             i.deleteLater()
             
         for i  in self.datasetList:
             del i
         
-        for i in self.buttonPathList:
+        for i in self.logWidgetList:
             self.flowLayoutLogs.removeWidget(i)
             del i
         
@@ -181,23 +181,24 @@ class MainWindow(QMainWindow):
 
     def logInstantiation(self):
 
-        # custom layout for buttons
-        self.flowLayoutLogs = FlowLayout(widgets.scrollAreaLogsButtons)
         
         # for all files in log folder, create a LogButton in order of the log created date
-        self.buttonPathList = []
+        buttonPathList = []
+        self.logWidgetList=[]
 
         for directoryName, _, files in walk(self.universalSettingsWrapper.logFolder):
             for file in files:
-                self.buttonPathList.append(f"{directoryName}\\{file}")
+                buttonPathList.append(f"{directoryName}\\{file}")
         
-        for path in sorted(self.buttonPathList, key= lambda x: getFileCreatedDate(x)):
+        for path in sorted(buttonPathList, key= lambda x: getFileCreatedDate(x)):
 
             newMonthButton = LogButton(
                 widgets.scrollAreaLogsButtons,
                 path,
                 widgets.textEditLogs,
             )
+
+            self.logWidgetList.append(newMonthButton)
             self.flowLayoutLogs.addWidget(newMonthButton)
             newMonthButton.updateTextEdit()
   
@@ -272,10 +273,9 @@ class MainWindow(QMainWindow):
         }
 
         # get text from universal path's and store in dictionary
-
         
         #write universal to settings.json
-        UniversalSettingsWrapper.settingsWriter(universalSettingsDictionary)
+        self.universalSettingsWrapper.settingsWriter(universalSettingsDictionary)
         
         #write dataset settings to settings.json
         for i in self.datasetSettingsList:
@@ -287,14 +287,14 @@ class MainWindow(QMainWindow):
         """
         Open file dialogue for files
         """
-        fileDialogueOutput = QFileDialog().getExistingDirectory()
+        fileDialogueOutput = normpath(QFileDialog().getExistingDirectory())
         lineEdit.setText(fileDialogueOutput)
 
     def fileDialogueFile(self, lineEdit):
         """
         Open file dialogue for files
         """
-        fileDialogueOutput = QFileDialog().getOpenFileName()[0]
+        fileDialogueOutput = normpath(QFileDialog().getOpenFileName()[0])
         lineEdit.setText(fileDialogueOutput)
 
     def buttonClick(self):

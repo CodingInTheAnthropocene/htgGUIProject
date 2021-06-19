@@ -1780,7 +1780,7 @@ font-weight: bold;
                            <rect>
                             <x>0</x>
                             <y>0</y>
-                            <width>68</width>
+                            <width>50</width>
                             <height>16</height>
                            </rect>
                           </property>
@@ -1930,50 +1930,6 @@ font-weight: bold;
                                    </layout>
                                   </widget>
                                  </item>
-                                 <item alignment="Qt::AlignLeft">
-                                  <widget class="QFrame" name="frame_17">
-                                   <property name="frameShape">
-                                    <enum>QFrame::StyledPanel</enum>
-                                   </property>
-                                   <property name="frameShadow">
-                                    <enum>QFrame::Raised</enum>
-                                   </property>
-                                   <layout class="QHBoxLayout" name="horizontalLayout_20">
-                                    <item>
-                                     <widget class="QLabel" name="label_17">
-                                      <property name="maximumSize">
-                                       <size>
-                                        <width>110</width>
-                                        <height>16777215</height>
-                                       </size>
-                                      </property>
-                                      <property name="styleSheet">
-                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;</string>
-                                      </property>
-                                      <property name="text">
-                                       <string>E-mail:</string>
-                                      </property>
-                                     </widget>
-                                    </item>
-                                    <item>
-                                     <widget class="QLineEdit" name="lineEditEmail">
-                                      <property name="minimumSize">
-                                       <size>
-                                        <width>200</width>
-                                        <height>25</height>
-                                       </size>
-                                      </property>
-                                      <property name="maximumSize">
-                                       <size>
-                                        <width>200</width>
-                                        <height>16777215</height>
-                                       </size>
-                                      </property>
-                                     </widget>
-                                    </item>
-                                   </layout>
-                                  </widget>
-                                 </item>
                                  <item>
                                   <widget class="QFrame" name="frame_18">
                                    <property name="frameShape">
@@ -1992,7 +1948,7 @@ font-weight: bold;
                                        </size>
                                       </property>
                                       <property name="styleSheet">
-                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;</string>
+                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot; ; color: rgb(147,189,249)</string>
                                       </property>
                                       <property name="text">
                                        <string>Download Folder:</string>
@@ -2073,7 +2029,7 @@ font-weight: bold;
                                        </size>
                                       </property>
                                       <property name="styleSheet">
-                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;</string>
+                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;;color: rgb(147,189,249)</string>
                                       </property>
                                       <property name="text">
                                        <string>Archive Folder: </string>
@@ -2154,10 +2110,10 @@ font-weight: bold;
                                        </size>
                                       </property>
                                       <property name="styleSheet">
-                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;</string>
+                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;;color: rgb(147,189,249)</string>
                                       </property>
                                       <property name="text">
-                                       <string>Log Folder</string>
+                                       <string>Log Folder:</string>
                                       </property>
                                      </widget>
                                     </item>
@@ -2235,10 +2191,10 @@ font-weight: bold;
                                        </size>
                                       </property>
                                       <property name="styleSheet">
-                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;</string>
+                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;;color: rgb(147,189,249)</string>
                                       </property>
                                       <property name="text">
-                                       <string>HTG Lands</string>
+                                       <string>HTG Lands:</string>
                                       </property>
                                      </widget>
                                     </item>
@@ -2316,10 +2272,10 @@ font-weight: bold;
                                        </size>
                                       </property>
                                       <property name="styleSheet">
-                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;</string>
+                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;;color: rgb(147,189,249)</string>
                                       </property>
                                       <property name="text">
-                                       <string>HTG SOIs All</string>
+                                       <string>HTG SOIs All:</string>
                                       </property>
                                      </widget>
                                     </item>
@@ -2643,7 +2599,7 @@ font-weight: bold;
                                        <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;</string>
                                       </property>
                                       <property name="text">
-                                       <string>SW BC (Roads Mask):</string>
+                                       <string>SW BC (Roads):</string>
                                       </property>
                                      </widget>
                                     </item>
@@ -2697,6 +2653,56 @@ font-weight: bold;
                                       <property name="icon">
                                        <iconset resource="resources.qrc">
                                         <normaloff>:/icons/images/icons/cil-folder-open.png</normaloff>:/icons/images/icons/cil-folder-open.png</iconset>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                   </layout>
+                                  </widget>
+                                 </item>
+                                 <item alignment="Qt::AlignLeft">
+                                  <widget class="QFrame" name="frame_17">
+                                   <property name="frameShape">
+                                    <enum>QFrame::StyledPanel</enum>
+                                   </property>
+                                   <property name="frameShadow">
+                                    <enum>QFrame::Raised</enum>
+                                   </property>
+                                   <layout class="QHBoxLayout" name="horizontalLayout_20">
+                                    <item>
+                                     <widget class="QLabel" name="label_17">
+                                      <property name="minimumSize">
+                                       <size>
+                                        <width>110</width>
+                                        <height>0</height>
+                                       </size>
+                                      </property>
+                                      <property name="maximumSize">
+                                       <size>
+                                        <width>110</width>
+                                        <height>16777215</height>
+                                       </size>
+                                      </property>
+                                      <property name="styleSheet">
+                                       <string notr="true">font: 700 10pt &quot;Segoe UI Semibold&quot;</string>
+                                      </property>
+                                      <property name="text">
+                                       <string>E-mail:</string>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                    <item>
+                                     <widget class="QLineEdit" name="lineEditEmail">
+                                      <property name="minimumSize">
+                                       <size>
+                                        <width>200</width>
+                                        <height>25</height>
+                                       </size>
+                                      </property>
+                                      <property name="maximumSize">
+                                       <size>
+                                        <width>200</width>
+                                        <height>16777215</height>
+                                       </size>
                                       </property>
                                      </widget>
                                     </item>

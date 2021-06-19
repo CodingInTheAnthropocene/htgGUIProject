@@ -280,7 +280,7 @@ class Dataset:
         """        
         self.resultObject = self.geoprocessingFunction(self.rawFilePaths, self)
         self.processedFile = arcpyGetPath(self.resultObject)
-
+        
         #remove raw data
         rmtree(self.rawFolderPath)
         
@@ -333,8 +333,7 @@ class Dataset:
         """
         Builds JSON logs. Create a new log every month.
         """  
-
-        logFolder = f"{UniversalSettingsWrapper.logFolder}"
+        logFolder = f"{self.universalSettingsWrapper.logFolder}"
 
         # make log directory if it doesn't exist
         if exists(logFolder) == False:
@@ -391,7 +390,6 @@ class Dataset:
                 dump(jsonIn, logFile)
         
 
-
     def writeToSettings(self):
         """
         Write processed file path to settings.json
@@ -413,10 +411,29 @@ class Dataset:
             except:
                 spatialObjectStatus= False
                 print_exc()
+            
+            # check to see if requisite paths in place
+            fromSettings =self.universalSettingsWrapper
+            requiredPaths =True
+            requiredPathList = []
 
-            # if not, let er' rip
+            # if path doesn't exist, is a blank string, and isn't a geodatabase feature class, flag the path as invalid
+            for i  in  (fromSettings.downloadFolder, fromSettings.archiveFolder, fromSettings.logFolder, fromSettings.htgLandsPath, fromSettings.soiPath):
+                if (exists(i)== False or i == ""):
+                    try:
+                        if arcpy.Describe(i).dataType != "FeatureClass":
+                            requiredPaths=False
+                            requiredPathList.append(i)
+                    except:
+                        requiredPaths=False
+                        requiredPathList.append(i)
+                                   
+            if requiredPaths== False:
+                print(f"Download folder, archive folder, log folder, HTG lands path, and SOI path required. The following paths are invalid: {requiredPathList}")
+                return
 
-            if schemaLockStatus== True or spatialObjectStatus ==  False:
+            # If all is good, let 'er rip
+            if (schemaLockStatus== True or spatialObjectStatus ==  False) and requiredPaths==True:
                 
                 #insantiate logger
                 self.logger = logging.getLogger('basic_logger')
@@ -465,7 +482,8 @@ class Dataset:
                 print(f"{self.alias}: Finished update process!")
 
             else:
-                raise ValueError("Can't get exclusive schema lock")
+                print("Can't get exclusive schema lock")
+                
 
         update(self)
         # self.p=ProcessPool()
