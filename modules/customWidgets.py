@@ -406,20 +406,22 @@ class DatasetSettingsWidget(QFrame):
         :type dataset: Dataset
         """        
         super(DatasetSettingsWidget, self).__init__(parent)
+        #settingsWrapper
+        self.universalSettingsWrapper=UniversalSettingsWrapper()
 
         # attributes
         self.widgetParent = parent
-        self.datasetSettings = dataset.settingsWrapper
-        self.datasetName = dataset.settingsWrapper.name
+        self.datasetSettings = dataset.datasetSettingsWrapper
+        self.datasetName = dataset.datasetSettingsWrapper.name
 
         # show widget
         self.initSettingsWidget()
 
         # set text for lineEdits
-        self.lineEditSettingsWidgetCurrentPath.setText(dataset.currentPath)
-        self.lineEditSettingsWidgetArchiveFolder.setText(dataset.archiveFolder)
-        self.lineEditSettingsWidgetUpdateFrequency.setText(str(dataset.updateFrequency))
-        self.lineEditSettingsWidgetDownloadFolder.setText(dataset.downloadFolder)
+        self.lineEditSettingsWidgetCurrentPath.setText(dataset.datasetSettingsWrapper.currentPath)
+        self.lineEditSettingsWidgetArchiveFolder.setText(dataset.datasetSettingsWrapper.archiveFolder)
+        self.lineEditSettingsWidgetUpdateFrequency.setText(str(dataset.datasetSettingsWrapper.updateFrequency))
+        self.lineEditSettingsWidgetDownloadFolder.setText(dataset.datasetSettingsWrapper.downloadFolder)
         self.lineEditSettingsWidgetWorkspaceFolder.setText(
             dataset.arcgisWorkspaceFolder
         )
@@ -427,34 +429,34 @@ class DatasetSettingsWidget(QFrame):
 
         # Set lineEdit radio buttons
         if (
-            dataset.settingsWrapper.downloadFolder
-            == UniversalSettingsWrapper.downloadFolder
+            dataset.datasetSettingsWrapper.downloadFolder
+            == self.universalSettingsWrapper.downloadFolder
         ):
             self.radioSettingsWidgetDownloadFolder.setChecked(True)
             self.lineEditSettingsWidgetDownloadFolder.setReadOnly(True)
 
         if (
-            dataset.settingsWrapper.archiveFolder
-            == UniversalSettingsWrapper.archiveFolder
+            dataset.datasetSettingsWrapper.archiveFolder
+            == self.universalSettingsWrapper.archiveFolder
         ):
             self.radioSettingsWidgetArchiveFolder.setChecked(True)
             self.lineEditSettingsWidgetArchiveFolder.setReadOnly(True)
 
         if (
-            dataset.settingsWrapper.arcgisWorkspaceFolder
-            == UniversalSettingsWrapper.downloadFolder
+            dataset.datasetSettingsWrapper.arcgisWorkspaceFolder
+            == self.universalSettingsWrapper.downloadFolder
         ):
             self.radioSettingsWidgetWorkspaceFolder.setChecked(True)
             self.lineEditSettingsWidgetWorkspaceFolder.setReadOnly(True)
 
         # set AOI radio buttons
-        if dataset.settingsWrapper.aoi == "marine":
+        if dataset.datasetSettingsWrapper.aoi == "marine":
             self.radioSettingsWidgetMarine.setChecked(True)
-        elif dataset.settingsWrapper.aoi == "core":
+        elif dataset.datasetSettingsWrapper.aoi == "core":
             self.radioSettingsWidgetCore.setChecked(True)
-        elif dataset.settingsWrapper.aoi == "wha":
+        elif dataset.datasetSettingsWrapper.aoi == "wha":
             self.radioSettingsWidgetWha.setChecked(True)
-        elif dataset.settingsWrapper.aoi == "swbc":
+        elif dataset.datasetSettingsWrapper.aoi == "swbc":
             self.radioSettingsWidgetSwBc.setChecked(True)
 
         # signals and slots
@@ -463,7 +465,7 @@ class DatasetSettingsWidget(QFrame):
             lambda: self.radioButtonToggle(
                 self.radioSettingsWidgetDownloadFolder,
                 self.lineEditSettingsWidgetDownloadFolder,
-                dataset.settingsWrapper.downloadFolder,
+                dataset.datasetSettingsWrapper.downloadFolder,
             )
         )
 
@@ -471,7 +473,7 @@ class DatasetSettingsWidget(QFrame):
             lambda: self.radioButtonToggle(
                 self.radioSettingsWidgetArchiveFolder,
                 self.lineEditSettingsWidgetArchiveFolder,
-                dataset.settingsWrapper.archiveFolder,
+                dataset.datasetSettingsWrapper.archiveFolder,
             )
         )
 
@@ -479,7 +481,7 @@ class DatasetSettingsWidget(QFrame):
             lambda: self.radioButtonToggle(
                 self.radioSettingsWidgetWorkspaceFolder,
                 self.lineEditSettingsWidgetWorkspaceFolder,
-                dataset.settingsWrapper.arcgisWorkspaceFolder,
+                dataset.datasetSettingsWrapper.arcgisWorkspaceFolder,
             )
         )
 

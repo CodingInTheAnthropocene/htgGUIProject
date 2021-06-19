@@ -9,21 +9,29 @@ from modules.universalFunctions import *
 
 
 # load settings file
-settingsFile = "configuration\\settings.json"
-
-with open(settingsFile) as settingsFile:
-    configurationDictionary = load(settingsFile)
 
 
 class UniversalSettingsWrapper:
     """
     Reads from and writes to universalSettings in settings.json configuration file. Static Class.
     """
-    # get information from settings.json    
-    email = configurationDictionary["universalSettings"]["email"]
-    downloadFolder = configurationDictionary["universalSettings"]["downloadFolder"]
-    archiveFolder = configurationDictionary["universalSettings"]["archiveFolder"]
-    logFolder = configurationDictionary["universalSettings"]["logFolder"]
+    def __init__(self): 
+        settingsFile = "configuration\\settings.json"
+
+        with open(settingsFile) as settingsFile:
+            configurationDictionary = load(settingsFile)
+
+        # get information from settings.json    
+        self.email = configurationDictionary["universalSettings"]["email"]
+        self.downloadFolder = configurationDictionary["universalSettings"]["downloadFolder"]
+        self.archiveFolder = configurationDictionary["universalSettings"]["archiveFolder"]
+        self.logFolder = configurationDictionary["universalSettings"]["logFolder"]
+        self.htgLandsPath = configurationDictionary["universalPaths"]["htgLandsPath"]
+        self.soiPath = configurationDictionary["universalPaths"]["soiPath"]
+        self.soiCorePath = configurationDictionary["universalPaths"]["soiCorePath"]
+        self.soiMarinePath = configurationDictionary["universalPaths"]["soiMarinePath"]
+        self.soiWhaPath = configurationDictionary["universalPaths"]["soiWhaPath"]
+        self.aoiSwBcPath = configurationDictionary["universalPaths"]["aoiSwBcPath"]
 
     def settingsWriter(attributeDictionary):
         """Writes values in a dictionary back to universalSettings in settings.json"
@@ -44,38 +52,6 @@ class UniversalSettingsWrapper:
             dump(configurationDictionary, settingsFile)
 
 
-class UniversalPathsWrapper:
-    """
-    Reads from and writes to universalPaths in settings.json configuration file. Static class.
-    """ 
-    # get information from settings.json       
-    htgLandsPath = configurationDictionary["universalPaths"]["htgLandsPath"]
-    soiPath = configurationDictionary["universalPaths"]["soiPath"]
-    soiCorePath = configurationDictionary["universalPaths"]["soiCorePath"]
-    soiMarinePath = configurationDictionary["universalPaths"]["soiMarinePath"]
-    soiWhaPath = configurationDictionary["universalPaths"]["soiWhaPath"]
-    aoiSwBcPath = configurationDictionary["universalPaths"]["aoiSwBcPath"]
-
-    def settingsWriter(attributeDictionary):
-        """Writes values in a dictionary back to universalPaths in settings.json"
-        
-        :param attributeDictionary: Values to populate in settings file. Keys must match those in universalPath in settings.json.
-        :type attributeDictionary: dictionary
-        """
-
-        # open settings.json for reading and load as Python dictionary    
-        with open("configuration\\settings.json", "r") as settingsFile:
-            configurationDictionary = load(settingsFile)
-        
-        # open settings.json for writing and dump attributes from attributeDictionary
-        with open("configuration\\settings.json", "w") as settingsFile:
-            for attribute in attributeDictionary:
-                configurationDictionary["universalPaths"][attribute] = attributeDictionary[attribute]
-            
-            dump(configurationDictionary, settingsFile)
-    
-
-
 class DatasetSettingsWrapper:
     """Wrapper and writer for information from configuration files(settings.json, initiationDictionary.py). Instantiated when a Dataset object is instantiated, and passes configuration information to that object.
     """    
@@ -85,7 +61,14 @@ class DatasetSettingsWrapper:
 
         :param datasetAlias: Alias used in settings.json and initiationDictionary describe different datasets. Alias must match one of these datasets.
         :type datasetAlias: str
-        """              
+        """
+       
+        self.universalSettingsWrapper= UniversalSettingsWrapper()  
+        settingsFile = "configuration\\settings.json"
+
+        with open(settingsFile) as settingsFile:
+            configurationDictionary = load(settingsFile)
+            
 
         # catalogue dictionaries
         catalogueDatasetsConfigurationDictionary = configurationDictionary["datasets"][
@@ -134,13 +117,13 @@ class DatasetSettingsWrapper:
 
         # choose between universal or custom download folders
         self.downloadFolder = (
-            UniversalSettingsWrapper.downloadFolder
+            self.universalSettingsWrapper.downloadFolder
             if self.configuration["downloadFolder"] == "universal"
             else self.configuration["downloadFolder"]
         )
 
         self.archiveFolder = (
-            UniversalSettingsWrapper.archiveFolder
+            self.universalSettingsWrapper.archiveFolder
             if self.configuration["archiveFolder"] == "universal"
             else self.configuration["archiveFolder"]
         )
@@ -178,7 +161,7 @@ class DatasetSettingsWrapper:
         self.jsonPayloadFeatureItems=itemGeneratorList(self.initiation, "jsonPayloadFeatureItems")
 
         self.jsonPayload = {
-            "emailAddress": UniversalSettingsWrapper.email,
+            "emailAddress": self.universalSettingsWrapper.email,
             "aoiType": "1",
             "aoi": aoiChoice,
             "orderingApplication": "BCDC",

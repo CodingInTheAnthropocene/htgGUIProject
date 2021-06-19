@@ -84,7 +84,9 @@ class MainWindow(QMainWindow):
     def datasetInstantiation(self):
         """
         Instantiates datasets and their respective custom widgets
-        """        
+        """ 
+        self.universalSettingsWrapper = UniversalSettingsWrapper()
+
         self.datasetList= []
         self.datasetFrameList = []
         self.datasetSettingsList = []
@@ -170,8 +172,12 @@ class MainWindow(QMainWindow):
         for i  in self.datasetList:
             del i
         
-
+        for i in self.buttonPathList:
+            self.flowLayoutLogs.removeWidget(i)
+            del i
+        
         self.datasetInstantiation()
+        self.logInstantiation()
 
     def logInstantiation(self):
 
@@ -179,12 +185,13 @@ class MainWindow(QMainWindow):
         self.flowLayoutLogs = FlowLayout(widgets.scrollAreaLogsButtons)
         
         # for all files in log folder, create a LogButton in order of the log created date
-        pathList = []
-        for directoryName, _, files in walk(UniversalSettingsWrapper.logFolder):
+        self.buttonPathList = []
+
+        for directoryName, _, files in walk(self.universalSettingsWrapper.logFolder):
             for file in files:
-                pathList.append(f"{directoryName}\\{file}")
+                self.buttonPathList.append(f"{directoryName}\\{file}")
         
-        for path in sorted(pathList, key= lambda x: getFileCreatedDate(x)):
+        for path in sorted(self.buttonPathList, key= lambda x: getFileCreatedDate(x)):
 
             newMonthButton = LogButton(
                 widgets.scrollAreaLogsButtons,
@@ -198,16 +205,17 @@ class MainWindow(QMainWindow):
         """
         Starting state for settings widget
         """        
-        widgets.lineEditEmail.setText(UniversalSettingsWrapper.email)
-        widgets.lineEditDownloadFolder.setText(UniversalSettingsWrapper.downloadFolder)
-        widgets.lineEditArchiveFolder.setText(UniversalSettingsWrapper.archiveFolder)
-        widgets.lineEditLogFolder.setText(UniversalSettingsWrapper.logFolder)
-        widgets.lineEditHtgLands.setText(UniversalPathsWrapper.htgLandsPath)
-        widgets.lineEditSoiAll.setText(UniversalPathsWrapper.soiPath)
-        widgets.lineEditCore.setText(UniversalPathsWrapper.soiCorePath)
-        widgets.lineEditMarine.setText(UniversalPathsWrapper.soiMarinePath)
-        widgets.lineEditWha.setText(UniversalPathsWrapper.soiWhaPath)
-        widgets.lineEditSwBc.setText(UniversalPathsWrapper.aoiSwBcPath)
+
+        widgets.lineEditEmail.setText(self.universalSettingsWrapper.email)
+        widgets.lineEditDownloadFolder.setText(self.universalSettingsWrapper.downloadFolder)
+        widgets.lineEditArchiveFolder.setText(self.universalSettingsWrapper.archiveFolder)
+        widgets.lineEditLogFolder.setText(self.universalSettingsWrapper.logFolder)
+        widgets.lineEditHtgLands.setText(self.universalSettingsWrapper.htgLandsPath)
+        widgets.lineEditSoiAll.setText(self.universalSettingsWrapper.soiPath)
+        widgets.lineEditCore.setText(self.universalSettingsWrapper.soiCorePath)
+        widgets.lineEditMarine.setText(self.universalSettingsWrapper.soiMarinePath)
+        widgets.lineEditWha.setText(self.universalSettingsWrapper.soiWhaPath)
+        widgets.lineEditSwBc.setText(self.universalSettingsWrapper.aoiSwBcPath)
 
                 # signals and slots for settings update button
         widgets.buttonApplySettings.clicked.connect(self.updateAllSettings)
@@ -226,10 +234,10 @@ class MainWindow(QMainWindow):
             lambda: self.fileDialogueFile(widgets.lineEditSoiAll)
         )
         widgets.buttonHtgLands.clicked.connect(
-            lambda: self.fileDialogueFile(widgets.buttonHtgLands)
+            lambda: self.fileDialogueFile(widgets.lineEditHtgLands)
         )
         widgets.buttonSwBcPath.clicked.connect(
-            lambda: self.fileDialogueFile(widgets.buttonSwBcPath)
+            lambda: self.fileDialogueFile(widgets.lineEditSwBc)
         )
 
         widgets.buttonDownloadPath.clicked.connect(
@@ -254,25 +262,26 @@ class MainWindow(QMainWindow):
             "downloadFolder": widgets.lineEditDownloadFolder.text(),
             "archiveFolder": widgets.lineEditArchiveFolder.text(),
             "logFolder": widgets.lineEditLogFolder.text(),
-        }
 
-        # get text from universal path's and store in dictionary
-        universalPathsDictionary = {
             "htgLandsPath": widgets.lineEditHtgLands.text(),
             "soiPath": widgets.lineEditSoiAll.text(),
             "soiCorePath": widgets.lineEditCore.text(),
             "soiMarinePath": widgets.lineEditMarine.text(),
             "soiWhaPath": widgets.lineEditWha.text(),
-            "aoiSwBcPath": widgets.lineEditSwBc.text(),
+            "aoiSwBcPath": widgets.lineEditSwBc.text()
         }
 
+        # get text from universal path's and store in dictionary
+
+        
         #write universal to settings.json
-        UniversalPathsWrapper.settingsWriter(universalPathsDictionary)
         UniversalSettingsWrapper.settingsWriter(universalSettingsDictionary)
         
         #write dataset settings to settings.json
         for i in self.datasetSettingsList:
             i.outputToSettings()
+
+        self.datasetReset()
 
     def fileDialogueFolder(self, lineEdit):
         """

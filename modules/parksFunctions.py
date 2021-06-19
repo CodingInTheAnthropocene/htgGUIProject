@@ -270,7 +270,7 @@ def parksEcologicalProtectedGeoprocessing(rawPath, dataset):
 
     # intersect wwith SOI
     rawPath = arcpy.Intersect_analysis(
-        [rawPath, UniversalPathsWrapper.soiPath],
+        [rawPath, dataset.universalSettingsWrapper.soiPath],
         "tempParksEcoPro_SOIintersect",
         join_attributes="NO_FID",
     )
@@ -338,7 +338,7 @@ def nationalParksGeoprocessing(rawPath, dataset):
 
     # intersect with SOI
     rawPath = arcpy.Intersect_analysis(
-        [rawPath, UniversalPathsWrapper.soiPath],
+        [rawPath, dataset.universalSettingsWrapper.soiPath],
         "tempNatParks_SOIintersect",
         join_attributes="NO_FID",
     )
@@ -406,7 +406,7 @@ def recreationPolygonsGeoprocessing(rawPath, dataset):
 
     # intersect with SOI
     rawPath = arcpy.Intersect_analysis(
-        [rawPath, UniversalPathsWrapper.soiPath],
+        [rawPath, dataset.universalSettingsWrapper.soiPath],
         "tempRecPoly_SOIintersect",
         join_attributes="NO_FID",
     )

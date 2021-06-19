@@ -39,21 +39,22 @@ class Dataset:
         """        
 
         # Instantiate settings wrapper and assign attributes
-        self.settingsWrapper = DatasetSettingsWrapper(datasetAlias)
+        self.universalSettingsWrapper = UniversalSettingsWrapper()
+        self.datasetSettingsWrapper = DatasetSettingsWrapper(datasetAlias)
 
-        self.name = self.settingsWrapper.name
-        self.dataCatalogueIdList = self.settingsWrapper.dataCatalogueIdList
-        self.fileName = self.settingsWrapper.fileName
-        self.downloadFolder = self.settingsWrapper.downloadFolder
-        self.archiveFolder = self.settingsWrapper.archiveFolder
-        self.currentPath = self.settingsWrapper.currentPath
-        self.jsonPayload = self.settingsWrapper.jsonPayload
-        self.updateFrequency = self.settingsWrapper.updateFrequency
-        self.arcgisWorkspaceFolder = self.settingsWrapper.arcgisWorkspaceFolder
-        self.urlList = self.settingsWrapper.urlList
+        self.name = self.datasetSettingsWrapper.name
+        self.dataCatalogueIdList = self.datasetSettingsWrapper.dataCatalogueIdList
+        self.fileName = self.datasetSettingsWrapper.fileName
+        self.downloadFolder = self.datasetSettingsWrapper.downloadFolder
+        self.archiveFolder = self.datasetSettingsWrapper.archiveFolder
+        self.currentPath = self.datasetSettingsWrapper.currentPath
+        self.jsonPayload = self.datasetSettingsWrapper.jsonPayload
+        self.updateFrequency = self.datasetSettingsWrapper.updateFrequency
+        self.arcgisWorkspaceFolder = self.datasetSettingsWrapper.arcgisWorkspaceFolder
+        self.urlList = self.datasetSettingsWrapper.urlList
 
         self.alias = datasetAlias
-        self.geoprocessingFunction = eval(self.settingsWrapper.geoprocessingFunction)
+        self.geoprocessingFunction = eval(self.datasetSettingsWrapper.geoprocessingFunction)
 
     def archiving(self):
         """
@@ -148,7 +149,7 @@ class Dataset:
         """        
 
         with Session() as s:
-            # self.settingsWrapper session with BC data catalogue, save important cookies in variable
+            # self.datasetSettingsWrapper session with BC data catalogue, save important cookies in variable
             s.get(
                 "https://apps.gov.bc.ca/pub/dwds-ofi/jsp/dwds_pow_current_order.jsp?publicUrl=https%3A%2F%2Fapps.gov.bc.ca%2Fpub%2Fdwds-ofi%2Fpublic%2F&secureUrl=https%3A%2F%2Fapps.gov.bc.ca%2Fpub%2Fdwds-ofi%2Fsecure%2F&customAoiUrl=http%3A%2F%2Fmaps.gov.bc.ca%2Fess%2Fhm%2Faoi%2F&pastOrdersNbr=5&secureSite=false&orderSource=bcdc"
             )
@@ -339,7 +340,7 @@ class Dataset:
         if exists(logFolder) == False:
             mkdir(logFolder)
 
-        # self.settingsWrapper variables
+        # self.datasetSettingsWrapper variables
         archivedFile = (
             "Archiving Error" if self.archiveStatus == False else self.archivedFile
         )
@@ -396,7 +397,7 @@ class Dataset:
         Write processed file path to settings.json
         """  
         dictToSettings = {"currentPath": self.processedFile}
-        self.settingsWrapper.settingsWriter(dictToSettings)
+        self.datasetSettingsWrapper.settingsWriter(dictToSettings)
 
     def catalogueUpdateProcess(self):
         def update(self):

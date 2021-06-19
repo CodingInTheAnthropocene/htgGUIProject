@@ -118,7 +118,7 @@ def crownTenuresGeoprocessing(rawPath, dataset):
 
     landsDeleteFields = [ "ATTRIBUTE_", "EN", "GEOMETRY_S", "H_", "Ha", "ICF", "ICF_AREA", "ICIS", "JUROL", "LAND_ACT_P", "LAND_DISTR", "LEGAL_FREE", "LOCALAREA", "LTSA_BLOCK", "LTSA_LOT", "LTSA_PARCE", "LTSA_PLAN", "OWNER_CLAS", "OtherComme", "PARCEL_DES", "PID", "PIN", "PIN_DISTLE", "PIN_SUBDLA", "PMBC", "RoW", "SOURCE_PRO", "TEMP_PolyI", "TENURES", "TimbeTable", "Title_Info", "Title_num", "Title_owne", "access", "apprais2BC", "apprais2HB", "apprais2Ha", "apprais2re", "appraisal2", "arch_sites", "avail_issu", "available", "comments", "confirm_qu", "ess_respon", "essential", "guide_outf", "interests", "label", "landval_20", "landval_sr", "location", "municipali", "needs_conf", "potential_", "prop_class", "result_val", "selected", "specific_l", "tourism_ca", "trapline", "use_on_pro", "valperHa_2", "zone_code", "zoning"]
 
-    landsCopy=copySpecificFields(UniversalPathsWrapper.htgLandsPath, landsDeleteFields)
+    landsCopy=copySpecificFields(dataset.universalSettingsWrapper.htgLandsPath, landsDeleteFields)
     
     # Calculate fields
 
@@ -159,7 +159,7 @@ def crownTenuresGeoprocessing(rawPath, dataset):
     print(f"{dataset.alias}: Starting tenures/SOI intersect")
     # intersect crown tenures with SOI
     tenuresSOIIntersect = arcpy.Intersect_analysis(
-        [rawPath, UniversalPathsWrapper.soiPath],
+        [rawPath, dataset.universalSettingsWrapper.soiPath],
         "temptenureSOIIntersect",
         join_attributes="NO_FID",
     )
@@ -220,7 +220,7 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
     # create lands copy the correct fields
     landsDeleteFields = [ "ATTRIBUTE_", "EN", "GEOMETRY_S", "H_", "Ha", "ICF", "ICF_AREA", "ICIS", "JUROL", "LAND_ACT_P", "LAND_DISTR", "LEGAL_FREE", "LOCALAREA", "LTSA_BLOCK", "LTSA_LOT", "LTSA_PARCE", "LTSA_PLAN", "OWNER_CLAS", "OtherComme", "PARCEL_DES", "PID", "PIN", "PIN_DISTLE", "PIN_SUBDLA", "PMBC", "RoW", "SOURCE_PRO", "TEMP_PolyI", "TENURES", "TimbeTable", "Title_Info", "Title_num", "Title_owne", "access", "apprais2BC", "apprais2HB", "apprais2Ha", "apprais2re", "appraisal2", "arch_sites", "avail_issu", "available", "comments", "confirm_qu", "ess_respon", "essential", "guide_outf", "interests", "label", "landval_20", "landval_sr", "location", "municipali", "needs_conf", "owner", "potential_", "prop_class", "result_val", "selected", "specific_l", "tourism_ca", "trapline", "use_on_pro", "valperHa_2", "zone_code", "zoning", "Shape_Leng", "Shape_Area", "new_owners", "ownership_", ]
 
-    landsCopy=copySpecificFields(UniversalPathsWrapper.htgLandsPath, landsDeleteFields)
+    landsCopy=copySpecificFields(dataset.universalSettingsWrapper.htgLandsPath, landsDeleteFields)
 
     # rename fields
     print(f"{dataset.alias}: Renaming, calculating fields")
@@ -304,7 +304,7 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
     # create lands copy
     landsDeleteFields = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_S", "ATTRIBUTE_", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCE", "LTSA_PLAN", "LEGAL_FREE", "LAND_DISTR", "LAND_ACT_P", "PARCEL_DES", "OWNER_CLAS", "SOURCE_PRO", "landval_20", "valperHa_2", "result_val", "Ha", "comments", "new_owners", "PMBC", "ICIS", "ICF", "landval_sr", "prop_class", "needs_conf", "confirm_qu", "selected", "selected_b", "label", "location", "specific_l", "H_", "use_on_pro", "potential_", "interests", "available", "avail_issu", "owner", "EN", "guide_outf", "trapline", "ess_respon", "tourism_ca", "access", "zoning", "zone_code", "TENURES", "PIN_DISTLE", "PIN_SUBDLA", "municipali", "arch_sites", "Title_num", "Title_owne", "Title_Info", "essential", "RoW", "OtherComme", "appraisal2", "apprais2HB", "apprais2re", "apprais2BC", "apprais2Ha", "TEMP_PolyI", "TimbeTable", "ownership_", "Shape_Leng", "Shape_Area", ]
     
-    landsCopy=copySpecificFields(UniversalPathsWrapper.htgLandsPath, landsDeleteFields)
+    landsCopy=copySpecificFields(dataset.universalSettingsWrapper.htgLandsPath, landsDeleteFields)
        
     # add, rename and calculate fields
     print(f"{dataset.alias}: Renaming Fields, calculating field values")
@@ -391,7 +391,7 @@ def harvestedAreasGeoprocessing(rawPath, dataset):
 
     landsDeleteFields = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_S", "ATTRIBUTE_", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCE", "LTSA_PLAN", "LEGAL_FREE", "LAND_DISTR", "LAND_ACT_P", "PARCEL_DES", "OWNER_CLAS", "SOURCE_PRO", "landval_20", "valperHa_2", "result_val", "Ha", "comments", "new_owners", "PMBC", "ICIS", "ICF", "landval_sr", "prop_class", "needs_conf", "confirm_qu", "selected", "label", "location", "specific_l", "H_", "use_on_pro", "potential_", "interests", "available", "avail_issu", "owner", "EN", "guide_outf", "trapline", "ess_respon", "tourism_ca", "access", "zoning", "zone_code", "TENURES", "PIN_DISTLE", "PIN_SUBDLA", "municipali", "arch_sites", "Title_num", "Title_owne", "Title_Info", "essential", "RoW", "OtherComme", "appraisal2", "apprais2HB", "apprais2re", "apprais2BC", "apprais2Ha", "TEMP_PolyI", "TimbeTable", "ownership_", "Shape_Leng", "Shape_Area", ]
 
-    landsCopy=copySpecificFields(UniversalPathsWrapper.htgLandsPath, landsDeleteFields)
+    landsCopy=copySpecificFields(dataset.universalSettingsWrapper.htgLandsPath, landsDeleteFields)
 
     # Field rename
     print(f"{dataset.alias}: Renaming Fields, calculating field values")
@@ -458,7 +458,7 @@ def parcelMapBCGeoprocessing(rawPath, dataset):
 
     arcpy.env.workspace = parcelsGdb
 
-    gdbSOI = arcpy.CopyFeatures_management(UniversalPathsWrapper.soiPath, parcelsGdb)
+    gdbSOI = arcpy.CopyFeatures_management(dataset.universalSettingsWrapper.soiPath, parcelsGdb)
 
     #delete fields
     print(f"{dataset.alias}: Deleting fields")
@@ -549,7 +549,7 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
     # intersect with SOI
     print(f"{dataset.alias}: Starting intersect") 
     roadAtlasIntersect = arcpy.Intersect_analysis(
-        [roadAtlasDisolve, UniversalPathsWrapper.soiPath],
+        [roadAtlasDisolve, dataset.universalSettingsWrapper.soiPath],
         dataset.fileName,
         "NO_FID",
     )
@@ -584,7 +584,7 @@ def alcAlrPolygonsGeoprocessing(rawPath, dataset):
     # create lands copy witth specific fieldsAll.
     landsDeleteFields = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_SOURCE", "ATTRIBUTE_SOURCE", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCEL", "LTSA_PLAN", "LEGAL_FREEFORM", "LAND_DISTRICT", "LAND_ACT_PRIMARY_DESCRIPTION", "PARCEL_DESCRIPTION", "SOURCE_PROVISION_DATE", "landval_2017", "valperHa_2017", "result_val_2017", "Ha", "new_group", "comments", "new_ownership", "PMBC", "ICIS", "ICF", "landval_src", "prop_class", "needs_confirm", "confirm_question", "selected", "label", "location", "specific_location", "H_", "use_on_prop", "potential_FCyCmPD", "interests", "available", "avail_issues", "owner", "EN", "guide_outfit", "trapline", "ess_response", "tourism_capability", "access", "zoning", "zone_code", "TENURES", "parcel_num", "PIN_DISTLE", "PIN_SUBDLA", "municipality", "arch_sites", "Title_num", "Title_owner", "Title_Info", "essential", "RoW", "OtherComments", "appraisal2work", "apprais2HBU", "apprais2reportID", "apprais2BC_ID", "apprais2Ha", "TEMP_PolyID", "TimbeTableLink", "ownership_type", ]
 
-    landsCopy =copySpecificFields(UniversalPathsWrapper.htgLandsPath, landsDeleteFields)
+    landsCopy =copySpecificFields(dataset.universalSettingsWrapper.htgLandsPath, landsDeleteFields)
 
     #rename fields
     shapefileFieldRename(landsCopy, "OWNER_CLAS", "CROWN")
@@ -645,7 +645,7 @@ def environmentalRemediationSitesGeoprocessing(rawPath, dataset):
 
     landsDeleteFields = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_SOURCE", "ATTRIBUTE_SOURCE", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCEL", "LTSA_PLAN", "LEGAL_FREEFORM", "LAND_DISTRICT", "LAND_ACT_PRIMARY_DESCRIPTION", "PARCEL_DESCRIPTION", "SOURCE_PROVISION_DATE", "landval_2017", "valperHa_2017", "result_val_2017", "Ha", "new_group", "comments", "new_ownership", "PMBC", "ICIS", "ICF", "landval_src", "prop_class", "needs_confirm", "confirm_question", "selected", "label", "location", "specific_location", "H_", "use_on_prop", "potential_FCyCmPD", "interests", "available", "avail_issues", "owner", "EN", "guide_outfit", "trapline", "ess_response", "tourism_capability", "access", "zoning", "zone_code", "TENURES", "parcel_num", "PIN_DISTLE", "PIN_SUBDLA", "municipality", "arch_sites", "Title_num", "Title_owner", "Title_Info", "essential", "RoW", "OtherComments", "appraisal2work", "apprais2HBU", "apprais2reportID", "apprais2BC_ID", "apprais2Ha", "TEMP_PolyID", "TimbeTableLink", "ownership_type", ]
 
-    landsCopy =copySpecificFields(UniversalPathsWrapper.htgLandsPath, landsDeleteFields)    
+    landsCopy =copySpecificFields(dataset.universalSettingsWrapper.htgLandsPath, landsDeleteFields)    
    
     # rename and calculate fields
     print(f"{dataset.alias}: Renaming Fields, Calculating field values")
