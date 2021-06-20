@@ -197,7 +197,7 @@ def crownTenuresGeoprocessing(rawPath, dataset):
         crownTenuresProcessedPath, [["HA", "AREA"]], area_unit="HECTARES"
     )
 
-    # delete working copies
+    # cleanup
     arcpy.management.Delete(rawPath)
     arcpy.management.Delete(landsCopy)
     arcpy.management.Delete(tenuresSOIIntersect)
@@ -216,7 +216,6 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
     :rtype: result
     """   
 
-    # env variables
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
@@ -671,7 +670,6 @@ def environmentalRemediationSitesGeoprocessing(rawPath, dataset):
     :return: Processed file
     :rtype: result
     """ 
-
 
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
