@@ -10,22 +10,17 @@ from os.path import split, splitext, normpath
 from json import load
 from re import sub
 from traceback import print_exc
-from time import sleep
-from pathos.pools import ProcessPool
-
+from pathos.pools import _ProcessPool
 
 from modules.settingsWrapper import *
 from modules.universalFunctions import getFileCreatedDate, getCurrency
 
-
 class DatasetFrame(QFrame):
     """ 
-    A datasetFrame is the primary interface for updating datasets in the updater. It consists of a QTree for presenting dataset information, an QPushbutton which starts the update process for that dataset, as well as QPushbutton which brings the user to the settings for that particular dataset. A custom QFrame.
+    A datasetFrame is the primary interface for updating datasets in the updater. It consists of a QTree for presenting dataset information, an QPushbutton which starts the update process for that dataset, as well as QPushbutton which brings the user to the settings for that particular dataset.
     """
 
-    def __init__(
-        self, parent, dataset, mainWindow, mainWidgets, settingsWidget
-    ):
+    def __init__(self, parent, dataset, mainWindow, mainWidgets, settingsWidget):
         """
         Constructor method.
 
@@ -39,11 +34,11 @@ class DatasetFrame(QFrame):
         :type mainWidgets: Ui_MainWindow
         :param settingsWidget: DatasetSettingsWidget associated with dataset
         :type settingsWidget: DatasetSettingsWidget
-        """    
+        """
         super(DatasetFrame, self).__init__(parent)
 
         # Attributes
-        self.dataset=dataset
+        self.dataset = dataset
         self.alias = dataset.alias
         self.name = dataset.name
         self.downloadFolder = dataset.downloadFolder
@@ -58,7 +53,9 @@ class DatasetFrame(QFrame):
         self.mainWidgets = mainWidgets
         self.settingsWidget = settingsWidget
         self.mainWindow = mainWindow
-        self.updateFunction = dataset.catalogueUpdateProcess
+
+        # update process function passed to widget
+        self.updateFunction = dataset.updateProcess
 
         # get data currency from data catalogue API if Data has a data catalogue ID
         if self.dataCatalogueIdList != "N/A":
@@ -70,18 +67,17 @@ class DatasetFrame(QFrame):
 
         else:
             self.hostedFileDate = "N/A"
-            
 
         # get information about local current file, display "Not Found" if not found
         try:
-            if arcpy.Describe(self.currentPath).dataType== "ShapeFile":
+            if arcpy.Describe(self.currentPath).dataType == "ShapeFile":
                 self.fileSize = f"{getsize(self.currentPath)/1000000} mb"
                 self.date = getFileCreatedDate(self.currentPath)
-            
+
             else:
                 self.date = getFileCreatedDate(arcpy.Describe(self.currentPath).path)
-                self.fileSize = "gdb (can't calculate)"               
-            
+                self.fileSize = "gdb (can't calculate)"
+
         except:
             self.fileSize = "Not Found"
             self.date = "Not Found"
@@ -89,29 +85,118 @@ class DatasetFrame(QFrame):
 
         # functions on init
         self.initFrame()
-        
+
         try:
             self.turnPurple()
             self.turnRed()
         except:
             print("Notification error")
             print_exc()
+        
 
         # Signals and slots
-        self.buttonUpdate.clicked.connect(self.updateFunction)
+        self.buttonUpdate.clicked.connect(self.updateButtonState)
 
+        ## extremely important update button connecting to update processes
+        self.buttonUpdate.clicked.connect(
+            lambda:_ProcessPool(1).apply_async(
+                self.updateFunction, callback=self.callback
+            )
+        )
+
+        # self.buttonUpdate.clicked.connect(lambda: self.update(""))
         self.buttonSettings.clicked.connect(self.navigateToSettings)
         self.buttonUpdate.clicked.connect(self.turnPurple)
         self.qtree.expanded.connect(self.qtreeExpand)
         self.qtree.collapsed.connect(self.qtreeCollapse)
 
-    # def update(self):
-    #     self.mainWindow.p.map(self.updateFunction, [self.dataset])
+    def callback(self, _):
+        """
+        Executes after upddate function is complete
+
+        :param _: Dummy parameter, workaround for amap Function to operate properly
+        :type _:None
+        """        
+        self.buttonUpdate.setStyleSheet("border-color:rgb(147,189,249)")
+        self.buttonUpdate.setText("Done!")
+        self.buttonUpdate.setEnabled(True)
+        self.mainWindow.ui.buttonRefresh.setEnabled(True)
+        self.mainWindow.ui.buttonApplySettings.setEnabled(True)
+
+
+    def updateButtonState(self):
+        """
+        State of update button during update process
+        """        
+        self.mainWindow.ui.buttonRefresh.setEnabled(False)
+        self.mainWindow.ui.buttonApplySettings.setEnabled(False)
+        self.buttonUpdate.setEnabled(False)
+        self.buttonUpdate.setStyleSheet("border-color:rgb(147,249,240)")
+        self.buttonUpdate.setText("Updating…")
+    
+    def qtreeExpand(self):
+        """
+        Expands widget when info QTree is expanded
+        """
+        self.animation = QPropertyAnimation(self, b"minimumSize")
+        self.animation.setDuration(400)
+        self.animation.setStartValue(QSize(self.xCollapsed, self.yCollapsed))
+        self.animation.setEndValue(QSize(self.xExpanded, self.yExpanded))
+        self.animation.setEasingCurve(QEasingCurve.InOutQuart)
+        self.animation.start()
+
+    def qtreeCollapse(self):
+        """
+        Collapses widget when info QTree is collapsed
+        """
+        self.animationCollapse = QPropertyAnimation(self, b"minimumSize")
+        self.animationCollapse.setDuration(400)
+        self.animationCollapse.setStartValue(QSize(self.xExpanded, self.yExpanded))
+        self.animationCollapse.setEndValue(QSize(self.xCollapsed, self.yCollapsed))
+        self.animationCollapse.setEasingCurve(QEasingCurve.InOutQuart)
+
+        self.animationCollapse.start()
+
+    def turnPurple(self):
+        """
+        Turns QTree header purple when dataset is out of date based on update frequency in Settings. Note that this is based on when the file was last updated in the data catalogue, not updated on your computer. I.e., if you have your updateFrequency set to 5 days, the dataset will turn purple when the local version is 5 days behind the hosted version.
+        """
+        if (
+            isinstance(self.date, date) == True
+            and isinstance(self.hostedFileDate, date) == True
+        ):
+            if self.date < self.hostedFileDate - timedelta(days=self.updateFrequency):
+                self.qtree.setStyleSheet(
+                    "QHeaderView::section {border-radius: 5px; background: rgb(189, 147, 249); color: black}"
+                )
+                self.qtree.header().setVisible(True)
+
+    def turnRed(self):
+        """
+        Turns QTree header red if there is a problem accessing the local file or info from BC data catalogue
+        """
+        if "Not Found" in (self.date, self.hostedFileDate):
+            self.qtree.setStyleSheet(
+                "QHeaderView::section {border-radius: 5px; background: rgb(255,153,153); color:black}"
+            )
+            self.qtree.header().setVisible(True)
+
+    def navigateToSettings(self):
+        """
+        Navigates to corresponding DatasetSettingsWidget
+        """
+        self.mainWidgets.stackedWidget.setCurrentWidget(self.mainWidgets.settings)
+        self.mainWidgets.scrollAreaSettings.ensureWidgetVisible(self.settingsWidget)
+        btn = self.mainWidgets.buttonDataSettings
+        btnName = btn.objectName()
+        self.mainWindow.resetStyle(btnName)
+        btn.setStyleSheet(self.mainWindow.selectMenu(btn.styleSheet()))
+
 
     def initFrame(self):
         """
         Widget starting state
-        """        
+        """
         self.setGeometry(QRect(0, 0, self.xCollapsed, self.yCollapsed))
         sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.setSizePolicy(sizePolicy)
@@ -154,8 +239,6 @@ class DatasetFrame(QFrame):
         self.buttonUpdate.setSizePolicy(sizePolicy1)
         self.buttonUpdate.setMinimumSize(QSize(0, 0))
         self.buttonUpdate.setMaximumSize(QSize(16772155, 16777215))
-   
-
 
         self.layoutButtons.addWidget(self.buttonUpdate)
 
@@ -223,76 +306,12 @@ class DatasetFrame(QFrame):
             QCoreApplication.translate("Form", "Settings", None)
         )
 
-    # def update(self):
-
-    #     self.updateFunction()
-
-    #     self.buttonUpdate.setStyleSheet("border-color:rgb(147, 189, 249)")
-    #     self.buttonUpdate.setText("Done!")
-    
-    def qtreeExpand(self):
-        """
-        Expands widget when info QTree is expanded
-        """        
-        self.animation = QPropertyAnimation(self, b"minimumSize")
-        self.animation.setDuration(400)
-        self.animation.setStartValue(QSize(self.xCollapsed, self.yCollapsed))
-        self.animation.setEndValue(QSize(self.xExpanded, self.yExpanded))
-        self.animation.setEasingCurve(QEasingCurve.InOutQuart)
-        self.animation.start()
-
-    def qtreeCollapse(self):
-        """
-        Collapses widget when info QTree is collapsed
-        """       
-        self.animationCollapse = QPropertyAnimation(self, b"minimumSize")
-        self.animationCollapse.setDuration(400)
-        self.animationCollapse.setStartValue(QSize(self.xExpanded, self.yExpanded))
-        self.animationCollapse.setEndValue(QSize(self.xCollapsed, self.yCollapsed))
-        self.animationCollapse.setEasingCurve(QEasingCurve.InOutQuart)
-
-        self.animationCollapse.start()
-
-    def turnPurple(self):
-        """
-        Turns QTree header purple when dataset is out of date based on update frequency  in Settings.
-        """
-        if (
-            isinstance(self.date, date) == True
-            and isinstance(self.hostedFileDate, date) == True
-        ):
-            if self.date < self.hostedFileDate - timedelta(days=self.updateFrequency):
-                self.qtree.setStyleSheet(
-                    "QHeaderView::section {border-radius: 5px; background: rgb(189, 147, 249); color: black}"
-                )
-                self.qtree.header().setVisible(True)
-
-    def turnRed(self):
-        """
-        Turns QTree header red if there is a problem accessing the local file or info from BC data catalogue
-        """
-        if "Not Found" in (self.date, self.hostedFileDate):
-            self.qtree.setStyleSheet(
-                "QHeaderView::section {border-radius: 5px; background: rgb(255,153,153); color:black}"
-            )
-            self.qtree.header().setVisible(True)
-
-    def navigateToSettings(self):
-        """
-        Navigates to corresponding DatasetSettingsWidget
-        """        
-        self.mainWidgets.stackedWidget.setCurrentWidget(self.mainWidgets.settings)
-        self.mainWidgets.scrollAreaSettings.ensureWidgetVisible(self.settingsWidget)
-        btn = self.mainWidgets.buttonDataSettings
-        btnName = btn.objectName()
-        self.mainWindow.resetStyle(btnName)
-        btn.setStyleSheet(self.mainWindow.selectMenu(btn.styleSheet()))
-
 
 class LogButton(QPushButton):
     """
     Buttons for switching the view of log information. A custom QPushbutton.
     """
+
     def __init__(self, parent, logFile, textEdit):
         """
         Constructor method
@@ -303,7 +322,7 @@ class LogButton(QPushButton):
         :type logFile: str
         :param textEdit: Log QTextEdit
         :type textEdit: QTextEdit
-        """        
+        """
 
         super(LogButton, self).__init__(parent)
         self.logFile = logFile
@@ -393,10 +412,12 @@ class LogButton(QPushButton):
         except:
             print("Log display error")
 
+
 class DatasetSettingsWidget(QFrame):
     """
-    Widget for controlling Dataset settings.
-    """    
+    Widget for controlling Dataset settings. Gets populated into the same window as universal settings, though they are instantiated differently.
+    """
+
     def __init__(self, parent, dataset, mainWindow):
         """
         Constructor method
@@ -407,10 +428,10 @@ class DatasetSettingsWidget(QFrame):
         :type dataset: Dataset
         :param dataset: Main window
         :type dataset: MainWindow
-        """        
+        """
         super(DatasetSettingsWidget, self).__init__(parent)
-        #settingsWrapper
-        self.universalSettingsWrapper=UniversalSettingsWrapper()
+        # settingsWrapper
+        self.universalSettingsWrapper = UniversalSettingsWrapper()
 
         # attributes
         self.widgetParent = parent
@@ -421,10 +442,18 @@ class DatasetSettingsWidget(QFrame):
         self.initSettingsWidget()
 
         # set text for lineEdits
-        self.lineEditSettingsWidgetCurrentPath.setText(dataset.datasetSettingsWrapper.currentPath)
-        self.lineEditSettingsWidgetArchiveFolder.setText(dataset.datasetSettingsWrapper.archiveFolder)
-        self.lineEditSettingsWidgetUpdateFrequency.setText(str(dataset.datasetSettingsWrapper.updateFrequency))
-        self.lineEditSettingsWidgetDownloadFolder.setText(dataset.datasetSettingsWrapper.downloadFolder)
+        self.lineEditSettingsWidgetCurrentPath.setText(
+            dataset.datasetSettingsWrapper.currentPath
+        )
+        self.lineEditSettingsWidgetArchiveFolder.setText(
+            dataset.datasetSettingsWrapper.archiveFolder
+        )
+        self.lineEditSettingsWidgetUpdateFrequency.setText(
+            str(dataset.datasetSettingsWrapper.updateFrequency)
+        )
+        self.lineEditSettingsWidgetDownloadFolder.setText(
+            dataset.datasetSettingsWrapper.downloadFolder
+        )
         self.lineEditSettingsWidgetWorkspaceFolder.setText(
             dataset.arcgisWorkspaceFolder
         )
@@ -469,8 +498,6 @@ class DatasetSettingsWidget(QFrame):
                 self.radioSettingsWidgetDownloadFolder,
                 self.lineEditSettingsWidgetDownloadFolder,
                 mainWindow.ui.lineEditDownloadFolder,
-
-                
             )
         )
 
@@ -479,7 +506,6 @@ class DatasetSettingsWidget(QFrame):
                 self.radioSettingsWidgetArchiveFolder,
                 self.lineEditSettingsWidgetArchiveFolder,
                 mainWindow.ui.lineEditArchiveFolder,
-                
             )
         )
 
@@ -488,7 +514,6 @@ class DatasetSettingsWidget(QFrame):
                 self.radioSettingsWidgetWorkspaceFolder,
                 self.lineEditSettingsWidgetWorkspaceFolder,
                 self.lineEditSettingsWidgetDownloadFolder,
-                
             )
         )
 
@@ -496,7 +521,7 @@ class DatasetSettingsWidget(QFrame):
         self.buttonSettingWidgetCurrentPath.clicked.connect(
             lambda: self.fileDialogueFile(self.lineEditSettingsWidgetCurrentPath)
         )
-        
+
         self.buttonSettingsWidgetArchiveFolder.clicked.connect(
             lambda: self.fileDialogueFolder(self.lineEditSettingsWidgetArchiveFolder)
         )
@@ -507,13 +532,12 @@ class DatasetSettingsWidget(QFrame):
 
         self.buttonSettingsWidgetWorkspaceFolder.clicked.connect(
             lambda: self.fileDialogueFolder(self.lineEditSettingsWidgetWorkspaceFolder)
-        )        
-
+        )
 
     def outputToSettings(self):
         """
         Output widget state to settings.json. This method is called from a button on the main page.
-        """        
+        """
         if self.radioSettingsWidgetMarine.isChecked():
             soiValue = "marine"
         elif self.radioSettingsWidgetCore.isChecked():
@@ -563,7 +587,7 @@ class DatasetSettingsWidget(QFrame):
         :type lineEdit: QLineEdit
         :param fromSettings: Information in settings.json
         :type fromSettings: str
-        """        
+        """
         # set lineEdit to read only if radio button checked
         if radioButton.isChecked():
             lineEdit.setText(inheritedLineEdit.text())
@@ -575,21 +599,21 @@ class DatasetSettingsWidget(QFrame):
     def fileDialogueFile(self, lineEdit):
         """
         Open file dialogue for files
-        """        
-        fileDialogueOutput= normpath(QFileDialog().getOpenFileName()[0])
+        """
+        fileDialogueOutput = normpath(QFileDialog().getOpenFileName()[0])
         lineEdit.setText(fileDialogueOutput)
 
     def fileDialogueFolder(self, lineEdit):
         """
         Open file dialogue for folders
-        """        
-        fileDialogueOutput= normpath(QFileDialog().getExistingDirectory())
+        """
+        fileDialogueOutput = normpath(QFileDialog().getExistingDirectory())
         lineEdit.setText(fileDialogueOutput)
-    
+
     def initSettingsWidget(self):
         """
         Widget starting state
-        """ 
+        """
         self.setObjectName("frameSettingsWidget")
         self.setGeometry(QRect(110, 70, 630, 395))
         self.setFrameShape(QFrame.StyledPanel)
@@ -973,14 +997,16 @@ class DatasetSettingsWidget(QFrame):
         )
         self.lineEditSettingsWidgetUpdateFrequency.setText("")
         self.label_16.setText(
-            QCoreApplication.translate("Form", "Days after last posted update", None)
+            QCoreApplication.translate("Form", "Day(s) after last hosted update", None)
         )
+
 
 class CustomGrip(QWidget):
     """
     Custom grips for window. Template class.
-    """    
-    def __init__(self, parent, position, disable_color = False):
+    """
+
+    def __init__(self, parent, position, disable_color=False):
 
         # SETUP UI
         QWidget.__init__(self)
@@ -1001,11 +1027,14 @@ class CustomGrip(QWidget):
             # RESIZE TOP
             def resize_top(event):
                 delta = event.pos()
-                height = max(self.parent.minimumHeight(), self.parent.height() - delta.y())
+                height = max(
+                    self.parent.minimumHeight(), self.parent.height() - delta.y()
+                )
                 geo = self.parent.geometry()
                 geo.setTop(geo.bottom() - height)
                 self.parent.setGeometry(geo)
                 event.accept()
+
             self.wi.top.mouseMoveEvent = resize_top
 
             # ENABLE COLOR
@@ -1027,9 +1056,12 @@ class CustomGrip(QWidget):
             # RESIZE BOTTOM
             def resize_bottom(event):
                 delta = event.pos()
-                height = max(self.parent.minimumHeight(), self.parent.height() + delta.y())
+                height = max(
+                    self.parent.minimumHeight(), self.parent.height() + delta.y()
+                )
                 self.parent.resize(self.parent.width(), height)
                 event.accept()
+
             self.wi.bottom.mouseMoveEvent = resize_bottom
 
             # ENABLE COLOR
@@ -1052,6 +1084,7 @@ class CustomGrip(QWidget):
                 geo.setLeft(geo.right() - width)
                 self.parent.setGeometry(geo)
                 event.accept()
+
             self.wi.leftgrip.mouseMoveEvent = resize_left
 
             # ENABLE COLOR
@@ -1069,38 +1102,40 @@ class CustomGrip(QWidget):
                 width = max(self.parent.minimumWidth(), self.parent.width() + delta.x())
                 self.parent.resize(width, self.parent.height())
                 event.accept()
+
             self.wi.rightgrip.mouseMoveEvent = resize_right
 
             # ENABLE COLOR
             if disable_color:
                 self.wi.rightgrip.setStyleSheet("background: transparent")
 
-
     def mouseReleaseEvent(self, event):
         self.mousePos = None
 
     def resizeEvent(self, event):
-        if hasattr(self.wi, 'container_top'):
+        if hasattr(self.wi, "container_top"):
             self.wi.container_top.setGeometry(0, 0, self.width(), 10)
 
-        elif hasattr(self.wi, 'container_bottom'):
+        elif hasattr(self.wi, "container_bottom"):
             self.wi.container_bottom.setGeometry(0, 0, self.width(), 10)
 
-        elif hasattr(self.wi, 'leftgrip'):
+        elif hasattr(self.wi, "leftgrip"):
             self.wi.leftgrip.setGeometry(0, 0, 10, self.height() - 20)
 
-        elif hasattr(self.wi, 'rightgrip'):
+        elif hasattr(self.wi, "rightgrip"):
             self.wi.rightgrip.setGeometry(0, 0, 10, self.height() - 20)
+
 
 class Widgets(object):
     """
     Class used in custom grips. Static class. Template class.
-    """    
+    """
+
     def top(self, Form):
         if not Form.objectName():
-            Form.setObjectName(u"Form")
+            Form.setObjectName("Form")
         self.container_top = QFrame(Form)
-        self.container_top.setObjectName(u"container_top")
+        self.container_top.setObjectName("container_top")
         self.container_top.setGeometry(QRect(0, 0, 500, 10))
         self.container_top.setMinimumSize(QSize(0, 10))
         self.container_top.setMaximumSize(QSize(16777215, 10))
@@ -1108,39 +1143,39 @@ class Widgets(object):
         self.container_top.setFrameShadow(QFrame.Raised)
         self.top_layout = QHBoxLayout(self.container_top)
         self.top_layout.setSpacing(0)
-        self.top_layout.setObjectName(u"top_layout")
+        self.top_layout.setObjectName("top_layout")
         self.top_layout.setContentsMargins(0, 0, 0, 0)
         self.top_left = QFrame(self.container_top)
-        self.top_left.setObjectName(u"top_left")
+        self.top_left.setObjectName("top_left")
         self.top_left.setMinimumSize(QSize(10, 10))
         self.top_left.setMaximumSize(QSize(10, 10))
         self.top_left.setCursor(QCursor(Qt.SizeFDiagCursor))
-        self.top_left.setStyleSheet(u"background-color: rgb(33, 37, 43);")
+        self.top_left.setStyleSheet("background-color: rgb(33, 37, 43);")
         self.top_left.setFrameShape(QFrame.NoFrame)
         self.top_left.setFrameShadow(QFrame.Raised)
         self.top_layout.addWidget(self.top_left)
         self.top = QFrame(self.container_top)
-        self.top.setObjectName(u"top")
+        self.top.setObjectName("top")
         self.top.setCursor(QCursor(Qt.SizeVerCursor))
-        self.top.setStyleSheet(u"background-color: rgb(85, 255, 255);")
+        self.top.setStyleSheet("background-color: rgb(85, 255, 255);")
         self.top.setFrameShape(QFrame.NoFrame)
         self.top.setFrameShadow(QFrame.Raised)
         self.top_layout.addWidget(self.top)
         self.top_right = QFrame(self.container_top)
-        self.top_right.setObjectName(u"top_right")
+        self.top_right.setObjectName("top_right")
         self.top_right.setMinimumSize(QSize(10, 10))
         self.top_right.setMaximumSize(QSize(10, 10))
         self.top_right.setCursor(QCursor(Qt.SizeBDiagCursor))
-        self.top_right.setStyleSheet(u"background-color: rgb(33, 37, 43);")
+        self.top_right.setStyleSheet("background-color: rgb(33, 37, 43);")
         self.top_right.setFrameShape(QFrame.NoFrame)
         self.top_right.setFrameShadow(QFrame.Raised)
         self.top_layout.addWidget(self.top_right)
 
     def bottom(self, Form):
         if not Form.objectName():
-            Form.setObjectName(u"Form")
+            Form.setObjectName("Form")
         self.container_bottom = QFrame(Form)
-        self.container_bottom.setObjectName(u"container_bottom")
+        self.container_bottom.setObjectName("container_bottom")
         self.container_bottom.setGeometry(QRect(0, 0, 500, 10))
         self.container_bottom.setMinimumSize(QSize(0, 10))
         self.container_bottom.setMaximumSize(QSize(16777215, 10))
@@ -1148,55 +1183,55 @@ class Widgets(object):
         self.container_bottom.setFrameShadow(QFrame.Raised)
         self.bottom_layout = QHBoxLayout(self.container_bottom)
         self.bottom_layout.setSpacing(0)
-        self.bottom_layout.setObjectName(u"bottom_layout")
+        self.bottom_layout.setObjectName("bottom_layout")
         self.bottom_layout.setContentsMargins(0, 0, 0, 0)
         self.bottom_left = QFrame(self.container_bottom)
-        self.bottom_left.setObjectName(u"bottom_left")
+        self.bottom_left.setObjectName("bottom_left")
         self.bottom_left.setMinimumSize(QSize(10, 10))
         self.bottom_left.setMaximumSize(QSize(10, 10))
         self.bottom_left.setCursor(QCursor(Qt.SizeBDiagCursor))
-        self.bottom_left.setStyleSheet(u"background-color: rgb(33, 37, 43);")
+        self.bottom_left.setStyleSheet("background-color: rgb(33, 37, 43);")
         self.bottom_left.setFrameShape(QFrame.NoFrame)
         self.bottom_left.setFrameShadow(QFrame.Raised)
         self.bottom_layout.addWidget(self.bottom_left)
         self.bottom = QFrame(self.container_bottom)
-        self.bottom.setObjectName(u"bottom")
+        self.bottom.setObjectName("bottom")
         self.bottom.setCursor(QCursor(Qt.SizeVerCursor))
-        self.bottom.setStyleSheet(u"background-color: rgb(85, 170, 0);")
+        self.bottom.setStyleSheet("background-color: rgb(85, 170, 0);")
         self.bottom.setFrameShape(QFrame.NoFrame)
         self.bottom.setFrameShadow(QFrame.Raised)
         self.bottom_layout.addWidget(self.bottom)
         self.bottom_right = QFrame(self.container_bottom)
-        self.bottom_right.setObjectName(u"bottom_right")
+        self.bottom_right.setObjectName("bottom_right")
         self.bottom_right.setMinimumSize(QSize(10, 10))
         self.bottom_right.setMaximumSize(QSize(10, 10))
         self.bottom_right.setCursor(QCursor(Qt.SizeFDiagCursor))
-        self.bottom_right.setStyleSheet(u"background-color: rgb(33, 37, 43);")
+        self.bottom_right.setStyleSheet("background-color: rgb(33, 37, 43);")
         self.bottom_right.setFrameShape(QFrame.NoFrame)
         self.bottom_right.setFrameShadow(QFrame.Raised)
         self.bottom_layout.addWidget(self.bottom_right)
 
     def left(self, Form):
         if not Form.objectName():
-            Form.setObjectName(u"Form")
+            Form.setObjectName("Form")
         self.leftgrip = QFrame(Form)
-        self.leftgrip.setObjectName(u"left")
+        self.leftgrip.setObjectName("left")
         self.leftgrip.setGeometry(QRect(0, 10, 10, 480))
         self.leftgrip.setMinimumSize(QSize(10, 0))
         self.leftgrip.setCursor(QCursor(Qt.SizeHorCursor))
-        self.leftgrip.setStyleSheet(u"background-color: rgb(255, 121, 198);")
+        self.leftgrip.setStyleSheet("background-color: rgb(255, 121, 198);")
         self.leftgrip.setFrameShape(QFrame.NoFrame)
         self.leftgrip.setFrameShadow(QFrame.Raised)
 
     def right(self, Form):
         if not Form.objectName():
-            Form.setObjectName(u"Form")
+            Form.setObjectName("Form")
         Form.resize(500, 500)
         self.rightgrip = QFrame(Form)
-        self.rightgrip.setObjectName(u"right")
+        self.rightgrip.setObjectName("right")
         self.rightgrip.setGeometry(QRect(0, 0, 10, 500))
         self.rightgrip.setMinimumSize(QSize(10, 0))
         self.rightgrip.setCursor(QCursor(Qt.SizeHorCursor))
-        self.rightgrip.setStyleSheet(u"background-color: rgb(255, 0, 127);")
+        self.rightgrip.setStyleSheet("background-color: rgb(255, 0, 127);")
         self.rightgrip.setFrameShape(QFrame.NoFrame)
         self.rightgrip.setFrameShadow(QFrame.Raised)

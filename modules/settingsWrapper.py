@@ -13,7 +13,7 @@ from modules.universalFunctions import *
 
 class UniversalSettingsWrapper:
     """
-    Reads from and writes to universalSettings in settings.json configuration file. Static Class.
+    Reads from and writes to universalSettings in settings.json configuration file. Instantiated when a Dataset object is instantiated and  passes information to that object.
     """
     def __init__(self): 
         settingsFile = "configuration\\settings.json"

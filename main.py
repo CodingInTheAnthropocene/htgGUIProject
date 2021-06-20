@@ -33,7 +33,6 @@ class MainWindow(QMainWindow):
         Constructor method for main window.
         """        
         QMainWindow.__init__(self)
-        #self.p= p
         
         # Set widgets as global 
         self.ui = Ui_MainWindow()
@@ -102,7 +101,7 @@ class MainWindow(QMainWindow):
 
         # for each catalogue dataset instantiate a DatasetSettingsWidget, and DatasetFrame, add them to respective layouts
         for i in self.catalogueDatasetList:
-            newDatasetObject = Dataset(i,)
+            newDatasetObject = Dataset(i)
             self.datasetList.append(newDatasetObject)
 
             newDatasetSettingsWidget = DatasetSettingsWidget(
@@ -123,8 +122,7 @@ class MainWindow(QMainWindow):
             self.flowLayoutCatalogue.addWidget(newDatasetFrame)
             widgets.verticalLayout.addWidget(newDatasetSettingsWidget)
 
-        # for each hybrid dataset, instantiate a DatasetSettingsWidget, and DatasetFrame, add them to respective layouts
- 
+        # for each hybrid dataset, instantiate a DatasetSettingsWidget, and DatasetFrame, add them to respective layouts 
         self.hybridDatasetList = sorted(
             [i for i in initiationDictionary["datasets"]["hybridDatasets"]],
             key=lambda x: initiationDictionary["datasets"]["hybridDatasets"][x]["name"],
@@ -152,7 +150,6 @@ class MainWindow(QMainWindow):
 
             self.flowLayoutHybridDatasets.addWidget(newDatasetFrame)
             widgets.verticalLayout.addWidget(newDatasetSettingsWidget)
-
     
     def datasetReset(self):
         """
@@ -180,7 +177,9 @@ class MainWindow(QMainWindow):
         self.logInstantiation()
 
     def logInstantiation(self):
-
+        """
+        Generates buttons for log files, and displays Log for last button created
+        """        
         
         # for all files in log folder, create a LogButton in order of the log created date
         buttonPathList = []
@@ -200,11 +199,13 @@ class MainWindow(QMainWindow):
 
             self.logWidgetList.append(newMonthButton)
             self.flowLayoutLogs.addWidget(newMonthButton)
+            
+            # display log from most recently created button  in textedit
             newMonthButton.updateTextEdit()
   
     def universalSettingsInstantiation(self):
         """
-        Starting state for settings widget
+        Starting state for Universal settings. Instantiated as part of the main application. 
         """        
 
         widgets.lineEditEmail.setText(self.universalSettingsWrapper.email)
@@ -218,7 +219,7 @@ class MainWindow(QMainWindow):
         widgets.lineEditWha.setText(self.universalSettingsWrapper.soiWhaPath)
         widgets.lineEditSwBc.setText(self.universalSettingsWrapper.aoiSwBcPath)
 
-                # signals and slots for settings update button
+        # signals and slots for settings update button
         widgets.buttonApplySettings.clicked.connect(self.updateAllSettings)
 
         # display text from settings.json
@@ -254,10 +255,10 @@ class MainWindow(QMainWindow):
 
     def updateAllSettings(self):
         """
-        Write state of all settings to settings.json
+        Write state of all settings to settings.json. Also does a dataset refresh so that new settings are available immediately.
         """        
         
-        # get text from universal settings and store in  dictionary
+        # get text from universal settings and store in  dictionary 
         universalSettingsDictionary = {
             "email": widgets.lineEditEmail.text(),
             "downloadFolder": widgets.lineEditDownloadFolder.text(),
@@ -281,6 +282,7 @@ class MainWindow(QMainWindow):
         for i in self.datasetSettingsList:
             i.outputToSettings()
 
+        # reset all datasets
         self.datasetReset()
 
     def fileDialogueFolder(self, lineEdit):
@@ -452,7 +454,7 @@ class MainWindow(QMainWindow):
         self.bottom_grip.setGeometry(0, self.height() - 10, self.width(), 10)
 
 if __name__ == "__main__":
-    #p=ProcessPool()
+    
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("icon.ico"))
     window = MainWindow()

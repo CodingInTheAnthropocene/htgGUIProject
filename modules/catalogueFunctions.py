@@ -3,6 +3,7 @@ catalogueFunctions.py - Geoprocessing chains for BC data catalogue datasets.
 """
 
 import arcpy
+from time import sleep
 
 from modules.settingsWrapper import *
 from modules.universalFunctions import *
@@ -116,6 +117,11 @@ def crownTenuresGeoprocessing(rawPath, dataset):
 
     arcpy.DeleteField_management(rawPath, deleteFields)
 
+    # wait for lands Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.htgLandsPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30)
+
     landsDeleteFields = [ "ATTRIBUTE_", "EN", "GEOMETRY_S", "H_", "Ha", "ICF", "ICF_AREA", "ICIS", "JUROL", "LAND_ACT_P", "LAND_DISTR", "LEGAL_FREE", "LOCALAREA", "LTSA_BLOCK", "LTSA_LOT", "LTSA_PARCE", "LTSA_PLAN", "OWNER_CLAS", "OtherComme", "PARCEL_DES", "PID", "PIN", "PIN_DISTLE", "PIN_SUBDLA", "PMBC", "RoW", "SOURCE_PRO", "TEMP_PolyI", "TENURES", "TimbeTable", "Title_Info", "Title_num", "Title_owne", "access", "apprais2BC", "apprais2HB", "apprais2Ha", "apprais2re", "appraisal2", "arch_sites", "avail_issu", "available", "comments", "confirm_qu", "ess_respon", "essential", "guide_outf", "interests", "label", "landval_20", "landval_sr", "location", "municipali", "needs_conf", "potential_", "prop_class", "result_val", "selected", "specific_l", "tourism_ca", "trapline", "use_on_pro", "valperHa_2", "zone_code", "zoning"]
 
     landsCopy=copySpecificFields(dataset.universalSettingsWrapper.htgLandsPath, landsDeleteFields)
@@ -154,7 +160,11 @@ def crownTenuresGeoprocessing(rawPath, dataset):
                 row[2] = fieldValueDictionary[first2]
                 cursor.updateRow(row)
                 break
-
+    
+    # wait for soi Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.soiPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30) 
 
     print(f"{dataset.alias}: Starting tenures/SOI intersect")
     # intersect crown tenures with SOI
@@ -216,6 +226,11 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
     deleteFields = [ "HVA_SKEY", "FFID", "CP_ID", "FEAT_CLASS", "HVA_ID", "HVA_MGMTID", "HVA_MGMTCD", "HRV_TP_CD", "HRV_TP_DSC", "HVA_ST_CD", "ISSUE_DATE", "CURR_EX_DT", "QTA_TP_CD", "CR_LND_CD", "SAL_TP_CD", "CASC_SP_CD", "CATAST_IND", "CR_GRT_IND", "CRUISE_IND", "DECID_IND", "RETIRE_DT", "FEAT_AREA", "FEAT_PERIM", "ADM_DST_CD", "GEO_DST_CD", "GEO_DST_NM", "TM_PRIME", "MRK_MD_CD", "MRK_MD_DSC", "MRK_IN_CD", "MRK_IN_DSC", "OTH_TM_IND", "CL_LOC_CD", "FILE_TP_CD", "FILE_ST_CD", "PFU_MGMTID", "SB_FND_IND", "BCTS_ORGCD", "BCTS_ORGNM", "MAP_LABEL", "AREA_SQM", "FEAT_LEN", "OBJECTID", ]
 
     arcpy.DeleteField_management(rawPath, deleteFields)
+
+    # wait for lands Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.htgLandsPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30)
 
     # create lands copy the correct fields
     landsDeleteFields = [ "ATTRIBUTE_", "EN", "GEOMETRY_S", "H_", "Ha", "ICF", "ICF_AREA", "ICIS", "JUROL", "LAND_ACT_P", "LAND_DISTR", "LEGAL_FREE", "LOCALAREA", "LTSA_BLOCK", "LTSA_LOT", "LTSA_PARCE", "LTSA_PLAN", "OWNER_CLAS", "OtherComme", "PARCEL_DES", "PID", "PIN", "PIN_DISTLE", "PIN_SUBDLA", "PMBC", "RoW", "SOURCE_PRO", "TEMP_PolyI", "TENURES", "TimbeTable", "Title_Info", "Title_num", "Title_owne", "access", "apprais2BC", "apprais2HB", "apprais2Ha", "apprais2re", "appraisal2", "arch_sites", "avail_issu", "available", "comments", "confirm_qu", "ess_respon", "essential", "guide_outf", "interests", "label", "landval_20", "landval_sr", "location", "municipali", "needs_conf", "owner", "potential_", "prop_class", "result_val", "selected", "specific_l", "tourism_ca", "trapline", "use_on_pro", "valperHa_2", "zone_code", "zoning", "Shape_Leng", "Shape_Area", "new_owners", "ownership_", ]
@@ -300,6 +315,11 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
     deleteFields = [ "MPBLCKD", "MLTPCD", "RTRMNTDT", "MNDMNTD", "MAP_LABEL", "FEAT_AREA", "FTRPRMTR", "FTRCLSSSK", "FLSTTSCD", "DMNDSTRCTC", "AREA_SQM", "FEAT_LEN", "OBJECTID", ]
 
     arcpy.DeleteField_management(rawPath, deleteFields)
+
+    # wait for lands Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.htgLandsPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30)
 
     # create lands copy
     landsDeleteFields = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_S", "ATTRIBUTE_", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCE", "LTSA_PLAN", "LEGAL_FREE", "LAND_DISTR", "LAND_ACT_P", "PARCEL_DES", "OWNER_CLAS", "SOURCE_PRO", "landval_20", "valperHa_2", "result_val", "Ha", "comments", "new_owners", "PMBC", "ICIS", "ICF", "landval_sr", "prop_class", "needs_conf", "confirm_qu", "selected", "selected_b", "label", "location", "specific_l", "H_", "use_on_pro", "potential_", "interests", "available", "avail_issu", "owner", "EN", "guide_outf", "trapline", "ess_respon", "tourism_ca", "access", "zoning", "zone_code", "TENURES", "PIN_DISTLE", "PIN_SUBDLA", "municipali", "arch_sites", "Title_num", "Title_owne", "Title_Info", "essential", "RoW", "OtherComme", "appraisal2", "apprais2HB", "apprais2re", "apprais2BC", "apprais2Ha", "TEMP_PolyI", "TimbeTable", "ownership_", "Shape_Leng", "Shape_Area", ]
@@ -389,6 +409,11 @@ def harvestedAreasGeoprocessing(rawPath, dataset):
 
     arcpy.DeleteField_management(rawPath, deleteFields)
 
+    # wait for lands Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.htgLandsPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30)
+
     landsDeleteFields = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_S", "ATTRIBUTE_", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCE", "LTSA_PLAN", "LEGAL_FREE", "LAND_DISTR", "LAND_ACT_P", "PARCEL_DES", "OWNER_CLAS", "SOURCE_PRO", "landval_20", "valperHa_2", "result_val", "Ha", "comments", "new_owners", "PMBC", "ICIS", "ICF", "landval_sr", "prop_class", "needs_conf", "confirm_qu", "selected", "label", "location", "specific_l", "H_", "use_on_pro", "potential_", "interests", "available", "avail_issu", "owner", "EN", "guide_outf", "trapline", "ess_respon", "tourism_ca", "access", "zoning", "zone_code", "TENURES", "PIN_DISTLE", "PIN_SUBDLA", "municipali", "arch_sites", "Title_num", "Title_owne", "Title_Info", "essential", "RoW", "OtherComme", "appraisal2", "apprais2HB", "apprais2re", "apprais2BC", "apprais2Ha", "TEMP_PolyI", "TimbeTable", "ownership_", "Shape_Leng", "Shape_Area", ]
 
     landsCopy=copySpecificFields(dataset.universalSettingsWrapper.htgLandsPath, landsDeleteFields)
@@ -457,6 +482,11 @@ def parcelMapBCGeoprocessing(rawPath, dataset):
     arcpy.CreateFileGDB_management(dataset.downloadFolder, dataset.fileName)
 
     arcpy.env.workspace = parcelsGdb
+
+    # wait for soi Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.soiPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30) 
 
     gdbSOI = arcpy.CopyFeatures_management(dataset.universalSettingsWrapper.soiPath, parcelsGdb)
 
@@ -544,7 +574,12 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
     roadAtlasDisolve = arcpy.Dissolve_management(
         rawPath, "tempRoadDisolve.shp", ["RDNAME", "road_type"], [["RDALIAS1", "FIRST"], 
         ["RDALIAS2", "FIRST"], ["RDNAME", "FIRST"], ["RDSURFACE", "FIRST"], ["ROAD_CLASS", "FIRST"], ["NUMLANES","FIRST"], ["CPTRDATE","FIRST"], ["FEAT_LEN", "SUM"]], "SINGLE_PART"
-    )    
+    ) 
+
+    # wait for soi Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.soiPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30)   
 
     # intersect with SOI
     print(f"{dataset.alias}: Starting intersect") 
@@ -580,6 +615,11 @@ def alcAlrPolygonsGeoprocessing(rawPath, dataset):
     
     deleteFields = ["STATUS", "FTRCD", "OBJECTID", "AREA_SQM"]
     arcpy.DeleteField_management(rawPath, deleteFields)
+
+    # wait for lands Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.htgLandsPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30)
 
     # create lands copy witth specific fieldsAll.
     landsDeleteFields = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_SOURCE", "ATTRIBUTE_SOURCE", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCEL", "LTSA_PLAN", "LEGAL_FREEFORM", "LAND_DISTRICT", "LAND_ACT_PRIMARY_DESCRIPTION", "PARCEL_DESCRIPTION", "SOURCE_PROVISION_DATE", "landval_2017", "valperHa_2017", "result_val_2017", "Ha", "new_group", "comments", "new_ownership", "PMBC", "ICIS", "ICF", "landval_src", "prop_class", "needs_confirm", "confirm_question", "selected", "label", "location", "specific_location", "H_", "use_on_prop", "potential_FCyCmPD", "interests", "available", "avail_issues", "owner", "EN", "guide_outfit", "trapline", "ess_response", "tourism_capability", "access", "zoning", "zone_code", "TENURES", "parcel_num", "PIN_DISTLE", "PIN_SUBDLA", "municipality", "arch_sites", "Title_num", "Title_owner", "Title_Info", "essential", "RoW", "OtherComments", "appraisal2work", "apprais2HBU", "apprais2reportID", "apprais2BC_ID", "apprais2Ha", "TEMP_PolyID", "TimbeTableLink", "ownership_type", ]
@@ -642,6 +682,11 @@ def environmentalRemediationSitesGeoprocessing(rawPath, dataset):
     deleteFields = [ "ENV_RMD_ID", "GEN_DESC", "VICFILENO", "REGFILENO", "COMMON_NM", "LATITUDE", "LONGITUDE", "OBJECTID", ]
 
     arcpy.DeleteField_management(rawPath, deleteFields)
+
+    # wait for lands Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.htgLandsPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30)
 
     landsDeleteFields = [ "LOCALAREA", "ICF_AREA", "GEOMETRY_SOURCE", "ATTRIBUTE_SOURCE", "PID", "PIN", "JUROL", "LTSA_LOT", "LTSA_BLOCK", "LTSA_PARCEL", "LTSA_PLAN", "LEGAL_FREEFORM", "LAND_DISTRICT", "LAND_ACT_PRIMARY_DESCRIPTION", "PARCEL_DESCRIPTION", "SOURCE_PROVISION_DATE", "landval_2017", "valperHa_2017", "result_val_2017", "Ha", "new_group", "comments", "new_ownership", "PMBC", "ICIS", "ICF", "landval_src", "prop_class", "needs_confirm", "confirm_question", "selected", "label", "location", "specific_location", "H_", "use_on_prop", "potential_FCyCmPD", "interests", "available", "avail_issues", "owner", "EN", "guide_outfit", "trapline", "ess_response", "tourism_capability", "access", "zoning", "zone_code", "TENURES", "parcel_num", "PIN_DISTLE", "PIN_SUBDLA", "municipality", "arch_sites", "Title_num", "Title_owner", "Title_Info", "essential", "RoW", "OtherComments", "appraisal2work", "apprais2HBU", "apprais2reportID", "apprais2BC_ID", "apprais2Ha", "TEMP_PolyID", "TimbeTableLink", "ownership_type", ]
 

@@ -4,6 +4,7 @@ parksFunctions.py - Geoprocessing chains for the Parks and Recreation dataset.
 
 import arcpy
 from os import path
+from time import sleep
 from modules.settingsWrapper import *
 
 def northCowichanRecreationGeoprocessing(rawPath, dataset):
@@ -268,6 +269,11 @@ def parksEcologicalProtectedGeoprocessing(rawPath, dataset):
     for i in renameDict:
         shapefileFieldRename(rawPath, i, renameDict[i], renameDict[i])
 
+    # wait for soi Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.soiPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30) 
+
     # intersect wwith SOI
     rawPath = arcpy.Intersect_analysis(
         [rawPath, dataset.universalSettingsWrapper.soiPath],
@@ -336,6 +342,12 @@ def nationalParksGeoprocessing(rawPath, dataset):
     for i in renameDict.keys():
         shapefileFieldRename(rawPath, i, renameDict[i], renameDict[i])
 
+    # wait for soi Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.soiPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30) 
+
+
     # intersect with SOI
     rawPath = arcpy.Intersect_analysis(
         [rawPath, dataset.universalSettingsWrapper.soiPath],
@@ -403,6 +415,12 @@ def recreationPolygonsGeoprocessing(rawPath, dataset):
 
     for i in renameDict.keys():
         shapefileFieldRename(rawPath, i, renameDict[i], renameDict[i])
+
+    # wait for soi Schema look
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.soiPath) ==   False:
+        print(f"{dataset.alias}: waiting for clear path…")
+        sleep(30) 
+
 
     # intersect with SOI
     rawPath = arcpy.Intersect_analysis(
@@ -502,7 +520,6 @@ def nanaimoCityParksGeoprocessing(rawPath, dataset):
 
     return rawPath
 
-
 def cvrdParksGeoprocessing(rawPath, dataset):
     """
     CVRD parks geoprocessing.
@@ -514,7 +531,6 @@ def cvrdParksGeoprocessing(rawPath, dataset):
     :return: Processed file
     :rtype: result
     """    
-
 
     arcpy.env.workspace = dataset.downloadFolder
     arcpy.env.overwriteOutput = True

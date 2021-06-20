@@ -1,7 +1,6 @@
 """
-datasetObjects.py- Module for dataset object
+datasetObjects.py- Module for Dataset object
 """
-
 import arcpy
 import logging
 from genericpath import exists, getsize
@@ -17,14 +16,11 @@ from json import load, dump
 import time
 from traceback import print_exc
 from io import StringIO
-from pathos.pools import ProcessPool
-
 
 from modules.universalFunctions import *
 from modules.settingsWrapper import *
 from modules.catalogueFunctions import *
 from modules.parksFunctions import *
-
 
 class Dataset:
     """
@@ -38,7 +34,7 @@ class Dataset:
         :type datasetAlias: str
         """        
 
-        # Instantiate settings wrapper and assign attributes
+        # Instantiate settings wrappers and assign attributes
         self.universalSettingsWrapper = UniversalSettingsWrapper()
         self.datasetSettingsWrapper = DatasetSettingsWrapper(datasetAlias)
 
@@ -52,6 +48,7 @@ class Dataset:
         self.updateFrequency = self.datasetSettingsWrapper.updateFrequency
         self.arcgisWorkspaceFolder = self.datasetSettingsWrapper.arcgisWorkspaceFolder
         self.urlList = self.datasetSettingsWrapper.urlList
+        
 
         self.alias = datasetAlias
         self.geoprocessingFunction = eval(self.datasetSettingsWrapper.geoprocessingFunction)
@@ -284,7 +281,7 @@ class Dataset:
         #remove raw data
         rmtree(self.rawFolderPath)
         
-        self.logger.info(f"{self.geoprocessingFunction.__name__}({self.rawFilePaths})")
+        self.logger.info(f"{self.geoprocessingFunction.__name__}('{self.rawFilePaths}')")
 
     def createDownloadInfo(self):
         """
@@ -397,97 +394,88 @@ class Dataset:
         dictToSettings = {"currentPath": self.processedFile}
         self.datasetSettingsWrapper.settingsWriter(dictToSettings)
 
-    def catalogueUpdateProcess(self):
-        def update(self):
-            """
-            The  most important darn function in the whole kit and caboodle. The entire update process for a dataset. Called from the update button on the dataset frame widget.
-            """ 
+    def updateProcess(self):
+        """
+        The  most important darn function in the whole kit and caboodle. The entire update process for a dataset. Called from the update button on the DatasetFrame widget.
+        """ 
+        # test to see if current file is open in ArcGIS
+        schemaLockStatus=arcpy.TestSchemaLock(self.currentPath)
+        
+        try:
+            spatialObjectStatus=  True if arcpy.Describe(self.currentPath).dataType in ("ShapeFile", "FeatureClass") else False
+        except:
+            spatialObjectStatus= False
+            print_exc()
+        
+        # check to see if requisite paths in place
+        fromSettings =self.universalSettingsWrapper
+        requiredPaths =True
+        requiredPathList = []
 
-            # test to see if current file is open in ArcGIS
-            schemaLockStatus=arcpy.TestSchemaLock(self.currentPath)
-            
-            try:
-                spatialObjectStatus=  True if arcpy.Describe(self.currentPath).dataType in ("ShapeFile", "FeatureClass") else False
-            except:
-                spatialObjectStatus= False
-                print_exc()
-            
-            # check to see if requisite paths in place
-            fromSettings =self.universalSettingsWrapper
-            requiredPaths =True
-            requiredPathList = []
-
-            # if path doesn't exist, is a blank string, and isn't a geodatabase feature class, flag the path as invalid
-            for i  in  (fromSettings.downloadFolder, fromSettings.archiveFolder, fromSettings.logFolder, fromSettings.htgLandsPath, fromSettings.soiPath):
-                if (exists(i)== False or i == ""):
-                    try:
-                        if arcpy.Describe(i).dataType != "FeatureClass":
-                            requiredPaths=False
-                            requiredPathList.append(i)
-                    except:
+        # if path doesn't exist, is a blank string, and isn't a geodatabase feature class, flag the path as invalid
+        for i in  (fromSettings.downloadFolder, fromSettings.archiveFolder, fromSettings.logFolder, fromSettings.htgLandsPath, fromSettings.soiPath):
+            if (exists(i)== False or i == ""):
+                try:
+                    if arcpy.Describe(i).dataType != "FeatureClass":
                         requiredPaths=False
                         requiredPathList.append(i)
-                                   
-            if requiredPaths== False:
-                print(f"Download folder, archive folder, log folder, HTG lands path, and SOI path required. The following paths are invalid: {requiredPathList}")
-                return
-
-            # If all is good, let 'er rip
-            if (schemaLockStatus== True or spatialObjectStatus ==  False) and requiredPaths==True:
-                
-                #insantiate logger
-                self.logger = logging.getLogger('basic_logger')
-                self.logger.setLevel(logging.DEBUG)
-                self.logCaptureString = StringIO()
-                self.ch = logging.StreamHandler(self.logCaptureString)
-                self.ch.setLevel(logging.DEBUG)
-                formatter = logging.Formatter('    %(levelname)s - %(message)s')
-                self.ch.setFormatter(formatter)
-                self.logger.addHandler(self.ch)
-
-                self.logger.info("catalogueUpdateProcess()")
-
-                print(f"{self.alias}: Starting update process!")
-                
-                # archive
-                print(f"{self.alias}: Archiving…")
-                self.archiving()
-
-                # acquire data
-                tic = time.perf_counter()
-                print(f"{self.alias}: Starting data acquisition")
-                self.dataAcquisition()
-                toc = time.perf_counter()
-                print(f"{self.alias}: Total acquisition time - {toc - tic:0.4f} seconds")
-
-                # geoprocessing chain
-                print(f"{self.alias}: Starting geoprocessing")
-                tic = time.perf_counter()
-                self.geoprocessing()
-                toc = time.perf_counter()
-                print(f"{self.alias}: Geoprocessing time - {toc - tic:0.4f} seconds")           
-
-                print(f"{self.alias}: Logging…")
-
-                #write logs and metadata
-                try:
-                    self.writeToSettings()
-                    self.createDownloadInfo()
-                    self.writeTextAndMetadata()
-                    self.writeLog()
                 except:
-                    print("Logging error")
-                    print_exc()
+                    requiredPaths=False
+                    requiredPathList.append(i)
+                                
+        if requiredPaths== False:
+            print(f"Download folder, archive folder, log folder, HTG lands path, and SOI path required. The following paths are invalid: {requiredPathList}")
+            return
 
-                print(f"{self.alias}: Finished update process!")
+        # If all is good, let 'er rip
+        if (schemaLockStatus== True or spatialObjectStatus ==  False) and requiredPaths==True:            
+            #insantiate logger
+            self.logger = logging.getLogger('basic_logger')
+            self.logger.setLevel(logging.DEBUG)
+            self.logCaptureString = StringIO()
+            self.ch = logging.StreamHandler(self.logCaptureString)
+            self.ch.setLevel(logging.DEBUG)
+            formatter = logging.Formatter('    %(levelname)s - %(message)s')
+            self.ch.setFormatter(formatter)
+            self.logger.addHandler(self.ch)
 
-            else:
-                print("Can't get exclusive schema lock")
-                
+            self.logger.info("updateProcess()")
 
-        update(self)
-        # self.p=ProcessPool()
-        # self.p.map(update, [self])
+            print(f"{self.alias}: Starting update process!")
+            
+            # archive
+            print(f"{self.alias}: Archiving…")
+            self.archiving()
 
+            # acquire data
+            tic = time.perf_counter()
+            print(f"{self.alias}: Starting data acquisition")
+            self.dataAcquisition()
+            toc = time.perf_counter()
+            print(f"{self.alias}: Total acquisition time - {toc - tic:0.4f} seconds")
+            
+            # geoprocessing chain 
+            print(f"{self.alias}: Starting geoprocessing")
+            tic = time.perf_counter()
+            self.geoprocessing()
+            toc = time.perf_counter()
+            print(f"{self.alias}: Geoprocessing time - {toc - tic:0.4f} seconds")           
 
+            print(f"{self.alias}: Logging…")
+
+            #write logs and metadata
+            try:
+                self.writeToSettings()
+                self.createDownloadInfo()
+                self.writeTextAndMetadata()
+                self.writeLog()
+            except:
+                print("Logging error")
+                print_exc()
+
+            print(f"{self.alias}: Finished update process!")
+
+        else:
+            print("Can't get exclusive schema lock")
+            
 
