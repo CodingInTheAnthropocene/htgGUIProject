@@ -111,7 +111,7 @@ def crownTenuresGeoprocessing(rawPath, dataset):
     arcpy.env.overwriteOutput = True
 
     # create working copies,delete fields
-    print(f"{dataset.alias}: Creaating working copies, Deleting fields")
+    print(f"{dataset.alias}: Creating working copies, Deleting fields")
 
     deleteFields = [ "INTRID_SID", "APP_TYPE_CD", "TEN_DOCMNT", "TEN_LGLDSC", "TEN_A_DRVN", "RESP_BUS_U", "DSP_TR_SID", "CD_CHR_STG", "SHAPE_1", "AREA_SQM", "FEAT_LEN", ]
 
@@ -153,13 +153,17 @@ def crownTenuresGeoprocessing(rawPath, dataset):
     )
 
     for row in cursor:
-        # iterate over tenures dictionary
+        first2 = f"{row[0]}, {row[1]}"
+
+        row[2]= f"other"
         for i in fieldValueDictionary:
-            first2 = f"{row[0]}, {row[1]}"
             if first2 == i:
-                row[2] = fieldValueDictionary[first2]
-                cursor.updateRow(row)
+                row[2] = fieldValueDictionary[first2]            
                 break
+        
+        cursor.updateRow(row)
+        
+
     
     # wait for soi Schema look
     while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.soiPath) ==   False:
@@ -190,14 +194,15 @@ def crownTenuresGeoprocessing(rawPath, dataset):
     del cursor
 
     # add and calculate HA field to tenures/soi/lands intersect
-    print(f"{dataset.alias}: Calculating geometry" )    
+    print(f"{dataset.alias}: Calculating geometry" ) 
+
     arcpy.AddField_management(crownTenuresProcessedPath, "HA", "FLOAT")
 
-    arcpy.CalculateGeometryAttributes_management(
+    arcpy.management.CalculateGeometryAttributes(
         crownTenuresProcessedPath, [["HA", "AREA"]], area_unit="HECTARES"
     )
 
-    # cleanup
+    # delete working copies
     arcpy.management.Delete(rawPath)
     arcpy.management.Delete(landsCopy)
     arcpy.management.Delete(tenuresSOIIntersect)
@@ -216,6 +221,7 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
     :rtype: result
     """   
 
+    # env variables
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True
 
@@ -282,7 +288,7 @@ def forestHarvestingAuthorityGeoprocessing(rawPath, dataset):
     print(f"{dataset.alias}: Calculating geometry")
     arcpy.AddField_management(forestHarvestingAuthorityProcessedPath, "HA", "FLOAT")
 
-    arcpy.CalculateGeometryAttributes_management(
+    arcpy.management.CalculateGeometryAttributes(
         forestHarvestingAuthorityProcessedPath, [["HA", "AREA"]], area_unit="HECTARES"
     )
 
@@ -373,8 +379,8 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
     print(f"{dataset.alias}: Calculating geometry")
     arcpy.AddField_management(forestManagedLicenceProcessedPath, "HA", "FLOAT")
 
-    arcpy.CalculateGeometryAttributes_management(
-        forestManagedLicenceProcessedPath, [["HA", "AREA"]], area_unit="HECTARES"
+    arcpy.management.CalculateGeometryAttributes(
+        forestManagedLicenceProcessedPath, [["HA", "AREA"]], area_unit="HECTARES", 
     )
 
     # remove working files
@@ -382,9 +388,6 @@ def forestManagedLicenceGeoprocessing(rawPath, dataset):
 
     return forestManagedLicenceProcessedPath
 
-####################################################################################################################
-# Harvested areas of BC (Consolidated Cut Blocks)
-####################################################################################################################
 
 def harvestedAreasGeoprocessing(rawPath, dataset):
     """
@@ -404,7 +407,7 @@ def harvestedAreasGeoprocessing(rawPath, dataset):
 
     # delete fields
     print(f"{dataset.alias}: Creating working copies, deleting fields")
-    deleteFields = ["OPENINGID", "AREA_SQM", "FTLENGTHM", "SHAPE_1", "OBJECTID"]
+    deleteFields = ["OPENINGID", "AREA_SQM", "FTLENGTHM", "SHAPE_1", "OBJECTID", "HA"]
 
     arcpy.DeleteField_management(rawPath, deleteFields)
 
@@ -452,7 +455,7 @@ def harvestedAreasGeoprocessing(rawPath, dataset):
 
     # calculate geometry
     print(f"{dataset.alias}: Calculating geometry")
-    arcpy.CalculateGeometryAttributes_management(
+    arcpy.management.CalculateGeometryAttributes(
         harvestedAreasProcessedPath, [["HA", "AREA"]], area_unit="HECTARES"
     )
 
@@ -528,18 +531,7 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
         ("local", "lane"): "local",
         "ferry": "ferry",
         "unclassified": "unnamed/logging",
-        (
-            "alleyway",
-            "driveway",
-            "private",
-            "recreation",
-            "resource",
-            "restricted",
-            "runway",
-            "service",
-            "strata",
-            "yield",
-        ): "other",
+        ( "alleyway", "driveway", "private", "recreation", "resource", "restricted", "runway", "service", "strata", "yield", ): "other",
         ("pedestrian", "trail"): "path",
         "proposed": "proposed",
     }
@@ -569,14 +561,18 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
 
     del cursor
 
-    print(f"{dataset.alias}: Starting Dissolve") 
+    #NOTE: Could add optional Intersect with municipalities/regional districts here. That feature class is provided in dependencies Folder.
+
+    # dissolve
+    print(f"{dataset.alias}: Starting Dissolve")
+
     roadAtlasDisolve = arcpy.Dissolve_management(
         rawPath, "tempRoadDisolve.shp", ["RDNAME", "road_type"], [["RDALIAS1", "FIRST"], 
         ["RDALIAS2", "FIRST"], ["RDNAME", "FIRST"], ["RDSURFACE", "FIRST"], ["ROAD_CLASS", "FIRST"], ["NUMLANES","FIRST"], ["CPTRDATE","FIRST"], ["FEAT_LEN", "SUM"]], "SINGLE_PART"
     ) 
 
     # wait for soi Schema look
-    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.soiPath) ==   False:
+    while arcpy.TestSchemaLock(dataset.universalSettingsWrapper.soiPath) ==  False:
         print(f"{dataset.alias}: waiting for clear path…")
         sleep(30)   
 
@@ -590,7 +586,7 @@ def digitalRoadAtlasGeoprocessing(rawPath, dataset):
 
     #Cleanup   
     arcpy.Delete_management(roadAtlasDisolve)
-    #arcpy.Delete_management(rawPath)
+    arcpy.Delete_management(rawPath)
 
     return roadAtlasIntersect
 
@@ -670,6 +666,7 @@ def environmentalRemediationSitesGeoprocessing(rawPath, dataset):
     :return: Processed file
     :rtype: result
     """ 
+
 
     arcpy.env.workspace = dataset.arcgisWorkspaceFolder
     arcpy.env.overwriteOutput = True

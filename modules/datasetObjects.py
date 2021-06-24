@@ -200,9 +200,10 @@ class Dataset:
 
         # check order url every 15 seconds for the appropriate download link, break the loop when that link no longer includes "fme_temp.zip". This signifies that the temporary link has been replaced.
         stopLoop = False
+        count = 0
         while stopLoop == False:
             sleep(15)
-            print(f"{self.alias}: Checking...")
+            print(f"{self.alias}: Checking - {count}...")
             connection = urlopen(orderURL)
             dom = fromstring(connection.read())
             for link in dom.xpath("//a/@href"):
@@ -213,6 +214,7 @@ class Dataset:
                     downloadURL = link
                     stopLoop = True
                     break
+            count += 1
         
         print(f"{self.alias}: Found! Starting download...")
 

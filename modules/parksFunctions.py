@@ -369,6 +369,8 @@ def nationalParksGeoprocessing(rawPath, dataset):
             "National Parks",
         )
 
+        cursor.updateRow(row)
+
     # calculate geometry
     arcpy.CalculateGeometryAttributes_management(
         rawPath, [["HA", "AREA"]], area_unit="HECTARES"

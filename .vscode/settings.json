@@ -1,10 +1,5 @@
 {
-    "python.pythonPath": "C:\\Users\\laure\\AppData\\Local\\ESRI\\conda\\envs\\arcgispro-py3-clone\\python.exe",
-    "python.autoComplete.extraPaths": [
-        "C:\\Users\\laure\\Desktop\\htgGUIProject\\modules"
-    ],
-    "python.analysis.extraPaths": [
-        "C:\\Users\\laure\\Desktop\\htgGUIProject\\modules"
-    ],
+    "python.pythonPath": "c:\\Users\\laure\\AppData\\Local\\ESRI\\conda\\envs\\arcgispro-py3-clone\\python.exe",
+
     "window.zoomLevel": 0
 }

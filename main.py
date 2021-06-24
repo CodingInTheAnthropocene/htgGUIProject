@@ -1,11 +1,11 @@
 """
 main.py - Main module for application.Includes view and functionality for main window.
 """
-from PySide6.QtWidgets import QGraphicsDropShadowEffect, QPushButton
-from PySide6.QtGui import QIcon, QColor
-from PySide6.QtCore import QTimer, QEvent, Qt
+
+from PySide6.QtWidgets import *
+from PySide6.QtGui import *
+from PySide6.QtCore import *
 import sys
-from pathos.pools import ProcessPool
 
 from ui_main import *
 from modules.customWidgets import *
@@ -454,10 +454,9 @@ class MainWindow(QMainWindow):
         self.bottom_grip.setGeometry(0, self.height() - 10, self.width(), 10)
 
 if __name__ == "__main__":
-    
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("icon.ico"))
     window = MainWindow()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
