@@ -69,6 +69,9 @@ class MainWindow(QMainWindow):
         self.flowLayoutHybridDatasets = FlowLayout(widgets.frameOtherDatasets)
         self.flowLayoutLogs = FlowLayout(widgets.scrollAreaLogsButtons)
 
+        # instantiate universal settings wrapper
+        self.universalSettingsWrapper = UniversalSettingsWrapper()
+
         # instantiate data sets and their corresponding custom widgets     
         self.datasetInstantiation()
 
@@ -85,7 +88,7 @@ class MainWindow(QMainWindow):
         """
         Instantiates datasets and their respective custom widgets
         """ 
-        self.universalSettingsWrapper = UniversalSettingsWrapper()
+        
 
         self.datasetList= []
         self.datasetFrameList = []

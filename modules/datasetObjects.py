@@ -30,7 +30,7 @@ class Dataset:
         """
         Constructor method.
 
-        :param datasetAlias: Dataset alias. Must match what is in configuration files.
+        :param datasetAlias: Dataset alias. Passed from initiationDictionary.py.
         :type datasetAlias: str
         """        
 
@@ -365,7 +365,7 @@ class Dataset:
             }
         }
 
-        # If log doesn't exist or is empty for some reason, create A new JSON file and populate with dictionary
+        # If log doesn't exist for this month yet or is empty for some reason, create A new JSON file and populate with dictionary
         if exists(logPath) == False or getsize(logPath)==0:
             with open(logPath, "w")  as logFile:
                 dump(logDictionary, logFile)

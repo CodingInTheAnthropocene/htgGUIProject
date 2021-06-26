@@ -25,7 +25,7 @@ class DatasetFrame(QFrame):
         Constructor method.
 
         :param parent: Parent widget
-        :type parent: QWidet
+        :type parent: QWidget
         :param dataset: Dataset object
         :type dataset: Dataset
         :param mainWindow: Main window into which the Dataset Frame will be instantiated
@@ -47,7 +47,7 @@ class DatasetFrame(QFrame):
         self.updateFrequency = dataset.updateFrequency
         self.dataCatalogueIdList = dataset.dataCatalogueIdList
         self.xCollapsed = 250
-        self.xExpanded = 500
+        self.xExpanded = 450
         self.yCollapsed = 115
         self.yExpanded = 200
         self.mainWidgets = mainWidgets
@@ -106,7 +106,7 @@ class DatasetFrame(QFrame):
 
         # self.buttonUpdate.clicked.connect(lambda: self.update(""))
         self.buttonSettings.clicked.connect(self.navigateToSettings)
-        self.buttonUpdate.clicked.connect(self.turnPurple)
+
         self.qtree.expanded.connect(self.qtreeExpand)
         self.qtree.collapsed.connect(self.qtreeCollapse)
 
@@ -144,6 +144,7 @@ class DatasetFrame(QFrame):
         self.animation.setEndValue(QSize(self.xExpanded, self.yExpanded))
         self.animation.setEasingCurve(QEasingCurve.InOutQuart)
         self.animation.start()
+        self.qtree.resizeColumnToContents( 0 )
 
     def qtreeCollapse(self):
         """
@@ -155,7 +156,9 @@ class DatasetFrame(QFrame):
         self.animationCollapse.setEndValue(QSize(self.xCollapsed, self.yCollapsed))
         self.animationCollapse.setEasingCurve(QEasingCurve.InOutQuart)
 
+
         self.animationCollapse.start()
+        self.qtree.resizeColumnToContents( 0 )
 
     def turnPurple(self):
         """
@@ -222,6 +225,7 @@ class DatasetFrame(QFrame):
         QTreeWidgetItem(__qtreewidgetitem1)
         self.qtree.setObjectName(f"qTree_{self.alias}")
         self.qtree.header().setCascadingSectionResizes(False)
+        
 
         self.verticalLayout_4.addWidget(self.qtree)
 
@@ -430,12 +434,11 @@ class DatasetSettingsWidget(QFrame):
         :type dataset: MainWindow
         """
         super(DatasetSettingsWidget, self).__init__(parent)
-        # settingsWrapper
-        self.universalSettingsWrapper = UniversalSettingsWrapper()
 
         # attributes
         self.widgetParent = parent
-        self.datasetSettings = dataset.datasetSettingsWrapper
+        self.datasetSettingsWrapper = dataset.datasetSettingsWrapper
+        self.universalSettingsWrapper= mainWindow.universalSettingsWrapper
         self.datasetName = dataset.datasetSettingsWrapper.name
 
         # show widget
@@ -476,7 +479,7 @@ class DatasetSettingsWidget(QFrame):
 
         if (
             dataset.datasetSettingsWrapper.arcgisWorkspaceFolder
-            == self.universalSettingsWrapper.downloadFolder
+            == self.lineEditSettingsWidgetDownloadFolder.text()
         ):
             self.radioSettingsWidgetWorkspaceFolder.setChecked(True)
             self.lineEditSettingsWidgetWorkspaceFolder.setReadOnly(True)
@@ -538,6 +541,7 @@ class DatasetSettingsWidget(QFrame):
         """
         Output widget state to settings.json. This method is called from a button on the main page.
         """
+        #set SOI value based on radio button state
         if self.radioSettingsWidgetMarine.isChecked():
             soiValue = "marine"
         elif self.radioSettingsWidgetCore.isChecked():
@@ -547,6 +551,7 @@ class DatasetSettingsWidget(QFrame):
         elif self.radioSettingsWidgetSwBc.isChecked():
             soiValue = "swbc"
 
+       #set values for paths depending on radio button state
         archiveFolderValue = (
             "universal"
             if self.radioSettingsWidgetArchiveFolder.isChecked()
@@ -565,6 +570,7 @@ class DatasetSettingsWidget(QFrame):
             else self.lineEditSettingsWidgetWorkspaceFolder.text()
         )
 
+        # Based on values above, and values written into Widget TextEdit's, build dictionary which can be written 2 settings.json
         dictionaryToSettings = {
             "fileName": self.lineEditSettingsWidgetFileName.text(),
             "currentPath": self.lineEditSettingsWidgetCurrentPath.text(),
@@ -575,7 +581,8 @@ class DatasetSettingsWidget(QFrame):
             "updateFrequency": int(self.lineEditSettingsWidgetUpdateFrequency.text()),
         }
 
-        self.datasetSettings.settingsWriter(dictionaryToSettings)
+        #write to JSON using the settings writer instantiated by the corresponding dataset
+        self.datasetSettingsWrapper.settingsWriter(dictionaryToSettings)
 
     def radioButtonToggle(self, radioButton, lineEdit, inheritedLineEdit):
         """

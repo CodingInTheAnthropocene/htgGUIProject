@@ -8,9 +8,6 @@ from configuration.initiationDictionary import initiationDictionary
 from modules.universalFunctions import *
 
 
-# load settings file
-
-
 class UniversalSettingsWrapper:
     """
     Reads from and writes to universalSettings in settings.json configuration file. Instantiated when a Dataset object is instantiated and  passes information to that object.
@@ -59,7 +56,7 @@ class DatasetSettingsWrapper:
         """
         Constructor method
 
-        :param datasetAlias: Alias used in settings.json and initiationDictionary describe different datasets. Alias must match one of these datasets.
+        :param datasetAlias: datasetAlias passed from Dataset object, which is passed to it from initiationDictionary.py
         :type datasetAlias: str
         """
        
